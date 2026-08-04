@@ -1,0 +1,641 @@
+% ============================================================
+%  Anteproyecto - Trabajo Final de Graduacion
+%  Escuela de Ingenieria en Computadores - TEC
+%  Titulo: AutoPipe - Generalizacion con meta-aprendizaje
+%  Autor: Ricardo Antonio Borbon Mena
+% ============================================================
+
+\documentclass[12pt,letterpaper]{article}
+
+% --- Codificacion e idioma ----------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{float}
+
+% --- Geometria y espaciado ----------------------------------
+\usepackage[letterpaper,top=2.5cm,bottom=2.5cm,left=3cm,right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% --- Tipografia y encabezados -------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries\sffamily}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\sffamily}{\thesubsubsection}{0.4em}{}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
+
+% --- Tablas, colores y graficos -----------------------------
+\usepackage{xcolor}
+\definecolor{tecnavy}{HTML}{003366}
+\definecolor{tecpurple}{HTML}{5B2A86}
+\definecolor{tablehead}{HTML}{E6EEF5}
+\definecolor{tablealt}{HTML}{F5F7FA}
+
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{multirow}
+\renewcommand{\arraystretch}{1.25}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+
+% --- Listas -------------------------------------------------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em,topsep=2pt,itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.6em,topsep=2pt,itemsep=2pt}
+
+% --- Cabeceras y pie de pagina ------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\textit{AutoPipe}}
+\fancyhead[R]{\small Anteproyecto TFG}
+\fancyfoot[C]{\thepage}
+
+% --- Referencias bibliograficas -----------------------------
+\usepackage{cite}
+
+% --- Hipervinculos ------------------------------------------
+\usepackage[hidelinks,colorlinks=false,bookmarks=true]{hyperref}
+\hypersetup{
+  pdftitle={Anteproyecto TFG - AutoPipe},
+  pdfauthor={Ricardo Antonio Borbon Mena},
+  pdfsubject={Trabajo Final de Graduacion - Ingenieria en Computadores}
+}
+
+% --- Cronograma (Gantt) -------------------------------------
+\usepackage{pgfgantt}
+
+\begin{document}
+
+% =========== PORTADA ========================================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{1.2cm}
+
+{\large\bfseries Instituto Tecnológico de Costa Rica}\\[10pt]
+
+{\large\bfseries Escuela de Ingeniería en Computadores}\\
+{\itshape (School of Computer Engineering)}\\[10pt]
+
+{\large\bfseries Programa de Licenciatura en Ingeniería en Computadores}\\
+{\itshape (Licentiate Degree Program in Computer Engineering)}\\[24pt]
+
+\IfFileExists{images/TEC.png}{\includegraphics[width=0.38\linewidth]{images/TEC.png}\\[20pt]}{%
+  {\Huge\bfseries\color{tecnavy} TEC}\\[4pt]{\large Tecnológico de Costa Rica}\\[24pt]}
+
+\rule{0.85\textwidth}{0.4pt}\\[12pt]
+{\LARGE\bfseries Generalización de framework de selección automática de pipelines de preprocesamiento a múltiples tareas de aprendizaje automático mediante meta-aprendizaje}\\[10pt]
+{\large\itshape Generalization of an Automatic Preprocessing Pipeline Selection Framework to Multiple Machine Learning Tasks through Meta-Learning}\\[10pt]
+\rule{0.85\textwidth}{0.4pt}\\[26pt]
+
+{\large Informe del Anteproyecto para el Trabajo Final de Graduación}\\
+{\itshape\small (Report of Pre-project for a Graduation Work in fulfillment of the requirements for the degree of Licentiate in Computer Engineering)}\\[26pt]
+
+{\large\bfseries Ricardo Antonio Borbón Mena}\\[34pt]
+
+\vfill
+{\large Cartago, Junio, 2026}\\
+{\itshape (Cartago, June, 2026)}
+
+\end{titlepage}
+
+% =========== INDICES ========================================
+\pagenumbering{roman}
+\setcounter{page}{2}
+\tableofcontents
+\newpage
+
+\section*{Palabras Clave}
+\addcontentsline{toc}{section}{Palabras Clave}
+Preprocesamiento de datos, Selección automática de pipelines (AutoML), Meta-aprendizaje (\textit{meta-learning}), Optimización bayesiana (Optuna), Arranque en caliente (\textit{warm-start}), Aprendizaje automático.
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% =========== INTRODUCCION ===================================
+\section{Introducción}
+
+El preprocesamiento de datos es una de las etapas que más incide en el desempeño de los modelos de aprendizaje automático (\textit{machine learning})~\cite{garcia2015preprocessing}. La elección de las transformaciones aplicadas a los datos de entrada, su orden y sus parámetros, determina en gran medida la calidad de las predicciones, y suele exigir un proceso manual de prueba y error que consume tiempo de experimentación y conocimiento experto. La automatización de esta etapa, dentro del campo conocido como aprendizaje automático automatizado (\textit{AutoML}), busca reducir ese esfuerzo seleccionando de forma sistemática la combinación de transformaciones que maximiza una métrica objetivo~\cite{hutter2019automl, feurer2015autosklearn}.
+
+En este contexto se sitúa \textit{AutoPipeAD}~\cite{borbon2026autopipead}, una librería existente en Python cuyo propósito es automatizar la selección de pipelines de preprocesamiento para la detección de anomalías en datasets de imágenes. La librería define un espacio de transformaciones componibles, genera y evalúa combinaciones mediante optimización bayesiana (Optuna)~\cite{akiba2019optuna}, ejecuta las evaluaciones en paralelo y selecciona el pipeline de mejor desempeño, generando reportes reproducibles. Está organizada en una arquitectura modular de seis componentes desacoplados (carga de datos, definición de pipelines, motor de búsqueda, evaluación, ejecución paralela y generación de reportes), y ha sido probada sobre datasets de referencia de detección de anomalías en imágenes, como MVTec AD~\cite{bergmann2019mvtec} y CIFAR-10~\cite{krizhevsky2009cifar} con anomalías sintéticas. Esta librería constituye el punto de partida del presente proyecto.
+
+Sin embargo, \textit{AutoPipeAD} presenta una limitación conceptual de alcance: aunque la motivación de una herramienta de este tipo es simplificar el preprocesamiento de datos en cualquier aplicación de aprendizaje automático, en su estado actual queda restringida a una sola tarea (detección de anomalías) y a una sola modalidad de datos (imágenes). Esta restricción responde al alcance con que fue construida y no a una limitación de su arquitectura, que está diseñada para ser modular y reemplazable componente a componente. Como se detalla más adelante, la mayor parte de sus componentes (el motor de búsqueda, la ejecución paralela, la composición de pipelines y la generación de reportes) son independientes del dominio, y el acoplamiento a imágenes y a la detección de anomalías se concentra únicamente en la carga de datos y en el cálculo de métricas.
+
+El presente proyecto propone evolucionar \textit{AutoPipeAD} hacia \textit{AutoPipe}, un framework de selección automática de pipelines de preprocesamiento generalizado a múltiples tareas de aprendizaje automático, e incorporar una capa de meta-aprendizaje~\cite{vanschoren2018metalearning, brazdil2009metalearning} que, a partir de las características descriptivas (\textit{meta-características}) de un dataset, recomiende configuraciones iniciales de búsqueda~\cite{feurer2015warmstart}. De esta forma se aborda tanto la generalización del alcance como un aporte investigativo medible: determinar si el conocimiento acumulado sobre datasets previos permite acelerar la búsqueda de pipelines en datasets nuevos frente a una búsqueda sin información previa.
+
+% =========== CONTEXTO Y ANTECEDENTES ========================
+\section{Contexto y Antecedentes}
+
+\subsection{Descripción de la organización}
+
+El proyecto se desarrolla en el Instituto Tecnológico de Costa Rica (TEC), institución pública de educación superior universitaria creada mediante la Ley No. 4777 del 10 de junio de 1971, dedicada a la docencia, la investigación y la extensión en los campos de la ciencia y la tecnología. Su campus central se ubica en Cartago, Costa Rica, y cuenta con sedes y centros académicos adicionales en distintas regiones del país.
+
+Dentro del TEC, el proyecto se enmarca en la Escuela de Ingeniería en Computadores, unidad responsable del programa de Licenciatura en Ingeniería en Computadores. Esta unidad articula la formación en las áreas de electrónica digital, arquitectura de computadores, sistemas embebidos, redes, software e inteligencia artificial. El presente Trabajo Final de Graduación (TFG) se desarrolla bajo la supervisión del profesor Luis Alberto Chavarría Zamora y toma como base una librería de software existente (\textit{AutoPipeAD}), sobre la cual se construye la solución propuesta.
+
+A diferencia de un proyecto realizado con una contraparte empresarial, este trabajo tiene un carácter académico e investigativo: su contraparte es la propia Área Académica de Ingeniería en Computadores, y su producto es una librería de software de uso abierto orientada a la comunidad de investigadores e ingenieros de aprendizaje automático.
+
+\subsection{Área de conocimiento}
+
+Este proyecto se ubica en el área de conocimiento de \textit{Inteligencia Artificial y Aprendizaje Automático}, dentro del eje de Computación y Software de la carrera de Ingeniería en Computadores. El trabajo aborda el diseño y la implementación de un framework de software para la selección automática de pipelines de preprocesamiento, integrando técnicas de optimización (optimización bayesiana~\cite{snoek2012practical}), de meta-aprendizaje~\cite{vanschoren2018metalearning} y de evaluación experimental reproducible. De esta manera, el proyecto contribuye a dicha área al aportar un mecanismo, generalizable y empíricamente validado, para automatizar y acelerar una etapa crítica del flujo de trabajo de aprendizaje automático.
+
+% =========== DESCRIPCION DEL PROYECTO =======================
+\section{Descripción del Proyecto}
+
+\subsection{Justificación y definición del problema}
+
+\subsubsection{Contexto del problema o necesidad}
+
+La construcción de un modelo de aprendizaje automático exige, antes del entrenamiento, decidir cómo se preprocesan los datos: qué transformaciones se aplican (por ejemplo, normalización, escalado, codificación de variables categóricas, imputación de valores faltantes, reducción de ruido o redimensionamiento), en qué orden y con qué parámetros~\cite{garcia2015preprocessing}. El espacio de combinaciones posibles es amplio, y la mejor combinación depende tanto de la tarea (clasificación, agrupamiento, detección de anomalías~\cite{chandola2009anomaly}) como de las características particulares del dataset. En la práctica, esta selección se realiza de forma manual y guiada por la experiencia, lo que la vuelve costosa en tiempo y dependiente de conocimiento experto.
+
+La librería \textit{AutoPipeAD} automatiza esta selección, pero únicamente para la tarea de detección de anomalías sobre datasets de imágenes. Su motor de búsqueda (Optuna), su mecanismo de paralelización (joblib), su abstracción de pipelines componibles (\texttt{BaseTransform} y \texttt{Pipeline}) y su generación de reportes reproducibles son, por diseño, independientes del dominio; sin embargo, los componentes de carga de datos y de cálculo de métricas están acoplados a imágenes y a métricas propias de la detección de anomalías. Esto impide que la herramienta cumpla su propósito original de ser de propósito general.
+
+Por otra parte, cada vez que \textit{AutoPipeAD} se enfrenta a un dataset nuevo, ejecuta la búsqueda de pipelines partiendo desde cero (\textit{arranque en frío}), sin aprovechar ninguna información de búsquedas anteriores sobre datasets similares. Dado que la búsqueda automática consume tiempo de cómputo proporcional al número de combinaciones evaluadas, repetir el proceso completo para cada dataset nuevo representa una oportunidad de mejora: si fuera posible recomendar configuraciones iniciales prometedoras a partir de la experiencia acumulada, la búsqueda podría alcanzar buenos resultados con menos ensayos.
+
+\subsubsection{Justificación de la necesidad}
+
+\textbf{Innovación.} La generalización del framework a múltiples tareas, combinada con una capa de meta-aprendizaje que recomienda configuraciones iniciales de búsqueda a partir de meta-características del dataset, constituye un aporte que va más allá de la ingeniería incremental. Mientras que la selección automática de pipelines es un problema estudiado en \textit{AutoML}~\cite{hutter2019automl}, la transferencia de conocimiento entre datasets para acelerar específicamente la selección de pipelines de preprocesamiento sigue siendo un área con margen de aporte~\cite{brazdil2009metalearning}, y permite formular una hipótesis verificable y defendible.
+
+El proyecto se diferencia de las herramientas \textit{AutoML} generalistas que ya emplean el arranque en caliente meta-aprendido, como \textit{auto-sklearn}~\cite{feurer2015autosklearn, feurer2015warmstart}, en tres aspectos: (1) el modelo base permanece como un componente externo configurable por el usuario, en lugar de seleccionarse dentro de un catálogo cerrado de estimadores; (2) el espacio de búsqueda se compone de transformaciones de preprocesamiento extensibles por el usuario mediante la interfaz \texttt{BaseTransform}, de modo que la capa de meta-aprendizaje se especializa exclusivamente en el preprocesamiento; y (3) se incluye la detección de anomalías, una familia de tareas que las herramientas generalistas de \textit{AutoML} no cubren.
+
+\textbf{Evidencia del problema.} El acoplamiento al dominio de imágenes y a la detección de anomalías es directamente observable en el diseño actual de la librería: su componente de carga de datos asume una estructura de directorios propia de imágenes (subdirectorios de muestras normales y anómalas) y su componente de evaluación calcula métricas específicas de detección de anomalías; ninguna otra modalidad de datos ni familia de tareas está soportada. El arranque en frío es igualmente verificable: el motor de búsqueda no consume ni produce ninguna base de conocimiento entre ejecuciones, por lo que cada nueva búsqueda parte siempre desde cero.
+
+\textbf{Relevancia estratégica y aporte de valor.} Para la comunidad de investigadores e ingenieros de aprendizaje automático, una herramienta que automatice el preprocesamiento de forma agnóstica a la tarea reduce el tiempo de experimentación y la dependencia de conocimiento experto. La capa de meta-aprendizaje añade valor al reducir el costo de cómputo de la búsqueda, lo que se traduce en menor tiempo y menor consumo energético por experimento.
+
+\textbf{Aporte al área de conocimiento.} El proyecto produce un artefacto de software reutilizable y un estudio experimental reproducible sobre la efectividad del arranque en caliente meta-aprendido, ambos pertinentes para el área de Inteligencia Artificial y Aprendizaje Automático.
+
+\subsubsection{Enunciado del problema}
+
+¿Cómo generalizar la selección automática de pipelines de preprocesamiento a múltiples tareas de aprendizaje automático y reducir el costo de la búsqueda en datasets nuevos aprovechando, mediante meta-aprendizaje, el conocimiento acumulado sobre datasets previos?
+
+\subsection{Especificación de los objetivos}
+
+\subsubsection{Objetivo general}
+
+Generalizar el framework \textit{AutoPipeAD} de selección automática de pipelines de preprocesamiento a múltiples tareas de aprendizaje automático e incorporar una capa de meta-aprendizaje que recomiende configuraciones iniciales de búsqueda a partir de las meta-características del dataset, con el fin de reducir el costo de exploración en datasets nuevos manteniendo la reproducibilidad de los resultados.
+
+\subsubsection{Objetivos específicos}
+
+\begin{enumerate}
+  \item Refactorizar la arquitectura de \textit{AutoPipeAD} hacia un núcleo agnóstico a la tarea con soporte para detección de anomalías y clasificación ---y para agrupamiento (\textit{clustering}) como extensión deseable, según el alcance priorizado---, e implementar el soporte para datos tabulares (cargador y transformaciones de preprocesamiento con semántica de ajuste y transformación), reutilizando y extendiendo los módulos de búsqueda, paralelización y composición de pipelines existentes.
+
+  \item Implementar un extractor de meta-características de datasets y construir una base de meta-conocimiento, ejecutando la selección automática de pipelines sobre un corpus de datasets públicos para las tareas soportadas.
+
+  \item Desarrollar un recomendador meta-aprendido que, a partir de las meta-características de un dataset nuevo, genere configuraciones iniciales (\textit{warm-start}) que orienten el motor de búsqueda Optuna.
+
+  \item Validar experimentalmente la generalización del framework a múltiples tareas y la mejora aportada por el arranque en caliente meta-aprendido frente al arranque en frío, mediante validación cruzada por exclusión de dataset (\textit{leave-one-dataset-out}) y la generación de reportes reproducibles.
+\end{enumerate}
+
+\subsection{Impactos del proyecto y resultados esperados}
+
+\subsubsection{Impactos}
+
+\textbf{Impacto técnico.} El proyecto convierte una herramienta de un solo dominio en un framework agnóstico a la tarea, reutilizable para clasificación y detección de anomalías, y extensible al agrupamiento según el alcance priorizado. La capa de meta-aprendizaje introduce una capacidad que la herramienta no posee actualmente: aprovechar la experiencia de búsquedas anteriores para orientar las nuevas, reduciendo el número de ensayos necesarios.
+
+\textbf{Impacto académico y organizacional.} El TFG aporta al Área Académica de Ingeniería en Computadores un artefacto de software de uso abierto y un estudio experimental reproducible sobre meta-aprendizaje aplicado a la selección de pipelines. El resultado es base potencial para trabajos futuros (otras modalidades de datos, técnicas generativas de aumento de datos) y material de referencia para cursos del área.
+
+\textbf{Impacto económico y ambiental.} La reducción del número de ensayos de búsqueda mediante el arranque en caliente disminuye el tiempo de cómputo y, con ello, el consumo energético por experimento. Este criterio es coherente con el uso de optimización bayesiana en lugar de búsqueda exhaustiva, elegido por su mayor eficiencia, y refuerza la dimensión de sostenibilidad del proyecto.
+
+\textbf{Impacto en los stakeholders.} Los investigadores e ingenieros de aprendizaje automático obtienen una herramienta que automatiza el preprocesamiento en más tareas y con menor costo de búsqueda. El estudiante consolida competencias en arquitectura de software, AutoML, meta-aprendizaje y experimentación rigurosa. La comunidad académica recibe resultados reproducibles y código abierto.
+
+\textbf{Impacto ético.} El uso de datasets públicos con licencias de uso abierto, la reproducibilidad garantizada por control de semillas y la publicación del código sustentan un proceso transparente y verificable. El proyecto no procesa datos personales ni sensibles.
+
+\subsubsection{Resultados esperados}
+
+\begin{table}[H]
+\centering
+\caption{Resultados esperados del proyecto.}
+\small
+\begin{tabularx}{\textwidth}{l L{4.5cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{\#} & \textbf{Resultado} & \textbf{Descripción} \\
+\midrule
+RE1 & Núcleo agnóstico a la tarea & Refactorización de \textit{AutoPipeAD} con una interfaz de tarea y un registro de métricas que soportan detección de anomalías y clasificación; el agrupamiento se aborda como extensión deseable según el alcance priorizado (Sección~\ref{subsec:alcance}). \\
+RE2 & Soporte de datos tabulares & Cargador de datasets tabulares y conjunto de transformaciones de preprocesamiento tabular (escalado, codificación, imputación, selección de características) construidas sobre la extensión de \texttt{BaseTransform} con semántica de ajuste y transformación (ajuste únicamente con el subconjunto de entrenamiento). \\
+RE3 & Extractor de meta-características & Componente que calcula un vector de meta-características descriptivas de un dataset (estadísticas, teórico-informativas y de complejidad). \\
+RE4 & Base de meta-conocimiento & Estructura de datos que asocia, para un corpus de datasets públicos, sus meta-características con los pipelines de mejor desempeño hallados por la búsqueda. \\
+RE5 & Recomendador meta-aprendido & Modelo que, dadas las meta-características de un dataset nuevo, produce configuraciones iniciales de \textit{warm-start} para el motor Optuna. \\
+RE6 & Experimentos y reportes comparativos & Conjunto de experimentos reproducibles y reportes que comparan arranque en frío contra arranque en caliente y documentan la generalización por tarea. \\
+RE7 & Documentación y código entregado & Documentación técnica, manual de uso y código fuente del framework \textit{AutoPipe} en repositorio. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Alcance priorizado}
+\label{subsec:alcance}
+
+Para administrar el presupuesto de 336 horas con un margen de riesgo explícito, el alcance se organiza en dos niveles:
+
+\textbf{Alcance mínimo comprometido.} Constituye el criterio de completitud del proyecto: (a) el núcleo agnóstico a la tarea con soporte para detección de anomalías (caso de continuidad de \textit{AutoPipeAD}) y clasificación sobre datos tabulares; (b) el extractor de meta-características; (c) la base de meta-conocimiento sobre un corpus acotado de datasets públicos; (d) el recomendador de arranque en caliente integrado con el motor Optuna; (e) la validación experimental \textit{leave-one-dataset-out} conforme a los criterios de éxito de la Sección~\ref{subsec:criterios}; y (f) la documentación técnica y el manual de uso.
+
+\textbf{Extensiones deseables.} Se abordan únicamente si el avance verificado del alcance mínimo lo permite: (a) el soporte de agrupamiento (\textit{clustering}), cuya evaluación no supervisada requiere un protocolo propio; (b) la ampliación del corpus de meta-conocimiento; y (c) un meta-modelo de recomendación más sofisticado que el recomendador por vecinos más cercanos.
+
+La decisión de incorporar o descartar las extensiones deseables se toma en el punto de control de alcance de la semana 7 del cronograma (Figura~\ref{fig:gantt}), con base en el avance del alcance mínimo comprometido. Esta priorización es consistente con la mitigación del riesgo RI5.
+
+\subsection{Supuestos y limitaciones}
+
+\subsubsection{Supuestos}
+
+\begin{itemize}
+  \item El estudiante dispone de una librería base funcional (\textit{AutoPipeAD}) como punto de partida para la evolución.
+  \item Existen datasets públicos tabulares etiquetados, con licencias de uso abierto (por ejemplo, OpenML y el repositorio UCI), en cantidad suficiente para construir un corpus de meta-conocimiento.
+  \item El hardware local disponible (CPU multinúcleo y 8 GB de memoria RAM) es suficiente para ejecutar la búsqueda automática sobre datasets tabulares de tamaño pequeño a mediano.
+  \item Las librerías de terceros utilizadas (scikit-learn, Optuna, joblib y una librería estándar de extracción de meta-características) se mantienen compatibles con Python 3.10 o superior durante el período del proyecto.
+  \item El profesor tutor estará disponible para revisiones periódicas de avance y validación de resultados.
+\end{itemize}
+
+\subsubsection{Limitaciones}
+
+\begin{itemize}
+  \item El alcance comprometido se restringe a datos tabulares y a las familias de tareas de clasificación y detección de anomalías (esta última proveniente de la librería base \textit{AutoPipeAD}, como caso de continuidad); el agrupamiento se aborda como extensión deseable, según el alcance priorizado de la Sección~\ref{subsec:alcance}. No se cubren texto, series temporales ni grafos.
+  \item El framework no entrena ni optimiza el modelo base del usuario, que permanece como un componente externo configurable a través de una interfaz compatible con scikit-learn. El único modelo entrenado dentro del proyecto es el meta-modelo interno del recomendador.
+  \item El aumento inteligente de datos mediante técnicas generativas (por ejemplo, GAN) queda fuera de alcance, por las restricciones de tiempo y de hardware del proyecto; se documenta como trabajo futuro.
+  \item La paralelización permanece limitada al hardware local; no se contempla distribución en clústeres ni en infraestructura de nube.
+  \item El tamaño del corpus de meta-conocimiento está acotado por el presupuesto de cómputo y de tiempo (336 horas), lo que limita el alcance estadístico de las conclusiones sobre el meta-aprendizaje.
+  \item La validación se realiza sobre datasets públicos; no se garantiza la transferencia de los resultados a datasets propietarios o a dominios sustancialmente distintos de los del corpus.
+\end{itemize}
+
+\newpage
+\subsection{Análisis de riesgos}
+
+{\small
+\begin{longtable}{@{}p{0.6cm} >{\raggedright\arraybackslash}p{4.8cm} c c >{\raggedright\arraybackslash}p{5.2cm}@{}}
+\caption{Análisis de riesgos del proyecto.} \\
+\toprule
+\rowcolor{tablehead}
+\textbf{\#} & \textbf{Escenario de riesgo} & \textbf{Prob.} & \textbf{Impacto} & \textbf{Acciones de mitigación} \\
+\midrule
+\endfirsthead
+
+\multicolumn{5}{l}{\textit{Tabla \thetable\ -- continuación}} \\
+\toprule
+\rowcolor{tablehead}
+\textbf{\#} & \textbf{Escenario de riesgo} & \textbf{Prob.} & \textbf{Impacto} & \textbf{Acciones de mitigación} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{5}{r}{\textit{Continúa en la siguiente página}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+RI1 & El arranque en caliente meta-aprendido no supera de forma significativa al arranque en frío, comprometiendo la hipótesis central del proyecto. & Media & Alto & Los criterios de éxito y las líneas base quedan definidos de antemano en la Sección~\ref{subsec:criterios}. Un resultado negativo riguroso sigue siendo un aporte válido y defendible; la generalización del framework se sostiene como contribución independiente. Analizar las causas (calidad de las meta-características, tamaño del corpus). \\
+\midrule
+
+RI2 & La construcción de la base de meta-conocimiento consume más tiempo de cómputo del previsto, al multiplicar datasets por ensayos de búsqueda. & Media & Alto & Acotar el corpus a entre 15 y 25 datasets pequeños a medianos, con un presupuesto fijo de ensayos por dataset (Sección~\ref{subsec:criterios}). Paralelizar la generación con joblib y cachear resultados intermedios para evitar recomputar. \\
+\midrule
+
+RI3 & La refactorización del núcleo introduce regresiones que rompen el caso de detección de anomalías en imágenes ya soportado por la librería base. & Media & Medio & Ejecutar antes y después del refactor la suite de pruebas de regresión ya existente en la librería base (134 pruebas unitarias y de integración, con una cobertura del 97\,\%), ampliándola donde el refactor lo requiera. Aplicar partición de equivalencia sobre el motor de búsqueda para verificar su comportamiento. \\
+\midrule
+
+RI4 & La heterogeneidad de los datasets públicos (tipos mixtos, valores faltantes, desbalance) dificulta la extracción uniforme de meta-características. & Media & Medio & Utilizar una librería estándar de extracción de meta-características, normalizar el espacio de meta-características y definir criterios explícitos de inclusión y exclusión de datasets en el corpus. \\
+\midrule
+
+RI5 & El alcance planificado excede las 336 horas disponibles. & Media & Alto & Aplicar el alcance priorizado de la Sección~\ref{subsec:alcance}: el agrupamiento es la primera extensión en descartarse en el punto de control de la semana 7. El aumento generativo de datos queda explícitamente como trabajo futuro. Revisar el avance contra el cronograma en cada hito. \\
+
+\end{longtable}
+}
+
+% =========== PROPUESTA METODOLOGICA =========================
+\section{Propuesta Metodológica}
+
+\subsection{Tipificación del trabajo a realizar}
+
+El proyecto combina dos modalidades. Por una parte, corresponde al \textit{desarrollo de un nuevo producto (innovación)}, en tanto evoluciona la librería \textit{AutoPipeAD} hacia un framework agnóstico a la tarea e incorpora una capa de meta-aprendizaje que no existe en la herramienta actual. Por otra parte, incorpora una componente de \textit{investigación teórico-práctica}, dado que formula y evalúa empíricamente una hipótesis verificable: si el arranque en caliente meta-aprendido reduce el costo de la búsqueda frente al arranque en frío. La estrategia respeta el principio de evolución sobre reinvención: se reutiliza la arquitectura modular existente y se construye sobre las decisiones de diseño consolidadas en la librería base (Optuna como motor de búsqueda, joblib para la paralelización y el modelo base externo configurable).
+
+\subsection{Descripción general del proceso por realizar}
+
+El proceso sigue una estrategia iterativa e incremental, organizada en etapas secuenciales donde cada fase construye sobre los resultados de la anterior, con validación continua a lo largo del desarrollo. La Figura~\ref{fig:flujo} resume el flujo general y la Figura~\ref{fig:arq} ubica los componentes nuevos sobre la arquitectura de la librería base.
+
+\begin{figure}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{c}
+\colorbox{tablehead}{\parbox{0.95\textwidth}{\centering \textbf{Dataset (tabular o imágenes) + tarea (clasificación / clustering / detección de anomalías)}}}\\[2pt]
+$\downarrow$\\[2pt]
+\colorbox{tablealt}{\parbox{0.95\textwidth}{\centering Extractor de meta-características $\rightarrow$ \textbf{Recomendador meta-aprendido} $\rightarrow$ configuraciones iniciales (\textit{warm-start})}}\\[2pt]
+$\downarrow$\\[2pt]
+\colorbox{tablealt}{\parbox{0.95\textwidth}{\centering Motor de búsqueda (Optuna, con \textit{warm-start}) $\rightarrow$ evaluación paralela (joblib) $\rightarrow$ selección}}\\[2pt]
+$\downarrow$\\[2pt]
+\colorbox{tablehead}{\parbox{0.95\textwidth}{\centering \textbf{Pipeline de mejor desempeño + reporte reproducible}}}
+\end{tabular}
+\caption{Flujo general de \textit{AutoPipe} con la capa de meta-aprendizaje. Los bloques sombreados en tono claro son componentes nuevos o extendidos respecto de \textit{AutoPipeAD}.}
+\label{fig:flujo}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.2cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Componente} & \textbf{Estado en la evolución} \\
+\midrule
+\texttt{search\_engine} (Optuna) & Reutilizado. Se integra el \textit{warm-start} mediante inyección de ensayos iniciales (\texttt{enqueue\_trial}). \\
+\texttt{parallel\_runner} (joblib) & Reutilizado sin cambios; se emplea además para construir el corpus en paralelo. \\
+\texttt{pipeline} (\texttt{BaseTransform}, \texttt{Pipeline}) & Reutilizado y extendido. El contrato de transformación se amplía con semántica de ajuste y transformación (\textit{fit/transform}): las transformaciones con estado (escalado, imputación, codificación) se ajustan únicamente con el subconjunto de entrenamiento, para evitar la fuga de información hacia la validación. Las transformaciones tabulares se añaden como nuevas subclases. \\
+\texttt{reporter} & Reutilizado; se adaptan las métricas y gráficas por tarea. \\
+\texttt{evaluator} (\texttt{MetricCalculator}) & Extendido a un registro de métricas por tarea. \\
+\texttt{data\_loader} & Extendido con un cargador de datos tabulares. \\
+\texttt{meta\_features} & \textbf{Nuevo}: extractor de meta-características. \\
+\texttt{meta\_recommender} & \textbf{Nuevo}: base de meta-conocimiento y recomendador de \textit{warm-start}. \\
+\bottomrule
+\end{tabularx}
+\caption{Mapa de reutilización y extensión sobre la arquitectura de \textit{AutoPipeAD}.}
+\label{fig:arq}
+\end{figure}
+
+El flujo general se compone de las siguientes etapas:
+
+\begin{enumerate}
+  \item \textbf{Análisis y diseño de la generalización.} Se analiza la arquitectura de \textit{AutoPipeAD} y se diseñan la interfaz de tarea agnóstica, el registro de métricas y la extensión del contrato de transformación con semántica de ajuste y transformación (\textit{fit/transform}), necesaria para que las transformaciones con estado se ajusten únicamente con los datos de entrenamiento y se evite la fuga de información. Se define el espacio de transformaciones de preprocesamiento tabular y los criterios de inclusión de datasets en el corpus.
+
+  \item \textbf{Implementación del núcleo agnóstico y soporte tabular.} Se refactoriza el núcleo para desacoplar la búsqueda y la evaluación de la tarea concreta. Se implementan el cargador de datos tabulares y las transformaciones tabulares sobre el contrato extendido de \texttt{BaseTransform}. Se ejecuta y amplía la suite de pruebas de regresión existente de la librería base (134 pruebas), verificando que el caso de imágenes ya soportado sigue funcionando.
+
+  \item \textbf{Implementación del extractor de meta-características.} Se implementa el componente que calcula el vector de meta-características de un dataset (estadísticas, teórico-informativas y de complejidad), utilizando una librería estándar de extracción de meta-características.
+
+  \item \textbf{Construcción de la base de meta-conocimiento.} Se selecciona el corpus de datasets públicos (entre 15 y 25, según los criterios de inclusión de la Sección~\ref{subsec:criterios}) y se ejecuta la selección automática de pipelines sobre cada uno con un presupuesto fijo de ensayos, registrando sus meta-características y los pipelines de mejor desempeño. La ejecución se paraleliza con joblib y se cachean los resultados.
+
+  \item \textbf{Implementación del recomendador meta-aprendido.} Se entrena un meta-modelo que, dadas las meta-características de un dataset, recomienda configuraciones iniciales. Estas configuraciones se inyectan en el motor Optuna como ensayos iniciales de \textit{warm-start}.
+
+  \item \textbf{Diseño experimental y validación.} Conforme al protocolo y a los criterios de éxito definidos en la Sección~\ref{subsec:criterios}, se ejecutan los experimentos de validación cruzada por exclusión de dataset (\textit{leave-one-dataset-out}) que comparan el arranque en frío contra el arranque en caliente, midiendo el número de ensayos para alcanzar un desempeño objetivo y el desempeño a presupuesto reducido.
+
+  \item \textbf{Generación de reportes y análisis de resultados.} Se generan los reportes reproducibles comparativos y se analizan los resultados de generalización por tarea y de mejora del \textit{warm-start}.
+
+  \item \textbf{Documentación y entrega.} Se consolida la documentación técnica, el manual de uso y los criterios definidos, y se entrega el código fuente del framework \textit{AutoPipe} en repositorio.
+\end{enumerate}
+
+\subsection{Criterios de éxito y diseño experimental}
+\label{subsec:criterios}
+
+Para que la validación del proyecto sea verificable, los criterios de éxito se definen de antemano y quedan fijados en este anteproyecto.
+
+\subsubsection{Corpus y presupuesto de búsqueda}
+
+El corpus de meta-conocimiento se compone de entre 15 y 25 datasets públicos de clasificación tabular obtenidos de OpenML o del repositorio UCI, seleccionados con los siguientes criterios de inclusión: licencia de uso abierto, entre 500 y 50\,000 instancias, no más de 100 características, ausencia de datos de imagen o texto embebidos y, en datasets multiclase, un máximo de 10 clases. La construcción de la base de meta-conocimiento ejecuta la búsqueda con un presupuesto fijo de 50 ensayos de Optuna por dataset, con semillas controladas y resultados cacheados.
+
+\subsubsection{Métricas primarias por tarea}
+
+La métrica primaria es macro-F1 para clasificación y AUC-ROC para detección de anomalías; las demás métricas se reportan con fines descriptivos. Si el agrupamiento se incorpora como extensión, su métrica primaria será el coeficiente de silueta.
+
+\subsubsection{Protocolo de comparación}
+
+La hipótesis se evalúa mediante validación cruzada por exclusión de dataset (\textit{leave-one-dataset-out}): para cada dataset del corpus, la base de meta-conocimiento se construye con los datasets restantes y se comparan dos condiciones sobre el dataset excluido, ambas con el mismo presupuesto de 30 ensayos y las mismas semillas: (a) \textbf{arranque en frío}, la búsqueda TPE estándar; y (b) \textbf{arranque en caliente}, la misma búsqueda con las 5 configuraciones recomendadas por el meta-recomendador inyectadas como ensayos iniciales (\texttt{enqueue\_trial}). En ambas condiciones se emplea el mismo modelo base fijo, un clasificador sensible al preprocesamiento (regresión logística o $k$ vecinos más cercanos de scikit-learn), de modo que las diferencias observadas sean atribuibles al pipeline de preprocesamiento y no al modelo.
+
+Se miden dos variables por condición: (1) \textit{ensayos hasta el objetivo}: número de ensayos necesarios para alcanzar al menos el 95\,\% del mejor valor de métrica hallado por el arranque en frío con el presupuesto completo; y (2) \textit{desempeño a presupuesto reducido}: mejor valor de métrica alcanzado tras la mitad del presupuesto (15 ensayos).
+
+\subsubsection{Criterio de éxito de la hipótesis}
+
+La hipótesis se considera confirmada si el arranque en caliente reduce la mediana de \textit{ensayos hasta el objetivo} en al menos un 30\,\% respecto del arranque en frío, con significancia estadística según la prueba de rangos con signo de Wilcoxon pareada por dataset ($\alpha = 0{,}05$). Si el criterio no se alcanza, el análisis riguroso de las causas (calidad de las meta-características, tamaño del corpus, diversidad de los pipelines ganadores) y la generalización del framework constituyen por sí mismos resultados defendibles, conforme a la mitigación del riesgo RI1.
+
+\subsubsection{Criterios de éxito de ingeniería}
+
+Con independencia del resultado de la hipótesis, el proyecto debe cumplir: (a) la suite de regresión de la librería base (134 pruebas) se mantiene en verde tras la refactorización; (b) los módulos nuevos alcanzan una cobertura de pruebas de al menos el 70\,\%; (c) los resultados son reproducibles (la misma semilla produce el mismo pipeline ganador); y (d) el flujo completo para el usuario final se mantiene expresable en no más de 20 líneas de código.
+
+\newpage
+\subsection{Tabla de relación entre objetivos y proceso por realizar}
+
+{\small
+\setlength{\LTpre}{6pt}
+\setlength{\LTpost}{6pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}p{3.2cm}@{}}
+\caption{Relación entre objetivos específicos y proceso por realizar.} \\
+\toprule
+\rowcolor{tablehead}
+\textbf{Objetivo específico} & \textbf{Principales actividades} & \textbf{Entregables asociados} & \textbf{Técnicas o herramientas} & \textbf{Estrategias de verificación y validación} \\
+\midrule
+\endfirsthead
+
+\multicolumn{5}{l}{\textit{Tabla \thetable\ -- continuación}} \\
+\toprule
+\rowcolor{tablehead}
+\textbf{Objetivo específico} & \textbf{Principales actividades} & \textbf{Entregables asociados} & \textbf{Técnicas o herramientas} & \textbf{Estrategias de verificación y validación} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{5}{r}{\textit{Continúa en la siguiente página}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\textbf{OE1.} Refactorizar el núcleo agnóstico a la tarea e implementar el soporte tabular.
+&
+1. Diseño de la interfaz de tarea, del registro de métricas y de la extensión \textit{fit/transform} del contrato de transformación. \newline
+2. Refactor del motor de búsqueda y la evaluación para desacoplar la tarea. \newline
+3. Implementación del cargador tabular y de las transformaciones tabulares sobre el contrato extendido de \texttt{BaseTransform}. \newline
+4. Ejecución y ampliación de la suite de pruebas de regresión existente del caso de imágenes.
+&
+1. Núcleo agnóstico a la tarea (RE1). \newline
+2. Soporte de datos tabulares (RE2).
+&
+Python, scikit-learn, Optuna, joblib, pytest, patrón Strategy, ruff y radon.
+&
+1. Pruebas de regresión que verifican que el caso de imágenes existente sigue funcionando. \newline
+2. Partición de equivalencia sobre el motor de búsqueda. \\
+\midrule
+
+\textbf{OE2.} Implementar el extractor de meta-características y construir la base de meta-conocimiento.
+&
+1. Implementación del extractor de meta-características. \newline
+2. Selección del corpus de datasets públicos según criterios de inclusión. \newline
+3. Ejecución paralela de la búsqueda sobre el corpus y registro de resultados.
+&
+1. Extractor de meta-características (RE3). \newline
+2. Base de meta-conocimiento (RE4).
+&
+Python, librería de meta-características, OpenML / UCI, joblib, Optuna.
+&
+1. Verificación de la consistencia del vector de meta-características sobre datasets de control. \newline
+2. Verificación de la completitud y reproducibilidad de la base de meta-conocimiento. \\
+\midrule
+
+\textbf{OE3.} Desarrollar el recomendador meta-aprendido de \textit{warm-start}.
+&
+1. Entrenamiento del meta-modelo sobre la base de meta-conocimiento. \newline
+2. Generación de configuraciones iniciales a partir de las meta-características. \newline
+3. Integración del \textit{warm-start} con Optuna (\texttt{enqueue\_trial}).
+&
+1. Recomendador meta-aprendido (RE5).
+&
+Python, scikit-learn, Optuna (\texttt{enqueue\_trial}).
+&
+1. Verificación de que las configuraciones recomendadas son válidas y ejecutables. \newline
+2. Evaluación preliminar del recomendador sobre un subconjunto de datasets retenidos. \\
+\midrule
+
+\textbf{OE4.} Validar la generalización y la mejora del \textit{warm-start}.
+&
+1. Instrumentación del protocolo \textit{leave-one-dataset-out} y de las métricas de éxito definidas en la Sección~\ref{subsec:criterios}. \newline
+2. Ejecución de los experimentos arranque en frío vs.\ arranque en caliente. \newline
+3. Generación de reportes reproducibles y análisis de resultados.
+&
+1. Experimentos y reportes comparativos (RE6). \newline
+2. Documentación y código entregado (RE7).
+&
+Python, validación cruzada \textit{leave-one-dataset-out}, métricas por tarea, reportes PDF/HTML.
+&
+1. Comparación estadística entre arranque en frío y en caliente según los criterios de la Sección~\ref{subsec:criterios} (prueba de Wilcoxon; ensayos hasta el objetivo y desempeño a presupuesto reducido). \newline
+2. Verificación de generalización por tarea. \newline
+3. Revisión de resultados con el tutor. \\
+
+\end{longtable}
+}
+
+\subsection{Cronograma propuesto}
+
+El proyecto se desarrolla durante 12 semanas con una dedicación de 28 horas semanales, para un total de 336 horas. La Figura~\ref{fig:gantt} presenta la distribución temporal de las etapas. La documentación técnica y el informe se elaboran de forma continua a partir de la semana 3, en lugar de concentrarse al cierre, y el punto de control de alcance de la semana 7 decide la incorporación o el descarte de las extensiones deseables (Sección~\ref{subsec:alcance}). Las fechas exactas se ajustarán según la fecha oficial de inicio.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{ganttchart}[
+    hgrid,
+    vgrid,
+    x unit=0.7cm,
+    y unit title=0.7cm,
+    y unit chart=0.55cm,
+    title/.append style={fill=tecnavy, draw=tecnavy},
+    title label font=\small\bfseries\color{white},
+    title label node/.append style={text=white},
+    bar/.append style={fill=tecnavy!60, draw=tecnavy},
+    bar label font=\small,
+    group/.append style={fill=tecnavy, draw=tecnavy},
+    group label font=\small\bfseries\color{white},
+    milestone/.append style={fill=tecpurple!80, draw=tecpurple}
+]{1}{12}
+\gantttitle{Semanas del proyecto}{12} \\
+\gantttitlelist{1,...,12}{1} \\
+\ganttbar{E1. Análisis y diseño de la generalización}{1}{2} \\
+\ganttbar{E2. Núcleo agnóstico y soporte tabular}{2}{4} \\
+\ganttbar{E3. Extractor de meta-características}{4}{5} \\
+\ganttbar{E4. Base de meta-conocimiento}{5}{7} \\
+\ganttbar{E5. Recomendador meta-aprendido}{7}{9} \\
+\ganttbar{E6. Diseño experimental y validación}{9}{11} \\
+\ganttbar{E7. Reportes y análisis de resultados}{10}{11} \\
+\ganttbar{E8. Documentación continua e informe}{3}{12} \\
+\ganttmilestone{Hito: Núcleo generalizado}{4} \\
+\ganttmilestone{Hito: Base de meta-conocimiento}{7} \\
+\ganttmilestone{Hito: Control de alcance}{7} \\
+\ganttmilestone{Hito: Recomendador funcional}{9} \\
+\ganttmilestone{Hito: Cierre del proyecto}{12}
+\end{ganttchart}%
+}
+\caption{Cronograma general del proyecto (12 semanas, 28 horas semanales, 336 horas totales).}
+\label{fig:gantt}
+\end{figure}
+
+% =========== REFERENCIAS ====================================
+\newpage
+\addcontentsline{toc}{section}{Referencias}
+\begin{thebibliography}{99}
+
+\bibitem{garcia2015preprocessing}
+S.~García, J.~Luengo, y F.~Herrera, \emph{Data Preprocessing in Data Mining}. Cham, Suiza: Springer, 2015.
+
+\bibitem{hutter2019automl}
+F.~Hutter, L.~Kotthoff, y J.~Vanschoren, Eds., \emph{Automated Machine Learning: Methods, Systems, Challenges}. Cham, Suiza: Springer, 2019.
+
+\bibitem{feurer2015autosklearn}
+M.~Feurer, A.~Klein, K.~Eggensperger, J.~T.~Springenberg, M.~Blum, y F.~Hutter, ``Efficient and robust automated machine learning,'' en \emph{Advances in Neural Information Processing Systems (NeurIPS)}, vol.~28, 2015, pp.~2962--2970.
+
+\bibitem{borbon2026autopipead}
+R.~A.~Borbón Mena, ``AutoPipeAD: Selección automática de pipelines de preprocesamiento para detección de anomalías en imágenes,'' Proyecto de Aplicación de la Ingeniería en Computadores, Instituto Tecnológico de Costa Rica, Cartago, Costa Rica, 2026. [En línea]. Disponible: \url{https://github.com/ItsRichard7/AutoPipeAD}
+
+\bibitem{akiba2019optuna}
+T.~Akiba, S.~Sano, T.~Yanase, T.~Ohta, y M.~Koyama, ``Optuna: A next-generation hyperparameter optimization framework,'' en \emph{Proc. 25th ACM SIGKDD Int. Conf. Knowledge Discovery \& Data Mining (KDD)}, 2019, pp.~2623--2631.
+
+\bibitem{bergmann2019mvtec}
+P.~Bergmann, M.~Fauser, D.~Sattlegger, y C.~Steger, ``MVTec AD --- A comprehensive real-world dataset for unsupervised anomaly detection,'' en \emph{Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)}, 2019, pp.~9592--9600.
+
+\bibitem{krizhevsky2009cifar}
+A.~Krizhevsky, ``Learning multiple layers of features from tiny images,'' Univ. de Toronto, Toronto, ON, Canadá, Reporte Técnico, 2009.
+
+\bibitem{vanschoren2018metalearning}
+J.~Vanschoren, ``Meta-learning: A survey,'' \emph{arXiv:1810.03548}, 2018.
+
+\bibitem{brazdil2009metalearning}
+P.~Brazdil, C.~Giraud-Carrier, C.~Soares, y R.~Vilalta, \emph{Metalearning: Applications to Data Mining}. Berlín, Alemania: Springer, 2009.
+
+\bibitem{feurer2015warmstart}
+M.~Feurer, J.~T.~Springenberg, y F.~Hutter, ``Initializing Bayesian hyperparameter optimization via meta-learning,'' en \emph{Proc. 29th AAAI Conf. Artificial Intelligence (AAAI)}, 2015, pp.~1128--1135.
+
+\bibitem{snoek2012practical}
+J.~Snoek, H.~Larochelle, y R.~P.~Adams, ``Practical Bayesian optimization of machine learning algorithms,'' en \emph{Advances in Neural Information Processing Systems (NeurIPS)}, vol.~25, 2012, pp.~2951--2959.
+
+\bibitem{chandola2009anomaly}
+V.~Chandola, A.~Banerjee, y V.~Kumar, ``Anomaly detection: A survey,'' \emph{ACM Computing Surveys}, vol.~41, no.~3, pp.~1--58, 2009.
+
+\end{thebibliography}
+
+% =========== APENDICE: FICHA DE CONTACTOS ====================
+\newpage
+\appendix
+\section*{Apéndice. Ficha de contactos del proyecto}
+\addcontentsline{toc}{section}{Apéndice. Ficha de contactos del proyecto}
+
+\vspace{0.5em}
+\begin{center}
+{\large\bfseries Ingeniería en Computadores}\\
+{\bfseries Ficha de contactos del proyecto}
+\end{center}
+
+\vspace{1em}
+
+\begin{tabularx}{\textwidth}{L{5cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Datos del estudiante}} \\
+\midrule
+Nombre & Ricardo Antonio Borbón Mena \\
+Correo electrónico & ricardobm@estudiantec.cr \\
+Teléfono & 6143-9499 \\
+\bottomrule
+\end{tabularx}
+
+\vspace{1em}
+
+\begin{tabularx}{\textwidth}{L{5cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Datos del proyecto}} \\
+\midrule
+Nombre & AutoPipe \\
+Breve descripción & Framework en Python que generaliza la selección automática de pipelines de preprocesamiento a múltiples tareas de aprendizaje automático e incorpora una capa de meta-aprendizaje que recomienda configuraciones iniciales de búsqueda a partir de las meta-características del dataset. \\
+Fecha de inicio & Por definir \\
+\bottomrule
+\end{tabularx}
+
+\vspace{1em}
+
+\begin{tabularx}{\textwidth}{L{5cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Datos de la organización}} \\
+\midrule
+Nombre & Instituto Tecnológico de Costa Rica, Área Académica de Ingeniería en Computadores \\
+Nombre del contacto & Luis Alberto Chavarría Zamora (profesor tutor) \\
+Correo electrónico & lachavarria@itcr.ac.cr \\
+Teléfono & 2550-2565 \\
+\bottomrule
+\end{tabularx}
+
+\end{document}

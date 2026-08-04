@@ -1,0 +1,1181 @@
+% ============================================================
+%  AutoPipeAD: Selección Automática de Pipelines de
+%  Preprocesamiento para Detección de Anomalías en Imágenes
+%  Artículo Técnico — CE-1114, I Semestre 2026
+%  Instituto Tecnológico de Costa Rica
+%  Formato IEEE Conference
+% ============================================================
+\documentclass[conference,spanish]{IEEEtran}
+
+% ----- Codificación y lenguaje -----
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+
+% ----- Matemáticas -----
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ----- Tablas y figuras -----
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+
+% ----- Referencias y URLs -----
+\usepackage{url}
+\usepackage{cite}
+
+% ----- Tipografía -----
+\usepackage{microtype}
+
+% ----- Código fuente -----
+\usepackage{listings}
+\lstset{
+    basicstyle=\scriptsize\ttfamily,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=flexible,
+    keepspaces=true,
+    showstringspaces=false,
+    aboveskip=4pt,
+    belowskip=2pt,
+}
+
+% ----- Diagramas TikZ -----
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+
+% ----- Hiperenlaces (cargado al final para compatibilidad con IEEEtran) -----
+\usepackage[hidelinks,breaklinks]{hyperref}
+
+% ============================================================
+%  COLORES
+% ============================================================
+\definecolor{tecblue}{RGB}{0,51,102}
+\definecolor{lightblue}{RGB}{210,230,255}
+\definecolor{lightgreen}{RGB}{210,240,220}
+\definecolor{lightyellow}{RGB}{255,250,210}
+\definecolor{lightgray}{RGB}{240,240,240}
+\definecolor{lightred}{RGB}{255,220,220}
+
+% ============================================================
+%  ESTILOS TIKZ
+% ============================================================
+\tikzstyle{modulo}   = [rectangle, rounded corners=3pt, minimum width=2.2cm,
+    minimum height=0.85cm, text centered, draw=tecblue, fill=lightblue,
+    font=\scriptsize\bfseries, text width=2.0cm]
+\tikzstyle{externo}  = [rectangle, minimum width=2.0cm,
+    minimum height=0.85cm, text centered, draw=gray, fill=lightgray,
+    font=\scriptsize, text width=1.85cm, dashed]
+\tikzstyle{actor}    = [rectangle, minimum width=2.0cm,
+    minimum height=0.85cm, text centered, draw=tecblue, fill=lightyellow,
+    font=\scriptsize, text width=1.85cm]
+\tikzstyle{estado}   = [rectangle, rounded corners=4pt, minimum width=2.6cm,
+    minimum height=0.8cm, text centered, draw=tecblue, fill=lightgreen,
+    font=\scriptsize, text width=2.4cm]
+\tikzstyle{decision} = [diamond, aspect=2.2, minimum width=2.2cm,
+    minimum height=0.7cm, text centered, draw=tecblue, fill=lightyellow,
+    font=\scriptsize, text width=2.0cm]
+\tikzstyle{startend} = [circle, minimum size=0.5cm, draw=tecblue, fill=tecblue]
+\tikzstyle{iface}    = [rectangle, rounded corners=2pt, minimum width=2.2cm,
+    minimum height=0.85cm, text centered, draw=tecblue!60, fill=lightred,
+    font=\scriptsize\itshape, text width=2.0cm]
+\tikzstyle{flecha}      = [-{Stealth[length=5pt]}, thick, color=tecblue]
+\tikzstyle{flechadash}  = [-{Stealth[length=5pt]}, dashed, color=gray]
+\tikzstyle{flechaopc}   = [-{Stealth[length=5pt]}, dotted, thick, color=tecblue!60]
+
+% ============================================================
+%  METADATOS PDF
+% ============================================================
+\hypersetup{
+    pdftitle={AutoPipeAD: Selección Automática de Pipelines de Preprocesamiento
+              para Detección de Anomalías en Imágenes},
+    pdfauthor={Ricardo Antonio Borbón Mena}
+}
+
+% ============================================================
+\begin{document}
+
+\title{AutoPipeAD: Selección Automática de Pipelines de Preprocesamiento
+       para Detección de Anomalías en Imágenes}
+
+\author{%
+\IEEEauthorblockN{Ricardo Antonio Borbón Mena}
+\IEEEauthorblockA{Escuela de Ingeniería en Computadores\\
+Instituto Tecnológico de Costa Rica\\
+Cartago, Costa Rica\\
+ricardobm@estudiantec.cr}
+\and
+\IEEEauthorblockN{Luis Alberto Chavarría Zamora \textit{(Supervisor)}}
+\IEEEauthorblockA{Escuela de Ingeniería en Computadores\\
+Instituto Tecnológico de Costa Rica\\
+Cartago, Costa Rica\\
+lachavarria@itcr.ac.cr}
+}
+
+\maketitle
+
+% ============================================================
+%  RESUMEN
+% ============================================================
+\begin{abstract}
+La detección de anomalías en imágenes es un problema relevante en inspección
+industrial, control de calidad y análisis médico. El desempeño de los
+detectores de anomalías depende en gran medida del preprocesamiento aplicado
+a las imágenes de entrada, y elegir manualmente esta cadena de
+transformaciones toma tiempo y requiere conocimiento especializado en visión
+computacional. En este trabajo se presenta AutoPipeAD, una librería Python de
+código abierto que automatiza la búsqueda del pipeline de preprocesamiento
+óptimo para un modelo base de detección de anomalías provisto por el usuario.
+La librería recibe conjuntos de imágenes organizados en subdirectorios de
+muestras normales y anómalas, y evalúa sistemáticamente combinaciones de
+siete transformaciones predefinidas mediante
+búsqueda exhaustiva por cuadrícula u optimización bayesiana con Optuna
+(muestreo TPE y poda por mediana). La evaluación paralela se
+implementó con joblib. Entre las métricas
+configurables se incluyen AUC-ROC, F1-score, precisión, recall y tasa de
+falsos positivos; el pipeline ganador se guarda en JSON o YAML para
+garantizar reproducibilidad. Los experimentos con tres datasets sintéticos comprobaron el correcto funcionamiento de la librería y su compatibilidad con modelos base de scikit-learn y PyTorch.
+\end{abstract}
+
+\begin{IEEEkeywords}
+detección de anomalías, preprocesamiento de imágenes, selección automática de
+pipelines, búsqueda en cuadrícula, optimización bayesiana, Optuna, procesamiento
+paralelo, IsolationForest, AUC-ROC, MVTec AD
+\end{IEEEkeywords}
+
+% ============================================================
+%  I. INTRODUCCIÓN
+% ============================================================
+\section{Introducción}
+
+La detección de anomalías en imágenes consiste en identificar
+automáticamente instancias que se alejan de un patrón esperado, llamado
+\emph{normal}~\cite{chandola2009anomaly}. Sus aplicaciones van desde la
+inspección de defectos en superficies industriales hasta el análisis de
+imágenes médicas y la vigilancia visual. A diferencia de la clasificación
+supervisada, los detectores de anomalías suelen entrenarse asumiendo que las
+muestras anómalas son escasas o desconocidas: el modelo aprende la
+distribución de los casos normales y asigna una puntuación de anomalía a
+cada instancia nueva~\cite{chandola2009anomaly}.
+
+El desempeño de estos detectores depende en buena medida del
+preprocesamiento aplicado a las imágenes de entrada. Operaciones como el
+redimensionamiento, el suavizado gaussiano, la normalización estadística o
+la ecualización adaptativa del histograma cambian la distribución de las
+características de la imagen, y pueden mejorar o empeorar notablemente la
+capacidad del modelo para distinguir lo normal de lo
+anómalo~\cite{gonzalez2018dip}. Elegir esta cadena de transformaciones
+—el \emph{pipeline de preprocesamiento}— se hace habitualmente a mano, por
+prueba y error, lo que toma tiempo y exige experiencia en visión
+computacional.
+
+AutoPipeAD se desarrolló para automatizar este proceso. La librería recibe
+un dataset de imágenes y un modelo base de detección de anomalías
+compatible con la interfaz de scikit-learn o PyTorch, y busca
+automáticamente la combinación de transformaciones que maximiza el
+desempeño del modelo sobre un conjunto de validación.
+
+El alcance del proyecto se limita a la selección del pipeline de
+preprocesamiento: no incluye el entrenamiento ni la optimización de la
+arquitectura del modelo base, ni clasificación multiclase, segmentación
+semántica, detección de objetos, interfaz gráfica o despliegue como
+servicio web.
+
+% ============================================================
+%  II. ANTECEDENTES
+% ============================================================
+\section{Antecedentes}
+
+\subsection{Detección de Anomalías en Imágenes}
+
+Chandola, Banerjee y Kumar~\cite{chandola2009anomaly} hicieron una revisión
+amplia de los métodos de detección de anomalías, clasificándolos según el
+nivel de supervisión disponible. En el caso de imágenes, el enfoque más
+usado es el \emph{aprendizaje de una clase} (\textit{one-class learning}):
+el modelo se entrena solo con muestras normales y asigna una puntuación de
+anomalía durante la inferencia.
+
+El detector de vector de soporte de una clase (One-Class SVM, OC-SVM) de Schölkopf et al.~\cite{scholkopf2001ocsvm} estima una
+hipersuperficie que envuelve la distribución de las muestras normales en el
+espacio de características. El bosque de aislamiento (Isolation
+Forest) de Liu, Ting y Zhou~\cite{liu2012isolation} sigue una idea
+distinta: aísla instancias construyendo árboles de decisión al azar, bajo
+el supuesto de que las anomalías quedan aisladas con menos particiones que
+las muestras normales. Ambos modelos exponen la interfaz
+fit/predict de scikit-learn~\cite{pedregosa2011sklearn},
+lo que los hace candidatos naturales para usarse con AutoPipeAD.
+
+Métodos más recientes, como PaDiM~\cite{defard2021padim} y
+PatchCore~\cite{roth2022patchcore}, aprovechan representaciones profundas de
+redes neuronales preentrenadas para detectar anomalías en imágenes
+industriales con alta precisión, aunque su integración es más compleja.
+
+El dataset MVTec AD~\cite{bergmann2019mvtec} es el conjunto de referencia
+más usado para evaluar métodos de detección de anomalías en imágenes
+industriales. Contiene 15~categorías de objetos y texturas con defectos
+reales, y se usó como referencia de compatibilidad en este trabajo.
+
+\subsection{Preprocesamiento de Imágenes}
+
+Gonzalez y Woods~\cite{gonzalez2018dip} describieron las transformaciones
+fundamentales de imágenes digitales. Para la detección de anomalías, las
+más relevantes son:
+
+\begin{itemize}
+\item \textbf{Redimensionamiento}: uniformiza las dimensiones de las
+  imágenes para garantizar vectores de características de longitud fija.
+\item \textbf{Suavizado gaussiano}: reduce el ruido de alta frecuencia
+  convolucionando la imagen con un núcleo gaussiano de desviación
+  estándar $\sigma$.
+\item \textbf{Filtro de mediana}: elimina el ruido impulsivo (sal
+  y pimienta) sin borrar los bordes de la imagen.
+\item \textbf{Normalización estadística}: centra y escala los valores de
+  intensidad según la media $\mu$ y la desviación estándar $\sigma$ del
+  canal, produciendo la imagen transformada $(I - \mu)/\sigma$.
+\item \textbf{CLAHE} (\textit{Contrast Limited Adaptive Histogram
+  Equalization}): mejora el contraste local dividiendo la imagen en
+  bloques y aplicando ecualización de histograma con un límite de
+  contraste (\textit{clip limit}) que evita amplificar el ruido.
+\item \textbf{Corrección gamma}: ajusta la luminosidad global mediante la
+  función de potencia $I_{\text{out}} = I_{\text{in}}^{\gamma}$, donde
+  $\gamma < 1$ aclara la imagen y $\gamma > 1$ la oscurece.
+\item \textbf{Conversión a escala de grises}: reduce la imagen RGB a un
+  solo canal de luminancia, bajando la dimensionalidad del espacio de
+  características.
+\end{itemize}
+
+No existen guías generales para elegir el pipeline de preprocesamiento en
+detección de anomalías: la combinación óptima depende del tipo de defecto,
+las condiciones de iluminación y la arquitectura del modelo base.
+
+\subsection{Aprendizaje Automático Automatizado y Búsqueda de Pipelines}
+
+El aprendizaje automático automatizado (AutoML) estudia cómo
+seleccionar y configurar de forma automática algoritmos y pipelines de
+aprendizaje automático~\cite{yang2020automl}. La búsqueda de pipelines de
+preprocesamiento es un subproblema de AutoML, donde el espacio de búsqueda
+queda definido por las transformaciones disponibles y sus hiperparámetros,
+discretos o continuos.
+
+La \textbf{búsqueda exhaustiva por cuadrícula} (\textit{grid search})
+evalúa el producto cartesiano de todas las opciones discretas. Garantiza
+explorar el espacio completo, pero su complejidad crece como
+$O\!\left(\prod_{i=1}^{n} |S_i|\right)$, donde $|S_i|$ es el número de
+opciones del paso $i$ del pipeline~\cite{hastie2009elements}.
+
+La \textbf{optimización bayesiana} construye un modelo probabilístico de la
+función objetivo y lo usa para decidir los próximos puntos a evaluar,
+convergiendo con menos ensayos que la búsqueda aleatoria~\cite{snoek2012practical}.
+Optuna~\cite{akiba2019optuna} implementa el muestreo por Estimación de
+Parzen en Árbol (Tree-structured Parzen Estimator, TPE) junto con
+el podador por mediana (MedianPruner), que descarta ensayos cuyo
+desempeño cae por debajo de la mediana del estudio tras un número mínimo de
+evaluaciones.
+
+\subsection{Evaluación Paralela}
+
+Como la evaluación de cada pipeline candidato es independiente de las
+demás, esta tarea se presta de forma natural al paralelismo. La librería
+joblib, distribuida junto con
+scikit-learn~\cite{pedregosa2011sklearn}, ofrece una interfaz de alto nivel
+para paralelismo basado en procesos mediante el backend loky,
+compatible con Windows, Linux y macOS sin necesidad de proteger
+explícitamente el punto de entrada en scripts Python. La eficiencia de la
+paralelización se mide con el speedup, definido como el cociente
+$T_{\text{seq}} / T_{\text{par}}$ entre los tiempos de ejecución secuencial
+y paralela.
+
+\subsection{Métricas de Evaluación}
+
+La evaluación de detectores de anomalías se basa en métricas de
+clasificación binaria. Fawcett~\cite{fawcett2006roc} describió el área bajo
+la curva ROC (AUC-ROC) como la métrica más robusta para comparar
+detectores, porque no depende del umbral de decisión ni del desbalance de
+clases. El AUC-ROC toma valores entre 0 y 1, donde 1.0 indica clasificación
+perfecta y 0.5 corresponde a predicción aleatoria. El F1-score, la
+precisión y el recall complementan el AUC-ROC al considerar un umbral de
+binarización específico.
+
+El dataset CIFAR-10~\cite{krizhevsky2009cifar}, con 60\,000 imágenes de
+$32\times32$ píxeles en diez categorías, se usó como base para construir
+escenarios de anomalía de una clase contra el resto
+(one-vs-rest), un protocolo estándar para evaluar detectores no
+supervisados sobre datos de clasificación.
+
+% ============================================================
+%  III. DESCRIPCIÓN DE LA SOLUCIÓN DESARROLLADA
+% ============================================================
+\section{Descripción de la Solución Desarrollada}
+
+El repositorio de AutoPipeAD donde se encuentra la implementación completa, la documentación y los ejemplos de uso está disponible en GitHub en la dirección \url{https://github.com/ItsRichard7/AutoPipeAD}.
+
+\subsection{Arquitectura General}
+
+AutoPipeAD se diseñó como una librería Python con seis módulos y interfaces
+públicas bien definidas. La Figura~\ref{fig:arquitectura} muestra cómo
+fluyen los datos entre los componentes del sistema.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[node distance=0.60cm and 0.80cm]
+
+    %% --- Columna izquierda: actores externos ---
+    \node[actor]  (usr)    {Usuario};
+
+    %% --- Columna central: flujo principal ---
+    \node[modulo, right=0.85cm of usr]  (dl)  {data\_loader\\ImageDataLoader};
+    \node[modulo, below=0.60cm of dl]   (pl)  {pipeline\\BaseTransform\\Pipeline};
+    \node[modulo, below=0.60cm of pl]   (se)  {search\_engine\\GridSearch\\Optuna};
+    \node[modulo, below=0.60cm of se]   (ev)  {evaluator\\DataSplitter\\MetricCalc.};
+    \node[modulo, below=0.60cm of ev]   (rep) {reporter\\ReportGenerator};
+
+    %% --- Rama opcional: parallel_runner ---
+    \node[modulo, right=1.5cm of se, fill=lightgray!60, draw=gray]
+          (pr)  {parallel\_runner\\ParallelRunner\\(opcional)};
+
+    %% --- Modelo base (actor externo) ---
+    \node[externo, right=1.5cm of pr] (mb) {Modelo base\\(sklearn /\\PyTorch)};
+
+    %% --- Flechas del flujo principal ---
+    \draw[flecha] (usr)  -- node[above, font=\scriptsize]{dataset} (dl);
+    \draw[flecha] (dl)   -- node[right, font=\scriptsize]{imágenes, etiquetas} (pl);
+    \draw[flecha] (pl)   -- node[right, font=\scriptsize]{Pipeline} (se);
+    \draw[flecha] (se)   -- node[right, font=\scriptsize]{usa} (ev);
+    \draw[flecha] (ev)   -- node[right, font=\scriptsize]{resultados} (rep);
+    \draw[flecha] (rep.west) -| (usr.south);
+
+    %% --- Rama opcional ---
+    \draw[flechaopc] (se.east) -- node[above, font=\scriptsize]{candidatos} (pr.west);
+    \draw[flechaopc] (pr.south) |- node[right, font=\scriptsize]{métricas} (rep.east);
+
+    %% --- Modelo base → módulos ---
+    \draw[flechadash] (mb) -- node[above, font=\scriptsize]{fit/predict} (pr);
+    \draw[flechadash] (mb.south) |- (ev.east);
+
+\end{tikzpicture}
+\caption{Arquitectura de AutoPipeAD. Las flechas con trazo continuo corresponden
+  al flujo principal de búsqueda automática; las punteadas indican el módulo
+  \texttt{parallel\_runner}, componente independiente y opcional.}
+\label{fig:arquitectura}
+\end{figure*}
+
+\subsection{Módulo de Carga de Datos (\texttt{data\_loader})}
+
+La clase ImageDataLoader cargó imágenes desde un directorio raíz
+que debió contener los subdirectorios \texttt{normal/} (etiqueta 0) y
+\texttt{anomaly/} (etiqueta 1). Se soportaron los formatos \texttt{.png},
+\texttt{.jpg} y \texttt{.bmp}; los archivos con extensión no soportada se
+omitieron con una advertencia de registro. El método
+load() retornó un arreglo NumPy denso de forma $(n, H, W, C)$ si
+todas las imágenes compartían dimensiones, o un arreglo de objetos en caso
+contrario.
+
+\subsection{Módulo de Transformaciones (\texttt{pipeline})}
+
+\subsubsection{Clase base \texttt{BaseTransform}}
+
+Todas las transformaciones heredan de la clase abstracta
+\texttt{BaseTransform}, que define dos métodos obligatorios:
+
+\begin{lstlisting}[language=Python]
+class BaseTransform(ABC):
+    @abstractmethod
+    def apply(self, image: np.ndarray) -> np.ndarray:
+        ...
+    @abstractmethod
+    def get_params(self) -> dict:
+        ...
+\end{lstlisting}
+
+Este contrato permite que el motor de búsqueda trate cualquier
+transformación de forma uniforme. La Figura~\ref{fig:clases} muestra la
+jerarquía de clases del módulo de transformaciones.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+
+    %% Clase base centrada
+    \node[iface, minimum width=3.0cm, text width=2.8cm] at (0,0) (bt)
+          {\textit{\guillemotleft{}abstracta\guillemotright{}}\\[2pt]
+           \textbf{BaseTransform}\\[2pt]
+           +apply(img)\\+get\_params()};
+
+    %% Siete clases concretas, equidistantes a 2.6cm entre centros
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at (-7.8,-2.6) (gb)
+          {Gaussian\\Blur};
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at (-5.2,-2.6) (mf)
+          {Median\\Filter};
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at (-2.6,-2.6) (rs)
+          {Resize};
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at ( 0.0,-2.6) (nm)
+          {Normalize};
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at ( 2.6,-2.6) (cl)
+          {CLAHE\\Transform};
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at ( 5.2,-2.6) (gc)
+          {Gamma\\Correction};
+    \node[modulo, text width=1.95cm, minimum width=2.1cm] at ( 7.8,-2.6) (gs)
+          {Grayscale\\Conversion};
+
+    %% Barra colectora horizontal (estilo bus UML)
+    \draw[thick, color=tecblue] (-7.8,-1.45) -- (7.8,-1.45);
+
+    %% Flecha de herencia: barra → BaseTransform (apunta hacia el padre)
+    \draw[flecha] (0,-1.45) -- (bt.south);
+
+    %% Stubs verticales: tope de cada nodo → barra
+    \draw[thick, color=tecblue] (gb.north) -- (-7.8,-1.45);
+    \draw[thick, color=tecblue] (mf.north) -- (-5.2,-1.45);
+    \draw[thick, color=tecblue] (rs.north) -- (-2.6,-1.45);
+    \draw[thick, color=tecblue] (nm.north) -- ( 0.0,-1.45);
+    \draw[thick, color=tecblue] (cl.north) -- ( 2.6,-1.45);
+    \draw[thick, color=tecblue] (gc.north) -- ( 5.2,-1.45);
+    \draw[thick, color=tecblue] (gs.north) -- ( 7.8,-1.45);
+
+\end{tikzpicture}
+\caption{Jerarquía de clases del módulo \texttt{pipeline}. Las siete
+  transformaciones concretas heredaron directamente de \texttt{BaseTransform}
+  e implementaron \texttt{apply()} y \texttt{get\_params()}.
+  La barra colectora representa herencia múltiple desde un único padre.}
+\label{fig:clases}
+\end{figure*}
+
+\subsubsection{Transformaciones predefinidas}
+
+La librería implementa siete transformaciones: GaussianBlur
+(suavizado gaussiano con núcleo cuadrado de tamaño impar positivo),
+MedianFilter (filtro de mediana, $\text{kernel} \geq 3$),
+Normalize (normalización por media y desviación estándar, produce
+float32), Resize (redimensionamiento bilineal con
+OpenCV), CLAHETransform (aplica CLAHE al canal $L$ del espacio
+LAB en imágenes a color, o directamente en imágenes en escala de grises),
+GammaCorrection (implementada con una tabla de búsqueda para imágenes enteras) y
+GrayscaleConversion (conversión de RGB a escala de grises).
+
+\subsubsection{Clase \texttt{Pipeline}}
+
+La clase \texttt{Pipeline} compone una secuencia ordenada de instancias de
+\texttt{BaseTransform}. Aplica cada
+transformación en orden, y retorna un diccionario
+con clave \{índice\}\_\{Clase\} por paso, lo que permite
+serializar la configuración ganadora.
+
+\subsection{Módulo de Búsqueda (\texttt{search\_engine})}
+
+El espacio de búsqueda se expresa como un diccionario Python donde cada
+clave identifica un paso del pipeline y el valor es una lista de
+transformaciones candidatas. Un ejemplo de uso real con
+\texttt{val\_size=0.3}:
+
+\begin{lstlisting}[language=Python]
+search_space = {
+    "resize":    [Resize(width=32, height=32)],
+    "blur":      [GaussianBlur(kernel_size=3),
+                  GaussianBlur(kernel_size=5)],
+    "normalize": [Normalize(mean=0.5, std=0.5)],
+}
+engine = GridSearchEngine(
+    search_space, val_size=0.3, random_state=42)
+best, metrics, results = engine.run(
+    images, labels,
+    base_model=IsolationForest(
+        contamination=0.2, random_state=0),
+    metric="auc_roc")
+\end{lstlisting}
+
+Para cada paso del espacio, ambos motores añaden de forma automática y
+transparente la opción de omitirlo: el usuario no configura nada
+adicional y la búsqueda también evalúa pipelines sin esa transformación. Un
+paso omitido simplemente no aparece en el pipeline resultante ni en su
+configuración serializada, lo que preserva el contrato de tipos de
+\texttt{BaseTransform} y hace trivial la reconstrucción.
+
+\subsubsection{GridSearchEngine}
+
+Genera el producto cartesiano de las listas de candidatos, ampliado con la opción de omisión por paso, y
+evalúa cada combinación de forma exhaustiva; el espacio efectivo es de
+$\prod_{i=1}^{n} (|S_i|+1)$ combinaciones. Para cada pipeline candidato:
+(1)~se aplica la secuencia de transformaciones a cada imagen y se aplana el
+resultado en un vector de características; (2)~se entrena una copia profunda del modelo base sobre el subconjunto de
+entrenamiento; (3)~se calculan las métricas sobre el subconjunto de
+validación estratificado. Se compara el valor
+objetivo según la dirección de la métrica: false\_positive\_rate se
+minimiza, el resto se maximiza. Los candidatos generados automáticamente que
+no pueden evaluarse (por ejemplo, omitir el redimensionamiento con imágenes
+de dimensiones heterogéneas) se registran con métricas NaN y una advertencia, sin
+abortar la búsqueda; un candidato NaN nunca resulta ganador.
+
+\subsubsection{OptunaSearchEngine}
+
+Implementa optimización bayesiana con TPESampler (semilla fija) y
+MedianPruner~\cite{akiba2019optuna}. Acepta el mismo formato de
+espacio de búsqueda que GridSearchEngine y expone la misma firma; la omisión de cada paso se modela como un índice
+categórico adicional en el muestreador. Los valores NaN que producen los
+ensayos con una sola clase en el conjunto de validación (o los candidatos
+inevaluables) se reemplazan por $\pm\infty$ para no corromper el estudio de
+Optuna.
+
+\subsection{Módulo de Evaluación (\texttt{evaluator})}
+
+\subsubsection{DataSplitter}
+
+Genera particiones train/val estratificadas de scikit-learn~\cite{pedregosa2011sklearn}. La
+estratificación garantiza que la proporción de muestras anómalas sea
+equivalente en ambos subconjuntos, algo importante en datasets
+desbalanceados. También soporta validación cruzada $k$-pliegues. La configuración del particionador se puede guardar y
+recargar en JSON o YAML.
+
+\subsubsection{MetricCalculator}
+
+Calcula AUC-ROC, F1-score, precisión, recall y tasa de falsos positivos.
+Para obtener las puntuaciones continuas que requiere el AUC-ROC, se
+prueban en orden los métodos predict\_proba,
+score\_samples (negado) y decision\_function (negado)
+del modelo base. Las predicciones de IsolationForest (convención
+$-1$=anomalía, $+1$=normal) se normalizan a etiquetas $\{0, 1\}$.
+
+\subsection{Módulo de Ejecución Paralela (\texttt{parallel\_runner})}
+
+La clase \texttt{ParallelRunner} evalúa una lista de pipelines de forma
+concurrente. Cada
+proceso evalúa un pipeline sobre una copia independiente del modelo base,
+sin estado compartido mutable. El método benchmark() mide el speedup como $T_{\text{seq}} / T_{\text{par}}$, y verifica que los resultados paralelos y
+secuenciales sean numéricamente equivalentes.
+
+\subsection{Módulo de Reportes (\texttt{reporter})}
+
+La clase \texttt{ReportGenerator} siempre produce un reporte HTML, con exportación opcional a PDF. Si el binario no está disponible, el
+sistema registra una advertencia y conserva el HTML (degradación
+elegante). Las gráficas se generan con matplotlib y se incrustan como URI de datos en base64, lo que produce
+un documento HTML autocontenido. La configuración del pipeline ganador se
+guarda en JSON con la estructura:
+\begin{lstlisting}
+{
+  "0_Resize":       {"width": 32, "height": 32},
+  "1_GaussianBlur": {"kernel_size": 3},
+  "2_Normalize":    {"mean": 0.5, "std": 0.5}
+}
+\end{lstlisting}
+El método estático rebuild\_pipeline(config) reconstruye el
+pipeline a partir de este archivo, lo que permite repetir exactamente la
+misma ejecución; los pasos omitidos por la búsqueda no aparecen en la
+configuración y los índices de los presentes quedan contiguos.
+
+Si el usuario no configura un directorio de salida, los archivos se
+escriben en una subcarpeta reports/ 
+junto al script que invoca la librería; en sesiones interactivas (Jupyter)
+se usa el directorio de trabajo, que coincide con el del cuaderno. La
+carpeta se crea automáticamente, de modo que el caso de uso estándar no
+requiere configurar rutas.
+
+\subsection{Flujo de Evaluación de un Pipeline}
+
+La Figura~\ref{fig:flujo} muestra el diagrama de actividad del proceso de
+evaluación de un pipeline candidato dentro del motor de búsqueda.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=0.75cm]
+    \node[startend] (ini)    {};
+    \node[estado,   below=0.55cm of ini] (load)   {Cargar imagen};
+    \node[decision, below=of load]        (valid)  {\scriptsize¿Formato soportado?};
+    \node[estado,   right=1.6cm of valid] (omit)   {Omitir +\\advertencia};
+    \node[estado,   below=of valid]       (trans)  {Aplicar transformación $i$};
+    \node[decision, below=of trans]       (more)   {\scriptsize¿Más pasos?};
+    \node[estado,   below=of more]        (score)  {Puntuar con\\modelo base};
+    \node[decision, below=of score]       (imgs)   {\scriptsize¿Más imágenes?};
+    \node[estado,   below=of imgs]        (metric) {Calcular métricas\\(AUC-ROC, F1\ldots)};
+    \node[startend, below=0.55cm of metric] (fin)  {};
+
+    \draw[flecha] (ini)    -- (load);
+    \draw[flecha] (load)   -- (valid);
+    \draw[flecha] (valid)  -- node[right, font=\scriptsize]{sí} (trans);
+    \draw[flecha] (valid)  -- node[above, font=\scriptsize]{no} (omit);
+    \draw[flecha] (trans)  -- (more);
+    \draw[flecha] (more.west) to[out=180,in=180]
+                 node[left, font=\scriptsize]{sí,\,$i{+}1$} (trans.west);
+    \draw[flecha] (more)   -- node[right, font=\scriptsize]{no} (score);
+    \draw[flecha] (score)  -- (imgs);
+    \draw[flecha] (imgs.east) to[out=0,in=0]
+                 node[right, font=\scriptsize]{sí} (load.east);
+    \draw[flecha] (imgs)   -- node[right, font=\scriptsize]{no} (metric);
+    \draw[flecha] (metric) -- (fin);
+\end{tikzpicture}
+\caption{Diagrama de actividad de la evaluación de un pipeline candidato.
+  Este flujo se ejecutó para cada combinación generada por el motor de búsqueda.}
+\label{fig:flujo}
+\end{figure}
+
+\subsection{Decisiones de Diseño}
+
+\textbf{Inyección del modelo base}: el motor de búsqueda recibe el modelo
+base como argumento y lo clona antes de cada
+evaluación. Así se garantiza que todos los candidatos se evalúen sobre un
+modelo sin entrenar idéntico, preservando la comparabilidad y la
+reproducibilidad.
+
+\textbf{Funciones a nivel de módulo para lógica compartida}: las funciones
+\texttt{evaluate\_pipeline()}, \texttt{is\_better()} y
+\texttt{validate\_metric()} se definieron a nivel de módulo, de modo que
+\texttt{GridSearchEngine}, \texttt{OptunaSearchEngine} y
+\texttt{ParallelRunner} pudieran usarlas sin necesidad de herencia.
+
+\textbf{Elección de joblib sobre multiprocessing}: se eligió joblib porque abstrae las diferencias entre plataformas
+(modelo fork en Linux versus spawn en Windows), es
+compatible con ambos motores de búsqueda y es la misma dependencia que usa
+scikit-learn~\cite{pedregosa2011sklearn}.
+
+\textbf{Elección de Jinja2 + pdfkit}: se descartó WeasyPrint porque
+requiere la pila gráfica GTK (Pango/Cairo), no disponible en Windows sin
+configuración compleja. En su lugar se adoptó pdfkit con
+tolerancia a fallos.
+
+\textbf{Omisión de pasos por ausencia}: se eligió representar el paso
+omitido como ausencia (no aparece en el pipeline ni en su configuración
+serializada) en lugar de un marcador explícito o una transformación
+identidad: así se preserva el contrato de tipos de \texttt{BaseTransform}
+y la reconstrucción desde JSON/YAML funciona sin casos especiales,
+incluido el pipeline vacío.
+
+\subsection{Tecnologías Utilizadas}
+
+La Tabla~\ref{tab:tecnologias} resume las dependencias principales.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Dependencias principales de AutoPipeAD.}
+\label{tab:tecnologias}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Componente} & \textbf{Librería} & \textbf{Versión mínima} \\
+\midrule
+Procesamiento de imágenes & OpenCV        & 4.9  \\
+                          & scikit-image  & 0.22 \\
+                          & Pillow        & 10.0 \\
+Cómputo numérico          & NumPy         & 1.26 \\
+Modelos ML e interfaz     & scikit-learn  & 1.4  \\
+                          & PyTorch       & 2.2  \\
+Búsqueda bayesiana        & Optuna        & 3.6  \\
+Paralelismo               & joblib        & 1.3  \\
+Visualización             & matplotlib    & 3.8  \\
+Plantillas HTML           & Jinja2        & 3.1  \\
+Exportación PDF           & pdfkit        & 1.0  \\
+Serialización             & PyYAML        & 6.0  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El entorno de desarrollo utilizó Python~3.12 con las herramientas Ruff
+(verificador de estilo e importaciones) y mypy (verificación estática de
+tipos estricta).
+
+% ============================================================
+%  IV. RESULTADOS
+% ============================================================
+\section{Resultados}
+
+\subsection{Suite de Pruebas}
+
+Se desarrolló una suite de pruebas con \textit{pytest}, compuesta por seis
+archivos de pruebas unitarias e integración —uno por módulo— y un archivo
+de pruebas de extremo a extremo que
+verifica el flujo completo, desde la carga del dataset hasta la generación
+del reporte y la reconstrucción del pipeline ganador: 134~pruebas en total
+con una cobertura del 97\,\% del código fuente según pytest-cov.
+
+\subsection{Experimento 1: Dataset Sintético con Grid Search y Optuna}
+
+El primer notebook ejecutó la búsqueda sobre un
+dataset sintético de 50~imágenes de $64\times64\times3$ píxeles, generado
+de forma programática: las 40~imágenes normales se crearon con valores en
+el rango $[0, 40]$ (oscuras) y las 10~anómalas con valores en $[200, 256]$
+(brillantes), de modo que las anomalías representan un 20\,\% del conjunto,
+acorde con el supuesto de rareza de los detectores de anomalías. El modelo
+base fue \texttt{IsolationForest} de
+scikit-learn~\cite{pedregosa2011sklearn} con \texttt{contamination=0.2}
+(igual a la proporción real de anomalías) y \texttt{random\_state=0}. El
+espacio de búsqueda y los parámetros de evaluación se muestran en la
+Tabla~\ref{tab:espacio_exp1}.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Configuración del Experimento~1 (dataset sintético).}
+\label{tab:espacio_exp1}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} \\
+\midrule
+Imágenes totales    & 50 (40 normales, 10 anómalas) \\
+Dimensiones         & $64\times64\times3$ \\
+\texttt{val\_size}  & 0.30 \\
+\texttt{random\_state} & 42 \\
+Modelo base         & IsolationForest (\texttt{contam=0.2}, \texttt{random\_st=0}) \\
+Métrica objetivo    & AUC-ROC \\
+Paso \emph{resize}  & 1 opción: Resize($32\times32$) \\
+Paso \emph{blur}    & 2 opciones: GaussianBlur($k=3$), GaussianBlur($k=5$) \\
+Paso \emph{normalize} & 1 opción: Normalize($\mu=0.5$, $\sigma=0.5$) \\
+Total (Grid Search) & 12 combinaciones ($2\cdot3\cdot2$, con omisión por paso) \\
+Ensayos (Optuna)    & 8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La búsqueda exhaustiva evaluó las 12~combinaciones y todas —incluidos los
+subconjuntos generados por la omisión automática y el pipeline vacío—
+alcanzaron métricas perfectas (Tabla~\ref{tab:metricas_exp1}): la
+separación de brillo entre clases es tan marcada que cualquier
+preprocesamiento (o ninguno) preserva la separabilidad, y el umbral
+calibrado con \texttt{contamination=0.2} produce predicciones binarias
+correctas. El ganador fue el primer candidato en alcanzar el óptimo según
+el orden de exploración: Resize($32\times32$) $\to$
+GaussianBlur($k=3$) $\to$ Normalize.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Resultados de Grid Search — Experimento~1 (extracto; las
+  12~combinaciones obtuvieron métricas idénticas).}
+\label{tab:metricas_exp1}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Pipeline} & \textbf{AUC-ROC} & \textbf{F1} & \textbf{Prec.} &
+\textbf{Recall} & \textbf{FPR} \\
+\midrule
+\#0 Res+Blur+Norm (\textbf{winner}) & 1.0 & 1.0 & 1.0 & 1.0 & 0.0 \\
+\#11 (pipeline vacío)                            & 1.0 & 1.0 & 1.0 & 1.0 & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Durante el desarrollo se observó que una versión balanceada 50/50 de este
+mismo dataset degradaba el AUC-ROC del mejor pipeline a 0.5000
+(predicción aleatoria): IsolationForest asume que las anomalías son raras
+y, con la clase anómala representando la mitad del entrenamiento, el
+modelo llegó a clasificar todas las muestras de validación como anómalas
+(FPR=1.0). Por ello el experimento final usa una proporción realista de
+20\,\% de anomalías y el parámetro \texttt{contamination=0.2}, que calibra
+el umbral de decisión binaria a la tasa de anomalías esperada.
+
+La búsqueda bayesiana con Optuna ejecutó 8~ensayos y alcanzó el mismo
+AUC-ROC de 1.0000 con un pipeline distinto pero igualmente óptimo
+(GaussianBlur($k=3$) $\to$ Normalize, omitiendo el redimensionamiento):
+cuando varios candidatos comparten el valor óptimo, cada motor retiene el
+primero que lo alcanza según su propio orden de exploración.
+
+La reproducibilidad se verificó así: la configuración del pipeline
+ganador se guardó automáticamente, y el método rebuild\_pipeline() reconstruyó exactamente el mismo pipeline,
+confirmado al comparar los parámetros de ambos.
+
+\subsection{Experimento 2: CIFAR-10 Sintético con Optuna}
+
+El segundo notebook construyó un
+escenario de anomalía de una clase contra el resto sobre un dataset
+CIFAR-10 sintético~\cite{krizhevsky2009cifar}: las imágenes normales
+(clase 1) se generaron con tonos verdosos ($\mu=[60,150,60]$,
+$\sigma=12$) y las anómalas (demás clases) con tonos rojizos
+($\mu=[170,60,60]$, $\sigma=40$). La Tabla~\ref{tab:espacio_exp2} muestra
+la configuración del experimento.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Configuración del Experimento~2 (CIFAR-10 sintético).}
+\label{tab:espacio_exp2}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} \\
+\midrule
+Imágenes totales    & 100 (60 normales, 40 anómalas) \\
+Dimensiones         & $32\times32\times3$ \\
+\texttt{val\_size}  & 0.30 \\
+\texttt{random\_state} & 42 \\
+Motor               & Optuna (12 ensayos, TPE + MedianPruner) \\
+Paso \emph{resize}  & 1 opción: Resize($16\times16$) \\
+Paso \emph{median}  & 1 opción: MedianFilter($k=3$) \\
+Paso \emph{blur}    & 2 opciones: GaussianBlur($k=3$), GaussianBlur($k=5$) \\
+Paso \emph{clahe}   & 1 opción: CLAHE (clip $2.0$, rejilla $4\times4$) \\
+Paso \emph{gamma}   & 2 opciones: $\gamma=0.5$, $\gamma=1.5$ \\
+Paso \emph{gray}    & 1 opción: GrayscaleConversion \\
+Paso \emph{normalize} & 1 opción: Normalize($\mu=0.5$, $\sigma=0.5$) \\
+Espacio total       & 288 combinaciones (con omisión por paso) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Este experimento usa un espacio de búsqueda completo con las siete
+transformaciones predefinidas de la librería. De los 12~ensayos de Optuna,
+11 alcanzaron AUC-ROC=1.0000 (el restante, 0.9954). El pipeline ganador
+correspondió al primer ensayo evaluado: MedianFilter($k=3$) $\to$
+GaussianBlur($k=3$) $\to$ CLAHE($2.0$) $\to$ GrayscaleConversion
+(Tabla~\ref{tab:metricas_exp2}), un pipeline que \emph{omite} tres de los
+siete pasos disponibles (redimensionamiento, corrección gamma y
+normalización), lo que ilustra la exploración automática de subconjuntos
+del espacio de búsqueda.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Métricas del pipeline ganador — Experimento~2 (CIFAR-10 sintético).}
+\label{tab:metricas_exp2}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+AUC-ROC              & 1.0 \\
+F1-score             & 1.0 \\
+Precisión            & 1.0 \\
+Recall               & 1.0 \\
+Tasa falsos positivos& 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El AUC-ROC=1.0000 refleja la alta separabilidad del dataset sintético: la
+diferencia cromática entre la clase normal (verde) y la anómala (rojo) fue
+suficiente para que IsolationForest separara perfectamente ambas clases
+con casi cualquier subconjunto de transformaciones. Este resultado
+confirma la correctitud funcional del sistema sobre un espacio amplio
+(288 combinaciones exploradas con solo 12 ensayos) y muestra que la
+omisión automática de pasos permite encontrar pipelines más cortos con el
+mismo desempeño.
+
+\subsection{Experimento 3: Adaptador para MVTec AD}
+
+El tercer notebook  mostró la integración
+de AutoPipeAD con el dataset MVTec AD~\cite{bergmann2019mvtec}, cuya
+estructura de directorios (categorías con subdirectorios por tipo de
+defecto) es distinta del formato que espera \texttt{ImageDataLoader}. El
+notebook incluye la función \texttt{build\_normal\_anomaly\_dir()}, que
+convierte la estructura \texttt{test/good/} + \texttt{test/\textit{defecto}/}
+al formato \texttt{normal/} + \texttt{anomaly/}. Como no se contó con el
+dataset real (requiere registro y descarga de
+$\sim$4.9~GB), el notebook se probó con un dataset sintético de
+validación (30~imágenes normales con textura gris uniforme y
+18~anómalas con parche brillante), lo que confirmó que el adaptador
+funciona correctamente. El espacio de búsqueda usó \texttt{CLAHETransform}
+con $\text{clip\_limit} \in \{2.0, 4.0\}$ y \texttt{GaussianBlur} con
+$k \in \{3, 5\}$, junto con \texttt{Resize}($64\times64$) y
+\texttt{Normalize}; con la omisión automática por paso, la búsqueda
+exhaustiva evaluó 36~combinaciones ($2\cdot3\cdot3\cdot2$). De ellas,
+24 alcanzaron AUC-ROC=1.0000 y la peor obtuvo 0.8704; el ganador fue
+Resize($64\times64$) $\to$ CLAHE($2.0$) $\to$ GaussianBlur($k=3$) $\to$
+Normalize, con las cinco métricas perfectas.
+
+\subsection{Evaluación del Módulo de Paralelismo}
+
+El método \texttt{ParallelRunner.benchmark()} ejecutó la evaluación del
+espacio de búsqueda del Experimento~1 (12~pipelines, incluida la omisión
+por paso) en modo secuencial (\texttt{n\_jobs=1}) y en modo paralelo
+(\texttt{n\_jobs=-1}), obteniendo los resultados de la
+Tabla~\ref{tab:speedup}.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Resultados de la evaluación de paralelismo — Experimento~1.}
+\label{tab:speedup}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor medido} \\
+\midrule
+\textit{Speedup} medido              & 0.25$\times$ \\
+Consistencia (seq. vs. par.)         & Verdadero \\
+\textit{n\_jobs}                     & $-1$ (todos los núcleos) \\
+Pipelines evaluados                  & 12 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El \textit{speedup} de 0.25$\times$ (la ejecución paralela fue alrededor
+de 4~veces más lenta que la secuencial) es el comportamiento esperado
+para un espacio de búsqueda pequeño de evaluación barata: la sobrecarga
+de inicializar el \textit{pool} de procesos \textit{loky} domina sobre el
+tiempo de cómputo de cada pipeline, aunque la penalización se reduce al
+crecer el espacio (con 2~pipelines, en mediciones previas, el
+\textit{speedup} fue de 0.06$\times$). El beneficio de la paralelización
+aparece en espacios más amplios o con modelos base costosos, donde el
+tiempo de evaluación supera esa sobrecarga. El indicador
+\texttt{consistent=True} confirma que los resultados paralelos y
+secuenciales fueron numéricamente equivalentes, lo que valida la
+correctitud del mecanismo.
+
+\subsection{Comparación de Estrategias de Búsqueda}
+
+La Tabla~\ref{tab:comparacion} compara las dos estrategias de búsqueda en
+el Experimento~1, donde el espacio fue lo bastante pequeño para evaluar
+ambas sobre el mismo conjunto.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\caption{Comparación Grid Search vs.\ Optuna — Experimento~1.}
+\label{tab:comparacion}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Estrategia} & \textbf{Evaluaciones} & \textbf{AUC-ROC ganador} & \textbf{Pipeline ganador} \\
+\midrule
+Grid Search & 12 & 1.0000 & Resize + Blur + Norm \\
+Optuna      & 8  & 1.0000 & Blur + Norm \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ambas estrategias alcanzaron el mismo AUC-ROC ganador, y Optuna lo hizo
+con menos evaluaciones (8 frente a las 12 del espacio completo). Las
+composiciones ganadoras difieren porque en este dataset varios candidatos
+comparten el valor óptimo y cada motor retiene el primero que lo alcanza
+según su orden de exploración; ambas son igualmente válidas. La ventaja de
+la optimización bayesiana se acentúa en espacios con cientos de
+combinaciones, como el del Experimento~2 (288 combinaciones exploradas con
+12 ensayos).
+
+\subsection{Fortalezas de la Solución}
+
+\begin{enumerate}
+\item \textbf{Reproducibilidad garantizada}: la semilla fija en el
+  particionador y en el muestreador de Optuna
+  produce resultados idénticos en ejecuciones independientes, verificado
+  con el pipeline reconstruido.
+\item \textbf{Exploración automática de subconjuntos}: cada paso del
+  espacio incluye la opción transparente de omitirse, sin configuración
+  adicional del usuario; la búsqueda puede así descartar transformaciones
+  que no aportan (el ganador del Experimento~2 omitió tres de los siete
+  pasos disponibles).
+\item \textbf{Extensibilidad}: la interfaz \texttt{BaseTransform} permite
+  agregar transformaciones personalizadas sin modificar ningún otro
+  módulo.
+\item \textbf{Compatibilidad con la interfaz estándar}: la librería acepta
+  cualquier modelo con métodos fit/predict de
+  scikit-learn, así como modelos PyTorch con la misma interfaz.
+\item \textbf{API concisa}: el flujo completo de carga, búsqueda y
+  reporte se expresa en menos de 20~líneas de código de usuario, según
+  muestran los notebooks de ejemplo.
+\item \textbf{Reporte autocontenido y de ubicación predecible}: el
+  documento HTML incluye gráficas e imágenes de anomalías codificadas en
+  base64, sin depender de archivos externos; sin configuración, los
+  archivos se escriben junto al script o cuaderno
+  invocador, con la carpeta creada automáticamente.
+\item \textbf{Adaptador de estructura de datos}: Se demuestra que la librería puede
+  integrarse con datasets de formato distinto mediante adaptadores
+  externos.
+\end{enumerate}
+
+\subsection{Limitaciones de la Solución}
+
+\begin{enumerate}
+\item \textbf{Sensibilidad al balance de clases}: IsolationForest asume
+  que las anomalías son raras; en pruebas de desarrollo con un balance
+  50/50 en el entrenamiento, el AUC-ROC bajó a 0.5000 (predicción
+  aleatoria). El Experimento~1 final mitiga esta limitación del modelo
+  base con una proporción realista (20\,\% de anomalías) y el parámetro contamination acorde.
+\item \textbf{Paralelismo no beneficioso para espacios pequeños}: el
+  \textit{speedup} de 0.25$\times$ con 12~pipelines de evaluación barata
+  muestra que la paralelización resulta contraproducente cuando la
+  sobrecarga de crear los procesos supera el costo de cada evaluación.
+\item \textbf{Representación por aplanamiento de píxeles}: la extracción
+  de características aplana la imagen en un vector, lo que descarta la
+  estructura espacial local. Esto limita la compatibilidad con modelos
+  basados en características profundas, como PatchCore o PaDiM.
+\item \textbf{Validación simple}: la búsqueda usa una sola partición
+  train/val, lo que introduce varianza en la estimación
+  de la métrica para datasets pequeños. La validación cruzada $k$-pliegues
+  ya está implementada, pero todavía no se integró
+  en el bucle de búsqueda automática.
+\item \textbf{Exportación a PDF condicional}: generar el PDF requiere el
+  binario externo wkhtmltopdf, que no viene incluido entre las
+  dependencias de la librería.
+\end{enumerate}
+
+% ============================================================
+%  V. CONCLUSIONES
+% ============================================================
+\section{Conclusiones}
+
+AutoPipeAD implementa un sistema funcional y reproducible para seleccionar
+automáticamente pipelines de preprocesamiento en detección de anomalías en
+imágenes. La arquitectura modular de seis componentes, con interfaces bien
+definidas, separa las responsabilidades de carga de datos, definición de
+transformaciones, búsqueda de configuraciones, evaluación de métricas,
+ejecución paralela y generación de reportes, lo que permite extender la
+librería sin modificar componentes existentes.
+
+Los experimentos confirmaron la correctitud funcional del sistema. En el
+Experimento~1, las dos estrategias de búsqueda alcanzaron un AUC-ROC de
+1.0000 de forma determinista bajo una semilla fija: Grid Search evaluó las 12~combinaciones del
+espacio (incluidos los subconjuntos generados por la omisión automática de
+pasos) y Optuna llegó al mismo óptimo con solo 8~ensayos. Reconstruir el
+pipeline desde el archivo JSON generado dio resultados idénticos, y las
+métricas de los tres notebooks resultaron reproducibles entre ejecuciones
+independientes. En el Experimento~2, la búsqueda bayesiana identificó
+desde el primer ensayo un pipeline con AUC-ROC de 1.0000 sobre un espacio
+de 288~combinaciones con las siete transformaciones predefinidas,
+omitiendo tres pasos que no aportaban al desempeño.
+
+La evaluación paralela mediante benchmark para
+12~pipelines dio un de 0.25$\times$, lo que muestra que
+la sobrecarga del backend superó el beneficio computacional
+en espacios de búsqueda de evaluación barata. La consistencia entre
+resultados paralelos y secuenciales se verificó en todos los experimentos.
+
+El hallazgo más relevante durante el desarrollo fue la sensibilidad de
+IsolationForest al balance de clases en el conjunto de entrenamiento: con
+una proporción 50/50 de muestras normales y anómalas, el detector operó al
+nivel de una predicción aleatoria (AUC-ROC=0.5). Esta limitación es
+propia del modelo base, no del sistema de selección de pipelines, y se
+mitigó en los experimentos finales usando una proporción realista de
+anomalías (20\,\%) junto con el parámetro contamination
+calibrado a esa tasa.
+
+% ============================================================
+%  VI. RECOMENDACIONES Y TRABAJO FUTURO
+% ============================================================
+\section{Recomendaciones y Trabajo Futuro}
+
+\subsection{Integración de Validación Cruzada en el Bucle de Búsqueda}
+
+Incorporar la validación cruzada $k$-pliegues (ya implementada en
+\texttt{DataSplitter}) dentro del bucle de búsqueda automática reduciría
+la varianza al estimar métricas en datasets pequeños. La métrica
+objetivo podría promediarse sobre los $k$~pliegues en lugar de evaluarse
+sobre una única partición.
+
+\subsection{Extracción de Características Profundas}
+
+Agregar un extractor de características basado en redes neuronales
+convolucionales preentrenadas —como ResNet o los
+descriptores de parches de PatchCore como etapa
+adicional del pipeline aumentaría la capacidad discriminativa sin
+necesitar etiquetas de anomalías durante el entrenamiento, superando la
+limitación del aplanamiento de píxeles.
+
+\subsection{Soporte de Hiperparámetros Continuos}
+
+Los hiperparámetros continuos del preprocesamiento —como el valor
+$\sigma$ del suavizado gaussiano o el exponente $\gamma$— podrían
+incorporarse al espacio de búsqueda de Optuna como variables reales, aprovechando la capacidad nativa del
+muestreador TPE para espacios mixtos.
+
+\subsection{Interfaz de Línea de Comandos}
+
+Desarrollar una interfaz de línea de comandos (CLI) que lea la
+configuración desde el archivo YAML de ejemplo permitiría ejecutar búsquedas completas sin escribir código Python,
+ampliando el acceso a la herramienta.
+
+\subsection{Validación con Datasets Reales de Anomalías Industriales}
+
+Los experimentos de este trabajo usaron datasets sintéticos pensados para
+validar la correctitud funcional. Validar con datos reales de MVTec
+AD —con defectos industriales sutiles— permitiría
+medir el aporte real del preprocesamiento automático sobre modelos de
+referencia como IsolationForest u OC-SVM.
+
+\subsection{Comparación con Herramientas AutoML Existentes}
+
+Comparar empíricamente el rendimiento y el tiempo de búsqueda de
+AutoPipeAD frente a herramientas AutoML generalistas como
+Auto-sklearn daría evidencia del valor diferencial
+de especializarse en detección de anomalías.
+
+% ============================================================
+%  BIBLIOGRAFÍA
+% ============================================================
+\bibliographystyle{IEEEtran}
+\begin{thebibliography}{99}
+
+\bibitem{chandola2009anomaly}
+V.~Chandola, A.~Banerjee, y V.~Kumar,
+``Anomaly detection: A survey,''
+\emph{ACM Computing Surveys}, vol.~41, no.~3, pp.~1--58, sep.~2009.
+
+\bibitem{bergmann2019mvtec}
+P.~Bergmann, M.~Fauser, D.~Sattlegger, y C.~Steger,
+``MVTec AD -- A comprehensive real-world dataset for unsupervised anomaly
+  detection,''
+en \emph{Proc. IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)},
+Long Beach, CA, EE.~UU., jun.~2019, pp.~9592--9600.
+
+\bibitem{roth2022patchcore}
+K.~Roth, L.~Pemula, J.~Zepeda, B.~Schölkopf, T.~Brox, y P.~Gehler,
+``Towards total recall in industrial anomaly detection,''
+en \emph{Proc. IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)},
+Nueva Orleans, LA, EE.~UU., jun.~2022, pp.~14318--14328.
+
+\bibitem{defard2021padim}
+T.~Defard, A.~Setkov, A.~Loesch, y R.~Audigier,
+``PaDiM: A patch distribution modeling framework for anomaly detection and
+  localization,''
+en \emph{Proc. Int. Conf. Pattern Recognit. (ICPR)},
+Milán, Italia, ene.~2021, pp.~475--489.
+
+\bibitem{liu2012isolation}
+F.~T.~Liu, K.~M.~Ting, y Z.-H.~Zhou,
+``Isolation-based anomaly detection,''
+\emph{ACM Trans. Knowl. Discov. Data}, vol.~6, no.~1, pp.~3:1--3:39, mar.~2012.
+
+\bibitem{scholkopf2001ocsvm}
+B.~Schölkopf, J.~C.~Platt, J.~Shawe-Taylor, A.~J.~Smola,
+y R.~C.~Williamson,
+``Estimating the support of a high-dimensional distribution,''
+\emph{Neural Computation}, vol.~13, no.~7, pp.~1443--1471, jul.~2001.
+
+\bibitem{akiba2019optuna}
+T.~Akiba, S.~Sano, T.~Yanase, T.~Ohta, y M.~Koyama,
+``Optuna: A next-generation hyperparameter optimization framework,''
+en \emph{Proc. 25th ACM SIGKDD Int. Conf. Knowl. Discov. Data Mining
+  (KDD)}, Anchorage, AK, EE.~UU., ago.~2019, pp.~2623--2631.
+
+\bibitem{snoek2012practical}
+J.~Snoek, H.~Larochelle, y R.~P.~Adams,
+``Practical Bayesian optimization of machine learning algorithms,''
+en \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~25,
+Lake Tahoe, NV, EE.~UU., dic.~2012, pp.~2951--2959.
+
+\bibitem{yang2020automl}
+L.~Yang y A.~Shami,
+``On hyperparameter optimization of machine learning algorithms: Theory and
+  practice,''
+\emph{Neurocomputing}, vol.~415, pp.~295--316, nov.~2020.
+
+\bibitem{gonzalez2018dip}
+R.~C.~Gonzalez y R.~E.~Woods,
+\emph{Digital Image Processing}, 4.ª~ed.
+Hoboken, NJ, EE.~UU.: Pearson, 2018.
+
+\bibitem{hastie2009elements}
+T.~Hastie, R.~Tibshirani, y J.~Friedman,
+\emph{The Elements of Statistical Learning: Data Mining, Inference, and
+  Prediction}, 2.ª~ed.
+Nueva York, NY, EE.~UU.: Springer, 2009.
+
+\bibitem{pedregosa2011sklearn}
+F.~Pedregosa, G.~Varoquaux, A.~Gramfort, V.~Michel, B.~Thirion,
+O.~Grisel, M.~Blondel, P.~Prettenhofer, R.~Weiss, V.~Dubourg,
+J.~Vanderplas, A.~Passos, D.~Cournapeau, M.~Brucher, M.~Perrot,
+y E.~Duchesnay,
+``Scikit-learn: Machine learning in {Python},''
+\emph{J. Mach. Learn. Res.}, vol.~12, pp.~2825--2830, oct.~2011.
+
+\bibitem{fawcett2006roc}
+T.~Fawcett,
+``An introduction to ROC analysis,''
+\emph{Pattern Recognit. Lett.}, vol.~27, no.~8, pp.~861--874, jun.~2006.
+
+\bibitem{krizhevsky2009cifar}
+A.~Krizhevsky,
+``Learning multiple layers of features from tiny images,''
+Univ. Toronto, Toronto, ON, Canadá, Inf.~Téc., 2009.
+
+\bibitem{he2016resnet}
+K.~He, X.~Zhang, S.~Ren, y J.~Sun,
+``Deep residual learning for image recognition,''
+en \emph{Proc. IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)},
+Las Vegas, NV, EE.~UU., jun.~2016, pp.~770--778.
+
+\end{thebibliography}
+
+\end{document}
