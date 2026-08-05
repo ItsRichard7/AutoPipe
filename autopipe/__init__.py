@@ -24,8 +24,10 @@ from autopipe.pipeline import (
     GrayscaleConversion,
     MedianFilter,
     Normalize,
+    NotFittedError,
     Pipeline,
     Resize,
+    StatefulTransform,
 )
 from autopipe.reporter import ReportGenerator
 from autopipe.search_engine import GridSearchEngine, OptunaSearchEngine
@@ -35,6 +37,8 @@ __all__ = [
     "DataSplitter",
     "MetricCalculator",
     "BaseTransform",
+    "StatefulTransform",
+    "NotFittedError",
     "Pipeline",
     "GaussianBlur",
     "Normalize",

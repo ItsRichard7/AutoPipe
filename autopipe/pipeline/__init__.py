@@ -3,6 +3,8 @@ pipeline -- preprocessing transform definition and pipeline composition.
 
 Public API:
     BaseTransform    abstract base class for all transforms
+    StatefulTransform  abstract base class for transforms that require fitting
+    NotFittedError   raised when a stateful transform is used before fitting
     Pipeline         ordered sequence of BaseTransform steps
     GaussianBlur     built-in Gaussian blur transform
     Normalize        built-in normalization transform
@@ -13,7 +15,7 @@ Public API:
     GrayscaleConversion  built-in RGB-to-grayscale transform
 """
 
-from autopipe.pipeline.base import BaseTransform
+from autopipe.pipeline.base import BaseTransform, NotFittedError, StatefulTransform
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.pipeline.transforms import (
     CLAHETransform,
@@ -27,6 +29,8 @@ from autopipe.pipeline.transforms import (
 
 __all__ = [
     "BaseTransform",
+    "StatefulTransform",
+    "NotFittedError",
     "Pipeline",
     "GaussianBlur",
     "Normalize",
