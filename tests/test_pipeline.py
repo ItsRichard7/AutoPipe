@@ -8,7 +8,12 @@ import logging
 import numpy as np
 import pytest
 
-from autopipe.pipeline.base import BaseTransform
+from autopipe.pipeline.base import (
+    BaseTransform,
+    Dataset,
+    NotFittedError,
+    StatefulTransform,
+)
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.pipeline.transforms import (
     CLAHETransform,
@@ -47,6 +52,205 @@ def test_incomplete_subclass_cannot_be_instantiated() -> None:
 
 def test_repr_includes_params() -> None:
     assert repr(GaussianBlur(kernel_size=3)) == "GaussianBlur(kernel_size=3)"
+
+
+# --------------------------------------------------------------------------- #
+# BaseTransform: contrato fit/transform (ADR-001)
+# --------------------------------------------------------------------------- #
+STATELESS_TRANSFORMS = (
+    GaussianBlur(kernel_size=3),
+    MedianFilter(kernel_size=3),
+    Normalize(mean=0.5, std=0.5),
+    Resize(width=8, height=8),
+    CLAHETransform(clip_limit=2.0, tile_grid_size=(4, 4)),
+    GammaCorrection(gamma=1.5),
+    GrayscaleConversion(),
+)
+
+
+@pytest.mark.parametrize("transform", STATELESS_TRANSFORMS, ids=lambda t: type(t).__name__)
+def test_fit_is_a_noop_for_stateless_transforms(
+    transform: BaseTransform, rgb_image: np.ndarray
+) -> None:
+    """El ajuste por defecto no aprende nada ni altera la configuración."""
+    params_before = transform.get_params()
+    result = transform.fit([rgb_image, rgb_image])
+    assert result is transform
+    assert transform.get_params() == params_before
+
+
+@pytest.mark.parametrize("transform", STATELESS_TRANSFORMS, ids=lambda t: type(t).__name__)
+def test_transform_matches_apply_per_sample(
+    transform: BaseTransform, rgb_image: np.ndarray
+) -> None:
+    """``transform`` por lote equivale a aplicar ``apply`` muestra por muestra."""
+    dataset = [rgb_image, rgb_image[::-1]]
+    expected = [transform.apply(sample) for sample in dataset]
+    obtained = transform.transform(dataset)
+
+    assert len(obtained) == len(expected)
+    for obtained_sample, expected_sample in zip(obtained, expected, strict=True):
+        np.testing.assert_array_equal(obtained_sample, expected_sample)
+
+
+def test_fit_ignores_labels_by_default(rgb_image: np.ndarray) -> None:
+    """Las etiquetas son opcionales y el ajuste por defecto las ignora."""
+    transform = GaussianBlur(kernel_size=3)
+    assert transform.fit([rgb_image], np.array([0])) is transform
+
+
+def test_fit_transform_equals_fit_then_transform(rgb_image: np.ndarray) -> None:
+    """``fit_transform`` es equivalente a ajustar y transformar por separado."""
+    dataset = [rgb_image, rgb_image[::-1]]
+    combined = Normalize(mean=0.5, std=0.5).fit_transform(dataset)
+    separate = Normalize(mean=0.5, std=0.5).fit(dataset).transform(dataset)
+
+    for combined_sample, separate_sample in zip(combined, separate, strict=True):
+        np.testing.assert_array_equal(combined_sample, separate_sample)
+
+
+def test_transform_preserves_order() -> None:
+    """El orden de las muestras transformadas coincide con el de entrada."""
+    samples = [np.full((4, 4), value, dtype=np.uint8) for value in (10, 20, 30)]
+    obtained = GammaCorrection(gamma=1.0).transform(samples)
+
+    assert [int(sample[0, 0]) for sample in obtained] == [10, 20, 30]
+
+
+def test_transform_of_empty_dataset_is_empty() -> None:
+    """Un conjunto vacío se transforma en un conjunto vacío."""
+    assert GaussianBlur(kernel_size=3).transform([]) == []
+
+
+def test_subclass_inherits_stateless_defaults() -> None:
+    """Una subclase que solo implementa el contrato mínimo hereda fit/transform."""
+
+    class Doubler(BaseTransform):
+        def apply(self, image: np.ndarray) -> np.ndarray:
+            return image * 2
+
+        def get_params(self) -> dict:
+            return {}
+
+    transform = Doubler()
+    obtained = transform.fit_transform([np.ones((2, 2)), np.zeros((2, 2))])
+
+    np.testing.assert_array_equal(obtained[0], np.full((2, 2), 2.0))
+    np.testing.assert_array_equal(obtained[1], np.zeros((2, 2)))
+
+
+def test_transform_on_tabular_matrix_iterates_rows() -> None:
+    """Sobre una matriz 2-D, las muestras son las filas."""
+    matrix = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+    obtained = GammaCorrection(gamma=1.0).transform(matrix)
+
+    assert len(obtained) == 3
+    np.testing.assert_allclose(np.vstack(obtained), matrix)
+
+
+# --------------------------------------------------------------------------- #
+# StatefulTransform (ADR-001)
+# --------------------------------------------------------------------------- #
+class MeanCenterer(StatefulTransform):
+    """Doble de prueba: centra cada columna con la media aprendida en el ajuste."""
+
+    def _fit(self, X: Dataset, y: np.ndarray | None = None) -> None:
+        self.mean_ = np.asarray(X, dtype=float).mean(axis=0)
+
+    def _transform(self, X: Dataset) -> Dataset:
+        return np.asarray(X, dtype=float) - self.mean_
+
+    def get_params(self) -> dict:
+        return {}
+
+
+def test_stateful_transform_starts_unfitted() -> None:
+    assert MeanCenterer().fitted is False
+
+
+def test_fit_marks_as_fitted_and_returns_self() -> None:
+    transform = MeanCenterer()
+    result = transform.fit(np.array([[1.0], [3.0]]))
+
+    assert result is transform
+    assert transform.fitted is True
+
+
+def test_transform_before_fit_raises_not_fitted() -> None:
+    with pytest.raises(NotFittedError, match="MeanCenterer"):
+        MeanCenterer().transform(np.array([[1.0], [2.0]]))
+
+
+def test_apply_before_fit_raises_not_fitted() -> None:
+    with pytest.raises(NotFittedError, match="MeanCenterer"):
+        MeanCenterer().apply(np.array([1.0]))
+
+
+def test_fit_uses_only_the_given_subset() -> None:
+    """El estado se aprende del subconjunto de ajuste, no del que se transforma.
+
+    Es la garantía que evita la fuga de datos: la validación se transforma con
+    las estadísticas del entrenamiento, de modo que **no** queda centrada.
+    """
+    train = np.array([[0.0], [10.0]])          # media de entrenamiento = 5.0
+    validation = np.array([[100.0], [200.0]])  # media propia = 150.0
+
+    transform = MeanCenterer().fit(train)
+    transformed_validation = np.asarray(transform.transform(validation))
+
+    np.testing.assert_allclose(transformed_validation, np.array([[95.0], [195.0]]))
+    assert transformed_validation.mean() != pytest.approx(0.0)
+
+
+def test_refit_replaces_previous_state() -> None:
+    transform = MeanCenterer().fit(np.array([[0.0], [10.0]]))
+    transform.fit(np.array([[100.0], [100.0]]))
+
+    np.testing.assert_allclose(np.asarray(transform.transform(np.array([[100.0]]))), [[0.0]])
+
+
+def test_apply_matches_the_corresponding_row_of_transform() -> None:
+    dataset = np.array([[1.0, 2.0], [3.0, 6.0]])
+    transform = MeanCenterer().fit(dataset)
+
+    by_batch = np.asarray(transform.transform(dataset))
+    by_sample = transform.apply(dataset[0])
+
+    np.testing.assert_allclose(by_sample, by_batch[0])
+
+
+def test_incomplete_stateful_subclass_cannot_be_instantiated() -> None:
+    """No implementar el ajuste impide instanciar la subclase."""
+
+    class MissingFit(StatefulTransform):
+        def _transform(self, X: Dataset) -> Dataset:
+            return X
+
+        def get_params(self) -> dict:
+            return {}
+
+    with pytest.raises(TypeError):
+        MissingFit()  # type: ignore[abstract]
+
+
+def test_not_fitted_is_raised_even_without_calling_super_init() -> None:
+    """El estado de ajuste vive en un atributo de clase, no en ``__init__``.
+
+    Una subclase que define su propio ``__init__`` sin invocar al de la clase
+    base debe seguir levantando ``NotFittedError``, no ``AttributeError``.
+    """
+
+    class OwnInit(MeanCenterer):
+        def __init__(self) -> None:  # noqa: D107 - doble de prueba
+            self.extra = 1
+
+    with pytest.raises(NotFittedError):
+        OwnInit().transform(np.array([[1.0]]))
+
+
+def test_stateful_transform_is_a_base_transform() -> None:
+    """El contrato con estado sigue siendo un ``BaseTransform``."""
+    assert isinstance(MeanCenterer(), BaseTransform)
 
 
 # --------------------------------------------------------------------------- #
