@@ -1,0 +1,539 @@
+% ============================================================
+%  Pre-registro del protocolo experimental - TFG AutoPipe
+%  Autor: Ricardo Antonio Borbon Mena
+%
+%  PROPOSITO
+%  ---------
+%  Documento fechado y versionado que fija, ANTES de ejecutar los
+%  experimentos, las decisiones de protocolo que el anteproyecto
+%  (seccion 4.3) no especifica. No modifica ningun criterio de
+%  exito ya comprometido: solo cierra sus silencios.
+%
+%  REGLA DE ORO
+%  ------------
+%  Ninguna version de este documento se escribe DESPUES de la
+%  ejecucion que gobierna:
+%    v0.1  semana 1  - decisiones de protocolo (este documento)
+%    v0.2  semana 5  - antes de correr el cribado de sensibilidad
+%    v1.0  semana 9  - antes de ejecutar el leave-one-dataset-out
+%
+%  Cada version se cierra con un commit propio y una etiqueta
+%  anotada de git (prereg-v0.1, prereg-v0.2, prereg-v1.0).
+%
+%  Compilar con:  pdflatex Preregistro.tex
+% ============================================================
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[letterpaper,top=2.4cm,bottom=2.4cm,left=2.8cm,right=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\definecolor{tecnavy}{HTML}{003366}
+\definecolor{gris}{HTML}{666666}
+\definecolor{tablehead}{HTML}{E6EEF5}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\setlist[itemize]{leftmargin=1.4em,topsep=2pt,itemsep=3pt}
+\setlist[enumerate]{leftmargin=1.6em,topsep=2pt,itemsep=3pt}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{tecnavy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\sffamily}{\thesubsection}{0.5em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textit{AutoPipe}}
+\fancyhead[R]{\small Pre-registro \preregversion}
+\fancyfoot[C]{\thepage}
+
+% --- Identidad de la version --------------------------------
+\newcommand{\preregversion}{v0.1}
+\newcommand{\preregfecha}{4 de agosto de 2026}
+\newcommand{\preregtag}{prereg-v0.1}
+
+\begin{document}
+
+% =========== PORTADA ========================================
+\begin{center}
+{\LARGE\bfseries\color{tecnavy} Pre-registro del protocolo experimental}\\[6pt]
+{\large AutoPipe --- Trabajo Final de Graduación}\\[4pt]
+{\small Ricardo Antonio Borbón Mena --- Instituto Tecnológico de Costa Rica}\\[14pt]
+
+\begin{tabularx}{0.92\textwidth}{L{3.6cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Identificación de esta versión}} \\
+\midrule
+Versión & \preregversion \\
+Fecha de cierre & \preregfecha \\
+Estado & Decisiones de protocolo fijadas. Pendientes de versiones posteriores: la
+versión congelada del espacio de búsqueda (v0.2) y la ejecución del
+\textit{leave-one-dataset-out} (v1.0). \\
+Etiqueta de git & \texttt{\preregtag}, etiqueta anotada creada al cerrar esta
+versión. Su fecha de creación, registrada por git, es el fechado verificable de
+este documento. \\
+Forma de cita en el informe & «Pre-registro \preregversion, etiqueta
+\texttt{\preregtag}, \preregfecha» \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+{\small\color{gris} El documento se identifica por su etiqueta y no por el hash del
+commit que lo congela: ese hash se calcula sobre el contenido del documento, de modo
+que escribirlo dentro de él lo alteraría. El hash correspondiente se obtiene con
+\texttt{git rev-parse \preregtag}.\par}
+\end{center}
+
+\vspace{10pt}
+
+% =========== 1. PROPOSITO ===================================
+\section{Propósito y alcance de este documento}
+
+Este documento fija, con fecha anterior a la ejecución de los experimentos, las
+decisiones de protocolo que el anteproyecto no especifica. Su función es que las
+reglas de análisis no puedan ajustarse después de conocer los resultados.
+
+\textbf{Este documento no modifica ningún criterio de éxito del anteproyecto.} La
+Sección~4.3 del anteproyecto (corpus y presupuesto, métricas primarias, protocolo
+de comparación, criterio de éxito de la hipótesis y criterios de éxito de
+ingeniería) permanece vigente sin cambios. Lo que aquí se registra son
+precisiones sobre puntos en los que ese texto guarda silencio, más decisiones de
+diseño internas que el texto no gobierna. La Tabla~\ref{tab:relacion} deslinda
+ambas cosas explícitamente.
+
+\begin{table}[htbp]
+\centering
+\caption{Deslinde entre lo que fija el anteproyecto y lo que precisa este documento.}
+\label{tab:relacion}
+\small
+\begin{tabularx}{\textwidth}{L{4.1cm} L{4.3cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Asunto} & \textbf{Lo que fija el anteproyecto \S4.3} & \textbf{Lo que precisa este documento} \\
+\midrule
+Modelo base &
+«Un clasificador sensible al preprocesamiento (regresión logística o $k$ vecinos
+más cercanos de scikit-learn)», fijo en ambas condiciones. &
+Se elige $k$ vecinos más cercanos y se congela su configuración completa
+(Sección~\ref{sec:modelo}). El texto autoriza expresamente esta opción. \\
+\midrule
+Espacio de búsqueda &
+Nada: \S4.3 no lo especifica. &
+Parametrización relativa (fraccional) y espacio canónico versionado
+(Sección~\ref{sec:espacio}). \\
+\midrule
+Corpus &
+Criterios de inclusión: licencia abierta, 500--50\,000 instancias, $\leq 100$
+características, sin imagen ni texto embebidos, $\leq 10$ clases. Entre 15 y 25
+datasets. 50 ensayos por dataset. &
+Cómo se eligen los 15--25 entre todos los elegibles: desempate por sensibilidad
+al preprocesamiento (Sección~\ref{sec:corpus}). Los criterios de inclusión no se
+alteran ni se añaden nuevos. \\
+\midrule
+Semillas &
+«El mismo presupuesto de 30 ensayos y las mismas semillas» en ambas condiciones. &
+Cuántas semillas, cuáles literalmente, y cómo se agregan
+(Sección~\ref{sec:lodo}). \\
+\midrule
+Ensayos hasta el objetivo &
+«Número de ensayos necesarios para alcanzar al menos el 95\% del mejor valor de
+métrica hallado por el arranque en frío con el presupuesto completo». &
+Respecto a qué corrida en frío se define el objetivo, si los ensayos inyectados
+cuentan, y qué se hace cuando una condición no alcanza el objetivo
+(Sección~\ref{sec:lodo}). \\
+\midrule
+Criterio de éxito &
+Reducción $\geq 30\%$ de la mediana de ensayos hasta el objetivo, con
+significancia según Wilcoxon pareada por dataset, $\alpha = 0{,}05$. &
+Lateralidad de la prueba y análisis secundarios, que no sustituyen al primario
+(Sección~\ref{sec:analisis}). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =========== 2. MODELO BASE =================================
+\section{Modelo base congelado}
+\label{sec:modelo}
+
+El modelo base es \texttt{KNeighborsClassifier} de scikit-learn, con esta
+configuración literal, idéntica en todas las condiciones, datasets y semillas:
+
+\begin{center}
+\texttt{KNeighborsClassifier(n\_neighbors=5, weights="uniform",\\
+metric="minkowski", p=2, algorithm="brute")}
+\end{center}
+
+\textbf{Justificación de la elección.} La Sección~4.3.3 del anteproyecto autoriza
+expresamente regresión logística o $k$ vecinos más cercanos. Se elige el segundo
+porque opera sobre distancias, de modo que el escalado, la imputación y la
+selección de características afectan la métrica de forma sustantiva. Un modelo
+base insensible al preprocesamiento produciría un efecto piso: si la métrica
+apenas varía entre pipelines, el objetivo del 95\% se alcanza en el primer
+ensayo de ambas condiciones y la comparación queda vacía por construcción,
+independientemente de la calidad del recomendador. La elección de $k$ vecinos más
+cercanos es la mitigación más económica de ese riesgo.
+
+\textbf{Justificación de} \texttt{algorithm="brute"}\textbf{.} Los algoritmos
+basados en árboles degradan su ventaja a un centenar de dimensiones y su
+construcción puede introducir variación entre ejecuciones. Forzar fuerza bruta
+elimina esa fuente de variabilidad y sirve al criterio de reproducibilidad de la
+Sección~4.3.5 del anteproyecto (la misma semilla debe producir el mismo pipeline
+ganador).
+
+\textbf{Consecuencia sobre el costo.} El modelo invierte el perfil de cómputo:
+entrenar es trivial y predecir crece cuadráticamente con el número de instancias,
+de modo que el costo total queda dominado por los datasets cercanos al techo de
+50\,000 instancias. La medición de ese costo se realiza en la semana 6 y se
+registra en la versión v0.2 de este documento.
+
+Ningún hiperparámetro del modelo base entra en el espacio de búsqueda: el
+anteproyecto exige un modelo base fijo para que las diferencias observadas sean
+atribuibles al pipeline de preprocesamiento.
+
+% =========== 3. ESPACIO DE BUSQUEDA =========================
+\section{Espacio de búsqueda}
+\label{sec:espacio}
+
+\subsection{Parametrización relativa}
+
+Todo parámetro cuyo dominio dependa del dataset se expresa en términos
+\textbf{relativos} y no absolutos. En particular, la selección de
+características se parametriza como fracción de columnas conservadas, no como un
+número absoluto de columnas.
+
+\textbf{Razón.} El arranque en caliente transfiere configuraciones entre
+datasets. Un parámetro absoluto no es transferible: conservar diez columnas
+significa algo distinto en un dataset de doce características que en uno de cien,
+y el valor podría ser inválido en el dataset receptor. La parametrización
+relativa es condición necesaria para que una configuración recomendada sea
+ejecutable en un dataset que el recomendador nunca vio.
+
+\subsection{Espacio canónico y versionado}
+
+El espacio de búsqueda tabular es único, idéntico para todos los datasets del
+corpus, y se identifica con un número de versión que se registra junto a cada
+entrada de la base de meta-conocimiento y junto a cada resultado experimental.
+
+\textbf{Razón.} En la implementación del motor de búsqueda, los parámetros que
+Optuna registra por ensayo son \emph{índices enteros} sobre la lista de opciones
+de cada paso, más un índice adicional que representa omitir el paso. Un índice no
+tiene significado por sí mismo: depende del orden de la lista. Si el espacio
+cambiara de claves o de orden entre datasets, una configuración inyectada como
+arranque en caliente designaría transformaciones distintas de las previstas, sin
+producir ningún error visible. El versionado hace detectable esa condición:
+una recomendación proveniente de una versión del espacio distinta de la vigente
+se rechaza en lugar de ejecutarse.
+
+La composición concreta del espacio y su identificador de versión se congelan en
+la semana 4 y se registran en la versión v0.2 de este documento.
+
+% =========== 4. CORPUS ======================================
+\section{Corpus y cribado de sensibilidad}
+\label{sec:corpus}
+
+Los criterios de inclusión son exclusivamente los de la Sección~4.3.1 del
+anteproyecto. Este documento no añade, elimina ni relaja ninguno. Lo que fija es
+el procedimiento para elegir los 15--25 datasets del corpus entre todos los que
+resultan elegibles, que el anteproyecto no especifica.
+
+\subsection{Procedimiento, fijado antes de ejecutarse}
+
+\begin{enumerate}
+  \item \textbf{Universo.} Todos los datasets que satisfacen los criterios de
+        inclusión de la Sección~4.3.1, sin excepción.
+
+  \item \textbf{Muestreo.} Doce pipelines por dataset candidato, extraídos
+        uniformemente al azar del espacio de búsqueda canónico de la
+        Sección~\ref{sec:espacio}, incluida la opción de omitir cada paso, con
+        semilla fija \texttt{4242}.
+
+  \item \textbf{Evaluación.} El modelo base congelado de la
+        Sección~\ref{sec:modelo}, la métrica primaria de clasificación del
+        anteproyecto (macro-F1), y la misma partición única de entrenamiento y
+        validación que emplea el protocolo de búsqueda.
+
+  \item \textbf{Medida de sensibilidad.} El rango interquartílico (IQR) de los
+        doce valores de macro-F1. Se registran además, con carácter descriptivo,
+        el rango total ($\max - \min$) y el margen sobre el pipeline vacío
+        (mejor pipeline aleatorio menos el desempeño sin preprocesamiento).
+
+        \textit{Razón de la elección:} con doce muestras, el rango total lo
+        determina un único pipeline degenerado. El IQR mide si \emph{elegir
+        entre} pipelines cambia el resultado, que es precisamente lo que
+        gobierna la variable «ensayos hasta el objetivo»; el margen sobre el
+        pipeline vacío mide si el preprocesamiento \emph{ayuda}, que es una
+        pregunta distinta y se reporta aparte.
+
+  \item \textbf{Regla de desempate.} Los candidatos se ordenan por IQR
+        descendente y se seleccionan los primeros hasta completar el corpus,
+        sujeto a dos restricciones de diversidad que se aplican \emph{después}
+        del orden:
+        \begin{itemize}
+          \item cobertura de los tres regímenes de tamaño (centenas, millares y
+                decenas de millares de instancias);
+          \item al menos cinco datasets con variables categóricas y al menos
+                cinco con valores faltantes, para que la codificación y la
+                imputación del espacio de búsqueda queden ejercitadas.
+        \end{itemize}
+        Cuando una restricción obliga a omitir un candidato mejor ubicado en el
+        orden, se registra cuál y por qué.
+
+  \item \textbf{Umbral del subconjunto sensible.} Un dataset se considera
+        sensible al preprocesamiento si su IQR es mayor o igual a $0{,}02$ de
+        macro-F1 (dos puntos porcentuales). Este umbral queda fijado aquí,
+        \emph{antes} de observar la distribución de los valores, y es el mismo
+        que define la estratificación de la Sección~\ref{sec:analisis}.
+
+  \item \textbf{Persistencia.} Los doce valores de cada candidato se conservan en
+        el repositorio, incluidos los de los candidatos descartados, para que la
+        selección sea verificable y no una afirmación.
+\end{enumerate}
+
+\subsection{Resultados posibles declarados de antemano}
+
+Si todos los datasets seleccionados superan el umbral, el subconjunto sensible
+coincide con el corpus completo y la estratificación de la
+Sección~\ref{sec:analisis} queda vacía. En ese caso se reporta como tal. El
+umbral no se redefine después de observar la distribución para forzar una
+partición del corpus.
+
+% =========== 5. PROTOCOLO LODO ==============================
+\section{Protocolo de comparación}
+\label{sec:lodo}
+
+El protocolo es el de la Sección~4.3.3 del anteproyecto: validación cruzada por
+exclusión de dataset, dos condiciones sobre el dataset excluido con un
+presupuesto de 30 ensayos cada una, arranque en frío contra arranque en caliente
+con cinco configuraciones inyectadas mediante \texttt{enqueue\_trial}. Lo que
+sigue precisa sus puntos no especificados.
+
+\subsection{Semillas}
+
+Cada condición se ejecuta con \textbf{tres semillas}, y son las \textbf{mismas
+tres} en ambas condiciones: $\{101,\ 202,\ 303\}$. La construcción de la base de
+meta-conocimiento, que el anteproyecto define con un presupuesto único de 50
+ensayos por dataset, emplea la semilla $42$. El cribado de sensibilidad emplea la
+semilla $4242$.
+
+Repetir con tres semillas responde a que una sola corrida por condición produce
+una observación pareada ruidosa: el muestreador TPE con 30 ensayos tiene varianza
+apreciable entre semillas, y una conclusión que dependa de la semilla que tocó no
+es defendible. Esto no altera el presupuesto de 30 ensayos, ni el emparejamiento
+por dataset, ni el número de pares de la prueba estadística.
+
+Si la medición de costo de la semana 6 muestra que el cómputo lo permite, el
+número de semillas asciende a cinco. La decisión se registra en la versión v0.2
+de este documento, antes de ejecutar el experimento, y en ningún caso se toma
+después de observar los resultados.
+
+En la implementación, la semilla gobierna tanto la partición de entrenamiento y
+validación como el muestreador de Optuna. Como ambas condiciones comparten la
+semilla, dentro de cada semilla la comparación entre frío y caliente se realiza
+sobre una partición idéntica.
+
+\subsection{Definición del objetivo}
+
+El objetivo se define por pareja \textbf{(dataset, semilla)}: para el dataset $d$
+y la semilla $s$, el objetivo es el 95\% del mejor valor de macro-F1 que
+alcanza el arranque en frío con la semilla $s$ sobre el dataset $d$ en su
+presupuesto completo de 30 ensayos. Los ensayos hasta el objetivo se calculan por
+semilla, y la observación pareada de cada dataset es la \textbf{mediana de las
+tres semillas} en cada condición.
+
+\textit{Razón:} la alternativa —definir un objetivo único por dataset a partir de
+la agregación de las tres corridas en frío— permitiría que el arranque en frío no
+alcanzara su propio objetivo en alguna semilla, reintroduciendo la censura en la
+condición de referencia. La definición por pareja preserva el emparejamiento de
+semillas que exige el anteproyecto y mantiene la propiedad de la
+Sección~\ref{sec:censura}.
+
+\subsection{Los ensayos inyectados cuentan}
+
+Las cinco configuraciones inyectadas como arranque en caliente cuentan dentro de
+los ensayos hasta el objetivo. El arranque en caliente dispone por tanto de
+veinticinco ensayos de exploración propia dentro del presupuesto de treinta.
+
+\textit{Razón:} no contarlas otorgaría al arranque en caliente una ventaja
+puramente contable, ajena a la hipótesis, que se investiga sobre el costo total
+de la búsqueda.
+
+\subsection{Casos censurados}
+\label{sec:censura}
+
+Cuando una condición no alcanza el objetivo dentro del presupuesto, su valor de
+ensayos hasta el objetivo se fija en $31$ (presupuesto más uno). La regla se
+aplica de forma simétrica a ambas condiciones y el número de casos censurados se
+reporta por condición y a nivel de semilla, no de dataset.
+
+\textbf{La censura es asimétrica por construcción, y conviene enunciarlo con
+precisión: el arranque en frío no puede censurarse.} El objetivo es el 95\% del
+mejor valor que el propio arranque en frío alcanza en su presupuesto completo; si
+ese mejor valor ocurre en el ensayo $t \leq 30$, entonces el frío cruzó el 95\%
+en algún ensayo menor o igual que $t$. No se trata de un suceso improbable sino
+imposible. Por lo tanto la regla de censura solo puede afectar al arranque en
+caliente, y su elección requiere una garantía explícita, que es la siguiente.
+
+\textbf{Chequeo de robustez.} El análisis primario se recalcula íntegro con
+castigos más severos para los casos censurados: dos veces y diez veces el
+presupuesto ($60$ y $300$). Si la conclusión no cambia con ninguna de las tres
+reglas, se declara explícitamente en el informe que la conclusión no depende de
+la regla de censura. Si cambia con alguna, se reporta con qué regla y en qué
+sentido, sin seleccionar la más favorable.
+
+Con la mediana de tres semillas, la regla de censura solo desplaza la observación
+de un dataset cuando al menos dos de sus tres semillas quedan censuradas; el
+reporte a nivel de semilla hace visible esa situación.
+
+\subsection{Ausencia de poda efectiva}
+
+El objetivo evalúa una única partición y no reporta valores intermedios, de modo
+que el podador por mediana configurado en el motor de búsqueda no interviene.
+Los treinta ensayos son treinta evaluaciones completas y ninguno queda sin valor
+de métrica, por lo que no se requiere una regla para ensayos podados.
+
+\subsection{Ausencia de fuga en el nivel meta}
+
+La normalización del espacio de meta-características y la métrica de distancia
+del recomendador se ajustan \textbf{únicamente con los datasets de entrenamiento
+de cada pliegue}, nunca con el dataset excluido. Ajustarlas sobre el corpus
+completo contaminaría cada pliegue y inflaría la ventaja del arranque en caliente
+de un modo difícil de detectar a posteriori. Es el análogo, en el nivel meta, del
+ajuste de las transformaciones con estado usando solo el subconjunto de
+entrenamiento.
+
+% =========== 6. PLAN DE ANALISIS ============================
+\section{Plan de análisis}
+\label{sec:analisis}
+
+\subsection{Análisis primario}
+
+Sobre el \textbf{corpus completo}, se contrastan las medianas de ensayos hasta el
+objetivo de ambas condiciones. La hipótesis se considera confirmada si se cumplen
+\emph{ambas} condiciones de la Sección~4.3.4 del anteproyecto:
+
+\begin{enumerate}
+  \item la mediana de ensayos hasta el objetivo del arranque en caliente es al
+        menos un 30\% menor que la del arranque en frío; \emph{y}
+  \item la prueba de rangos con signo de Wilcoxon, pareada por dataset, resulta
+        significativa con $\alpha = 0{,}05$.
+\end{enumerate}
+
+La prueba se realiza \textbf{de una cola}, en la dirección de la hipótesis
+(reducción), y se reporta además el valor $p$ de dos colas. La lateralidad se fija
+aquí, antes de ver los datos: la hipótesis del anteproyecto es direccional
+(«reduce la mediana en al menos un 30\%»), lo que justifica la prueba de una
+cola, y con $N$ entre 15 y 25 pares la potencia disponible es limitada. Reportar
+ambos valores evita que la elección de lateralidad se convierta en un grado de
+libertad oculto.
+
+La variable «desempeño a presupuesto reducido» (mejor valor de métrica tras
+quince ensayos), definida en la Sección~4.3.3 del anteproyecto, se reporta como
+medida descriptiva. No forma parte del criterio de confirmación, que la
+Sección~4.3.4 hace depender exclusivamente de los ensayos hasta el objetivo.
+
+\subsection{Análisis secundarios, declarados como tales}
+
+\begin{enumerate}
+  \item \textbf{Estratificado por sensibilidad.} La misma prueba sobre el
+        subconjunto de datasets con IQR $\geq 0{,}02$, etiquetada como secundaria
+        y acompañada de su $N$. Si el subconjunto queda por debajo de diez
+        datasets, se reportan el tamaño del efecto y las medianas sin
+        sobreinterpretar el valor $p$.
+  \item \textbf{Robustez frente a la regla de censura}, según la
+        Sección~\ref{sec:censura}.
+  \item \textbf{Tabla por dataset}, con sensibilidad, margen sobre el pipeline
+        vacío, ensayos hasta el objetivo por semilla y condición, casos
+        censurados y desempeño a quince ensayos. Los datasets planos aparecen en
+        su propia fila con su valor de sensibilidad visible, no promediados
+        dentro de la mediana global.
+\end{enumerate}
+
+Ningún análisis secundario sustituye al primario en la conclusión del proyecto.
+
+\subsection{Análisis exploratorios, no confirmatorios}
+
+Se declaran exploratorios, y por tanto no pueden usarse para sostener la
+hipótesis:
+
+\begin{itemize}
+  \item el análisis de diversidad de los pipelines ganadores de la base de
+        meta-conocimiento (semana 7);
+  \item la ablación con un recomendador aleatorio como control (semana 11);
+  \item cualquier análisis de causas posterior a la observación de los
+        resultados.
+\end{itemize}
+
+Su valor es interpretativo y así se presentan en el informe.
+
+\subsection{Resultado negativo}
+
+Conforme a la mitigación del riesgo RI1 del anteproyecto, si el criterio de la
+Sección~4.3.4 no se alcanza, el resultado se reporta como tal, sin reformular la
+hipótesis ni el umbral. El análisis de causas y la generalización del framework
+constituyen resultados defendibles por sí mismos.
+
+% =========== 7. FUERA DE ALCANCE ============================
+\section{Qué queda fuera de este documento}
+
+\begin{itemize}
+  \item La composición concreta del espacio de búsqueda canónico y su
+        identificador de versión: se congelan en la semana 4 y se registran en
+        v0.2.
+  \item El tope de submuestreo para las meta-características del grupo de
+        complejidad: se fija en v0.2, a partir de la medición de tiempos de la
+        semana 1 y del tamaño real de los datasets del corpus.
+  \item La medición del costo de cómputo y la decisión entre tres y cinco
+        semillas: semana 6, registrada en v0.2.
+  \item La identidad de los datasets del corpus: resultado de aplicar la
+        Sección~\ref{sec:corpus}, registrada en v0.2.
+  \item La incorporación o el descarte del agrupamiento como extensión deseable:
+        se decide en el punto de control de alcance de la semana 7, con los
+        criterios del plan de trabajo, y no afecta el protocolo aquí registrado.
+  \item Todo resultado experimental. Este documento registra reglas, no
+        hallazgos.
+\end{itemize}
+
+% =========== 8. HISTORIAL ===================================
+\section{Historial de versiones}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{1.6cm} L{2.4cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Versión} & \textbf{Fecha} & \textbf{Contenido y motivo} \\
+\midrule
+v0.1 & \preregfecha &
+Versión inicial. Fija el modelo base, la parametrización relativa y el versionado
+del espacio de búsqueda, el procedimiento de cribado de sensibilidad, las
+semillas, la definición del objetivo, el conteo de los ensayos inyectados, la
+regla de censura con su chequeo de robustez y el plan de análisis. Se cierra en
+la semana 1 para que las decisiones queden fechadas el día en que se tomaron. \\
+\midrule
+v0.2 & Semana 5 &
+Pendiente. Añadirá la versión congelada del espacio de búsqueda, el tope de
+submuestreo de meta-características, el costo de cómputo medido con la decisión
+entre tres y cinco semillas, y la identidad del corpus seleccionado. Se cierra
+antes de ejecutar el cribado de sensibilidad. \\
+\midrule
+v1.0 & Semana 9 &
+Pendiente. Versión congelada previa a la ejecución del
+\textit{leave-one-dataset-out}. Se cierra antes de generar cualquier resultado
+experimental. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\end{document}
