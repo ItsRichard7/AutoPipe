@@ -116,6 +116,18 @@
  \texttt{docs/planning-and-preregistration}; no se commitea directo en
  \texttt{develop}.}
 
+\entrada{2026-08-05}{5}
+{Escribí el ADR-001 con el diseño del contrato \texttt{fit/transform} y lo implementé
+ en \texttt{BaseTransform} (\texttt{fit}, \texttt{transform}, \texttt{fit\_transform})
+ y en \texttt{StatefulTransform}, con 30 pruebas nuevas. Suite en 164 pruebas, 97\% de
+ cobertura, \texttt{ruff} limpio y ningún test preexistente modificado.}
+{Hallazgo que cambió el diseño: el espacio de búsqueda comparte instancias de
+ transformación entre candidatos, así que al haber estado hay que clonar el pipeline
+ dentro de \texttt{evaluate\_pipeline}. Deuda detectada: \texttt{mypy} no corre
+ (\texttt{python\_version} 3.10 contra stubs de numpy de 3.12). Pendientes de la
+ Semana 1: los dos spikes (\texttt{enqueue\_trial} y \texttt{pymfe}) y el diseño de
+ la interfaz de tarea.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
