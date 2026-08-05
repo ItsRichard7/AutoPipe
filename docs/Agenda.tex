@@ -1,0 +1,173 @@
+% ============================================================
+%  Agenda / Bitacora de avance - TFG AutoPipe
+%  Autor: Ricardo Antonio Borbon Mena
+%
+%  COMO USAR ESTE ARCHIVO
+%  ----------------------
+%  1. Para registrar un dia, agregue UNA linea al final de la
+%     seccion "Bitacora", con este formato:
+%
+%         \entrada{AAAA-MM-DD}{horas}{que hice}{bloqueos o decisiones}
+%
+%     Ejemplo:
+%         \entrada{2026-08-07}{5}{Implemente el cargador tabular.}{Sin bloqueos.}
+%
+%  2. Las horas admiten decimales: {4.5} es valido.
+%  3. El acumulado de horas se calcula solo; no hay que actualizarlo a mano.
+%  4. Para separar semanas, agregue: \semana{3}{2026-08-17 a 2026-08-23}
+%  5. Compilar con:  pdflatex Agenda.tex   (dos veces si cambia el indice)
+% ============================================================
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[letterpaper,top=2.2cm,bottom=2.2cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xfp}
+\usepackage{fancyhdr}
+
+\definecolor{tecnavy}{HTML}{003366}
+\definecolor{gris}{HTML}{666666}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\renewcommand{\arraystretch}{1.2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textit{AutoPipe}}
+\fancyhead[R]{\small Bitácora de avance}
+\fancyfoot[C]{\thepage}
+
+% --- Presupuesto total del proyecto -------------------------
+\newcommand{\presupuesto}{336}
+
+% --- Acumulador de horas (se actualiza solo) ----------------
+\newcommand{\horasacum}{0}
+
+% --- Una entrada de bitácora --------------------------------
+% #1 fecha  #2 horas  #3 qué hice  #4 bloqueos/decisiones
+\newcommand{\entrada}[4]{%
+  \xdef\horasacum{\fpeval{\horasacum + #2}}%
+  \par\medskip
+  \noindent\textbf{\color{tecnavy}#1}\quad\textbf{#2\,h}%
+  \hfill{\small\color{gris}acumulado: \horasacum\,h / \presupuesto\,h}\par
+  \nopagebreak
+  \noindent\textit{Hice:} #3\par
+  \nopagebreak
+  \noindent\textit{Notas:} #4\par
+}
+
+% --- Separador de semana ------------------------------------
+\newcommand{\semana}[2]{%
+  \par\bigskip
+  \noindent{\large\bfseries\color{tecnavy}Semana #1}\quad{\small\color{gris}#2}\par
+  \vspace{-6pt}\noindent\rule{\textwidth}{0.4pt}\par
+}
+
+% --- Resumen final (se calcula solo) ------------------------
+\newcommand{\resumen}{%
+  \begin{center}
+  \begin{tabular}{@{}lr@{}}
+  \toprule
+  Horas registradas       & \horasacum\,h \\
+  Presupuesto total       & \presupuesto\,h \\
+  Horas restantes         & \fpeval{\presupuesto - \horasacum}\,h \\
+  Porcentaje consumido    & \fpeval{round(100*\horasacum/\presupuesto,1)}\,\% \\
+  \bottomrule
+  \end{tabular}
+  \end{center}
+}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{tecnavy} AutoPipe --- Bitácora de avance}\\[4pt]
+{\small Trabajo Final de Graduación --- Ricardo Antonio Borbón Mena}\\[2pt]
+{\small Presupuesto: \presupuesto\,h (12 semanas $\times$ 28 h/semana)}
+\end{center}
+
+\vspace{6pt}
+
+\section*{Bitácora}
+
+% ============================================================
+%  A partir de aquí: una linea \entrada{}{}{}{} por dia.
+% ============================================================
+
+\semana{1}{2026-08-03 a 2026-08-09 --- E1: análisis y diseño de la generalización}
+
+\entrada{2026-08-04}{6}
+{Verifiqué la línea base del repositorio migrado: 134 pruebas en verde, 97\% de
+ cobertura y \texttt{ruff} sin hallazgos. Leí el anteproyecto completo y elaboré la
+ hoja de ruta de 12 semanas (294\,h comprometidas, 42\,h de reserva). Creé esta
+ bitácora y el pre-registro v0.1 del protocolo experimental.}
+{Cerré cinco decisiones que la Sección~4.3 del anteproyecto no especifica: kNN como
+ modelo base, parametrización fraccional del espacio de búsqueda, 3 semillas por
+ condición, censura en 31 con chequeo de robustez, y Wilcoxon de una cola. Ninguna
+ modifica los criterios de éxito. Trabajo en la rama
+ \texttt{docs/planning-and-preregistration}; no se commitea directo en
+ \texttt{develop}.}
+
+% ------------------------------------------------------------
+%  Agregue las nuevas entradas debajo de esta línea.
+% ------------------------------------------------------------
+
+\newpage
+\section*{Resumen de horas}
+
+\resumen
+
+\subsection*{Horas por semana: plan contra real}
+
+Complete la columna \textit{Real} al cerrar cada semana. La columna \textit{Plan}
+corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
+28\,h semanales de capacidad es la reserva de contingencia.
+
+\begin{center}
+\begin{tabular}{@{}clrrl@{}}
+\toprule
+\textbf{Sem.} & \textbf{Etapas} & \textbf{Plan (h)} & \textbf{Real (h)} & \textbf{Observaciones} \\
+\midrule
+1  & E1                & 26 & --- & \\
+2  & E1, E2            & 26 & --- & \\
+3  & E2, E8            & 26 & --- & \\
+4  & E2, E8            & 25 & --- & Hito: núcleo generalizado \\
+5  & E3, E4, E8        & 25 & --- & \\
+6  & E4, E8            & 25 & --- & \\
+7  & E4, E5, E8        & 24 & --- & Hito: base y control de alcance \\
+8  & E5, E8            & 24 & --- & \\
+9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
+10 & E6, E7, E8        & 22 & --- & \\
+11 & E6, E7, E8        & 22 & --- & \\
+12 & E8                & 21 & --- & Hito: cierre del proyecto \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Total comprometido}} & \textbf{289} & --- & \\
+\multicolumn{2}{@{}l}{\textbf{Reserva de contingencia}} & \textbf{47} & --- & 14\,\% de \presupuesto\,h \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Decisiones abiertas}
+
+Registro corto de decisiones que aún no están cerradas, para no perderlas entre
+entradas diarias. Elimine el ítem cuando la decisión quede tomada (y anótela ese
+día en la bitácora). Las decisiones ya cerradas sobre el protocolo experimental
+viven en \texttt{docs/Preregistro.tex}, no aquí.
+
+\begin{itemize}[leftmargin=1.4em]
+  \item Subir de 3 a 5 semillas por condición: depende del costo de cómputo real
+        medido en la semana 6.
+  \item Tope de submuestreo para las meta-características del grupo de complejidad.
+  \item Entrada o descarte del agrupamiento (\textit{clustering}) en el control de
+        alcance de la semana 7.
+\end{itemize}
+
+\end{document}
