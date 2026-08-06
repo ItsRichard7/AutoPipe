@@ -58,6 +58,7 @@ docs/*.synctex.gz
 docs/*.nav
 docs/*.snm
 docs/*.toc
+docs/Agenda.pdf
 
 # --- OS ---
 .DS_Store
