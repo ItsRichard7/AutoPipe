@@ -234,8 +234,9 @@ class GridSearchEngine:
 
     Attributes:
         search_space (dict): Mapeo de nombre de paso a lista de transformaciones.
+        task (Task): Tarea de aprendizaje que gobierna métricas y predicciones.
         splitter (DataSplitter): Particionador train/validación.
-        metric_calculator (MetricCalculator): Calculador de métricas.
+        metric_calculator: Calculador de métricas de la tarea.
     """
 
     def __init__(
@@ -244,6 +245,7 @@ class GridSearchEngine:
         val_size: float = 0.2,
         random_state: int | None = None,
         threshold: float = 0.5,
+        task: str | Task = DEFAULT_TASK,
     ) -> None:
         """Inicializa el motor de búsqueda en malla.
 
@@ -252,34 +254,40 @@ class GridSearchEngine:
             val_size: Proporción del dataset para validación.
             random_state: Semilla para la partición (reproducibilidad).
             threshold: Umbral para binarizar predicciones continuas.
+            task: Tarea de aprendizaje, por nombre o instancia. Por defecto es la
+                detección de anomalías, por continuidad con la librería base.
         """
         self.search_space = search_space
+        self.task = get_task(task)
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
-        self.metric_calculator = MetricCalculator(threshold=threshold)
+        self.metric_calculator = self.task.build_metric_calculator(threshold)
 
     def run(
         self,
         images: Sequence[np.ndarray],
         labels: np.ndarray,
         base_model: object,
-        metric: str = "auc_roc",
+        metric: str | None = None,
     ) -> tuple[Pipeline, dict, list[dict]]:
         """Ejecuta la búsqueda exhaustiva.
 
         Args:
-            images: Conjunto de imágenes de entrada.
-            labels: Etiquetas binarias del dataset.
+            images: Conjunto de muestras de entrada.
+            labels: Etiquetas del dataset.
             base_model: Modelo base compatible con ``fit``/``predict``.
-            metric: Métrica objetivo a optimizar.
+            metric: Métrica objetivo a optimizar. Si es ``None`` se usa la
+                métrica por defecto de la tarea (``auc_roc`` en detección de
+                anomalías, ``macro_f1`` en clasificación).
 
         Returns:
             Tupla ``(best_pipeline, best_metrics, results)`` con el pipeline
             ganador, sus métricas y la tabla completa de resultados.
 
         Raises:
-            ValueError: Si la métrica no está soportada.
+            ValueError: Si la métrica no está soportada por la tarea.
         """
-        validate_metric(metric)
+        metric = self.task.default_metric if metric is None else metric
+        validate_metric(metric, self.task)
         labels = np.asarray(labels)
         train_idx, val_idx = self.splitter.split(labels)
         pipelines = self._build_pipelines()
@@ -298,6 +306,7 @@ class GridSearchEngine:
                 train_idx,
                 val_idx,
                 self.metric_calculator,
+                self.task,
             )
             results.append(
                 {
@@ -307,7 +316,7 @@ class GridSearchEngine:
                     "objective": objective,
                 }
             )
-            if is_better(objective, best_objective, metric):
+            if is_better(objective, best_objective, metric, self.task):
                 best_pipeline, best_metrics, best_objective = pipeline, metrics, objective
 
         if best_pipeline is None:

@@ -270,6 +270,69 @@ def test_is_better_direction_depends_on_the_task(
 
 
 # --------------------------------------------------------------------------- #
+# Los motores reciben la tarea en el constructor
+# --------------------------------------------------------------------------- #
+@pytest.fixture
+def multiclass_dataset() -> tuple[np.ndarray, np.ndarray]:
+    """Dataset tabular de tres clases, separable por la primera columna."""
+    rng = np.random.default_rng(0)
+    data = np.repeat(np.arange(3.0), 15).reshape(-1, 1) + rng.normal(0, 0.1, size=(45, 1))
+    labels = np.repeat(np.arange(3), 15)
+    return data, labels
+
+
+def test_default_engine_keeps_the_migrated_behaviour(separable_dataset, search_space) -> None:
+    """Sin indicar tarea ni métrica, se comporta como la librería base."""
+    images, labels = separable_dataset
+    engine = GridSearchEngine(search_space, val_size=0.5, random_state=42)
+
+    assert engine.task.name == "anomaly_detection"
+
+    _, best_metrics, _ = engine.run(images, labels, MeanThresholdModel())
+    assert set(best_metrics) == {
+        "auc_roc",
+        "f1",
+        "precision",
+        "recall",
+        "false_positive_rate",
+    }
+
+
+@pytest.mark.parametrize("engine_class", [GridSearchEngine, OptunaSearchEngine])
+def test_engines_accept_a_classification_task(
+    engine_class: type, multiclass_dataset, search_space
+) -> None:
+    """Construido con la tarea de clasificación, el motor optimiza macro-F1."""
+    data, labels = multiclass_dataset
+    engine = engine_class(search_space, val_size=0.4, random_state=42, task="classification")
+
+    _, best_metrics, results = engine.run(data, labels, LogisticRegression(max_iter=200))
+
+    assert engine.task.name == "classification"
+    assert set(best_metrics) == set(CLASSIFICATION.valid_metrics)
+    assert all(set(record["metrics"]) == set(CLASSIFICATION.valid_metrics) for record in results)
+
+
+def test_metric_defaults_to_the_task_default(multiclass_dataset, search_space) -> None:
+    """No indicar métrica equivale a pedir la métrica primaria de la tarea."""
+    data, labels = multiclass_dataset
+    engine = GridSearchEngine(search_space, val_size=0.4, random_state=42, task="classification")
+
+    sin_metrica = engine.run(data, labels, LogisticRegression(max_iter=200))[2]
+    explicita = engine.run(data, labels, LogisticRegression(max_iter=200), metric="macro_f1")[2]
+
+    assert [r["objective"] for r in sin_metrica] == [r["objective"] for r in explicita]
+
+
+def test_engine_rejects_a_metric_of_another_task(multiclass_dataset, search_space) -> None:
+    data, labels = multiclass_dataset
+    engine = GridSearchEngine(search_space, val_size=0.4, random_state=42, task="classification")
+
+    with pytest.raises(ValueError, match="Métrica no soportada"):
+        engine.run(data, labels, LogisticRegression(max_iter=200), metric="auc_roc")
+
+
+# --------------------------------------------------------------------------- #
 # GridSearchEngine
 # --------------------------------------------------------------------------- #
 def test_grid_evaluates_full_cartesian_product(separable_dataset, search_space) -> None:

@@ -5,10 +5,12 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from sklearn.linear_model import LogisticRegression
 
 from autopipe.parallel_runner.runner import ParallelRunner
 from autopipe.pipeline.base import BaseTransform
 from autopipe.pipeline.pipeline import Pipeline
+from autopipe.tasks import CLASSIFICATION
 
 
 class Identity(BaseTransform):
@@ -82,6 +84,45 @@ def test_sequential_mode_n_jobs_1(dataset, pipelines) -> None:
 
     assert len(results) == 2
     assert results[0]["metrics"]["auc_roc"] == 1.0
+
+
+@pytest.fixture
+def multiclass_dataset() -> tuple[np.ndarray, np.ndarray]:
+    """Dataset tabular de tres clases, separable por la primera columna."""
+    rng = np.random.default_rng(0)
+    data = np.repeat(np.arange(3.0), 15).reshape(-1, 1) + rng.normal(0, 0.1, size=(45, 1))
+    labels = np.repeat(np.arange(3), 15)
+    return data, labels
+
+
+def test_classification_task_travels_to_the_worker_processes(
+    multiclass_dataset, pipelines
+) -> None:
+    """La tarea debe sobrevivir al backend ``loky``, que serializa con pickle.
+
+    Se ejecuta con ``n_jobs=2`` a propósito: con un solo proceso la tarea nunca
+    se serializaría y la prueba no verificaría nada.
+    """
+    data, labels = multiclass_dataset
+    runner = ParallelRunner(n_jobs=2, val_size=0.4, random_state=42, task="classification")
+
+    results = runner.run(pipelines, data, labels, LogisticRegression(max_iter=200))
+
+    assert runner.task.name == "classification"
+    assert len(results) == 2
+    for record in results:
+        assert set(record["metrics"]) == set(CLASSIFICATION.valid_metrics)
+
+
+def test_default_runner_keeps_the_migrated_metric_keys(dataset, pipelines) -> None:
+    """Sin indicar tarea, las claves siguen siendo las de detección de anomalías."""
+    images, labels = dataset
+    runner = ParallelRunner(n_jobs=1, val_size=0.5, random_state=42)
+
+    results = runner.run(pipelines, images, labels, MeanThresholdModel())
+
+    assert runner.task.name == "anomaly_detection"
+    assert "auc_roc" in results[0]["metrics"]
 
 
 def test_run_records_runtime(dataset, pipelines) -> None:

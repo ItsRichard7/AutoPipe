@@ -11,10 +11,10 @@ from collections.abc import Sequence
 import numpy as np
 from joblib import Parallel, delayed
 
-from autopipe.evaluator.metrics import MetricCalculator
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.search_engine.grid_search import evaluate_pipeline, validate_metric
+from autopipe.tasks import DEFAULT_TASK, Task, get_task
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +31,9 @@ class ParallelRunner:
     Attributes:
         n_jobs (int): Número de procesos (-1 = todos los núcleos disponibles).
         backend (str): Backend de joblib.
+        task (Task): Tarea de aprendizaje que gobierna métricas y predicciones.
         splitter (DataSplitter): Particionador train/validación.
-        metric_calculator (MetricCalculator): Calculador de métricas.
+        metric_calculator: Calculador de métricas de la tarea.
         last_runtime_ (float | None): Duración de la última llamada a :meth:`run`.
     """
 
@@ -43,6 +44,7 @@ class ParallelRunner:
         val_size: float = 0.2,
         random_state: int | None = None,
         threshold: float = 0.5,
+        task: str | Task = DEFAULT_TASK,
     ) -> None:
         """Inicializa el ejecutor paralelo.
 
@@ -52,11 +54,14 @@ class ParallelRunner:
             val_size: Proporción del dataset para validación.
             random_state: Semilla para la partición (reproducibilidad).
             threshold: Umbral para binarizar predicciones continuas.
+            task: Tarea de aprendizaje, por nombre o instancia. Debe ser
+                serializable con ``pickle`` para viajar a los procesos de trabajo.
         """
         self.n_jobs = n_jobs
         self.backend = backend
+        self.task = get_task(task)
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
-        self.metric_calculator = MetricCalculator(threshold=threshold)
+        self.metric_calculator = self.task.build_metric_calculator(threshold)
         self.last_runtime_: float | None = None
 
     def run(
@@ -65,7 +70,7 @@ class ParallelRunner:
         images: Sequence[np.ndarray],
         labels: np.ndarray,
         base_model: object,
-        metric: str = "auc_roc",
+        metric: str | None = None,
     ) -> list[dict]:
         """Evalúa todos los pipelines en paralelo y devuelve la tabla de resultados.
 
@@ -82,7 +87,8 @@ class ParallelRunner:
         Raises:
             ValueError: Si la métrica no está soportada.
         """
-        validate_metric(metric)
+        metric = self.task.default_metric if metric is None else metric
+        validate_metric(metric, self.task)
         labels = np.asarray(labels)
         train_idx, val_idx = self.splitter.split(labels)
         start = time.perf_counter()
@@ -104,7 +110,7 @@ class ParallelRunner:
         images: Sequence[np.ndarray],
         labels: np.ndarray,
         base_model: object,
-        metric: str = "auc_roc",
+        metric: str | None = None,
     ) -> dict:
         """Compara la ejecución secuencial y paralela y calcula el speedup.
 
@@ -123,7 +129,8 @@ class ParallelRunner:
         Raises:
             ValueError: Si la métrica no está soportada.
         """
-        validate_metric(metric)
+        metric = self.task.default_metric if metric is None else metric
+        validate_metric(metric, self.task)
         labels = np.asarray(labels)
         train_idx, val_idx = self.splitter.split(labels)
 
@@ -192,6 +199,7 @@ class ParallelRunner:
                 train_idx,
                 val_idx,
                 self.metric_calculator,
+                self.task,
             )
             for pipeline in pipelines
         )

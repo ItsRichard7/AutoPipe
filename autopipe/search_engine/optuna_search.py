@@ -12,7 +12,6 @@ import optuna
 from optuna.pruners import MedianPruner
 from optuna.samplers import TPESampler
 
-from autopipe.evaluator.metrics import MetricCalculator
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.base import BaseTransform
 from autopipe.pipeline.pipeline import Pipeline
@@ -20,7 +19,7 @@ from autopipe.search_engine.grid_search import (
     evaluate_pipeline_safe,
     validate_metric,
 )
-from autopipe.tasks.anomaly import MINIMIZE_METRICS
+from autopipe.tasks import DEFAULT_TASK, Task, get_task
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +39,9 @@ class OptunaSearchEngine:
         search_space (dict): Mapeo de nombre de paso a lista de transformaciones.
         n_trials (int): Número de pruebas de optimización.
         seed (int | None): Semilla del sampler.
+        task (Task): Tarea de aprendizaje que gobierna métricas y predicciones.
         splitter (DataSplitter): Particionador train/validación.
-        metric_calculator (MetricCalculator): Calculador de métricas.
+        metric_calculator: Calculador de métricas de la tarea.
     """
 
     def __init__(
@@ -51,6 +51,7 @@ class OptunaSearchEngine:
         val_size: float = 0.2,
         random_state: int | None = None,
         threshold: float = 0.5,
+        task: str | Task = DEFAULT_TASK,
     ) -> None:
         """Inicializa el motor de búsqueda con Optuna.
 
@@ -60,40 +61,45 @@ class OptunaSearchEngine:
             val_size: Proporción del dataset para validación.
             random_state: Semilla del sampler y de la partición (reproducibilidad).
             threshold: Umbral para binarizar predicciones continuas.
+            task: Tarea de aprendizaje, por nombre o instancia. Por defecto es la
+                detección de anomalías, por continuidad con la librería base.
         """
         self.search_space = search_space
         self.n_trials = n_trials
         self.seed = random_state
+        self.task = get_task(task)
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
-        self.metric_calculator = MetricCalculator(threshold=threshold)
+        self.metric_calculator = self.task.build_metric_calculator(threshold)
 
     def run(
         self,
         images: Sequence[np.ndarray],
         labels: np.ndarray,
         base_model: object,
-        metric: str = "auc_roc",
+        metric: str | None = None,
     ) -> tuple[Pipeline, dict, list[dict]]:
         """Ejecuta la búsqueda con Optuna.
 
         Args:
-            images: Conjunto de imágenes de entrada.
-            labels: Etiquetas binarias del dataset.
+            images: Conjunto de muestras de entrada.
+            labels: Etiquetas del dataset.
             base_model: Modelo base compatible con ``fit``/``predict``.
-            metric: Métrica objetivo a optimizar.
+            metric: Métrica objetivo a optimizar. Si es ``None`` se usa la
+                métrica por defecto de la tarea.
 
         Returns:
             Tupla ``(best_pipeline, best_metrics, results)`` con el pipeline
             ganador, sus métricas y la tabla completa de resultados.
 
         Raises:
-            ValueError: Si la métrica no está soportada.
+            ValueError: Si la métrica no está soportada por la tarea.
         """
-        validate_metric(metric)
+        metric = self.task.default_metric if metric is None else metric
+        validate_metric(metric, self.task)
         labels = np.asarray(labels)
         train_idx, val_idx = self.splitter.split(labels)
         keys = list(self.search_space)
-        direction = "minimize" if metric in MINIMIZE_METRICS else "maximize"
+        direction = "minimize" if self.task.is_minimized(metric) else "maximize"
         results: list[dict] = []
 
         def objective(trial: optuna.Trial) -> float:
@@ -114,6 +120,7 @@ class OptunaSearchEngine:
                 train_idx,
                 val_idx,
                 self.metric_calculator,
+                self.task,
             )
             trial.set_user_attr("metrics", metrics)
             results.append(
