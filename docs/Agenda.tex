@@ -2,6 +2,13 @@
 %  Agenda / Bitacora de avance - TFG AutoPipe
 %  Autor: Ricardo Antonio Borbon Mena
 %
+%  ESTRUCTURA
+%  ----------
+%  1. "Hoja de ruta": el cronograma planificado de las 12
+%     semanas (trabajo, horas y entregable RE). Es el PLAN.
+%  2. "Bitacora": el trabajo realmente realizado, dia por dia.
+%  3. "Resumen de horas": acumulado y plan contra real.
+%
 %  COMO USAR ESTE ARCHIVO
 %  ----------------------
 %  1. Para registrar un dia, agregue UNA linea al final de la
@@ -28,7 +35,10 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tabularx}
 \usepackage{enumitem}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \usepackage{xfp}
 \usepackage{fancyhdr}
 
@@ -72,6 +82,16 @@
   \vspace{-6pt}\noindent\rule{\textwidth}{0.4pt}\par
 }
 
+% --- Encabezado de una semana de la hoja de ruta -------------
+% #1 número  #2 etapas y título  #3 horas comprometidas  #4 reserva
+\newcommand{\rutasemana}[4]{%
+  \par\medskip
+  \noindent{\bfseries\color{tecnavy}Semana #1}\quad{\small #2}\hfill
+  {\small\color{gris}#3\,h comprometidas, reserva #4\,h}\par
+  \vspace{-4pt}\noindent\rule{\textwidth}{0.4pt}\par
+  \vspace{-2pt}
+}
+
 % --- Cierre de semana ---------------------------------------
 % #1 número de semana  #2 horas reales  #3 horas planificadas  #4 nota
 \newcommand{\cierresemana}[4]{%
@@ -107,6 +127,144 @@
 
 \vspace{6pt}
 
+\section*{Hoja de ruta}
+
+Cronograma planificado de las doce semanas, derivado del anteproyecto (etapas E1--E8 y
+entregables RE1--RE7). En cada semana: el trabajo, las horas estimadas y el entregable
+al que contribuye. La diferencia entre las horas comprometidas y las 28\,h semanales de
+capacidad es la reserva de contingencia.
+
+Esta sección es el \emph{plan}. Lo que realmente ocurrió se registra en la
+\textbf{Bitácora}, más abajo.
+
+\rutasemana{1}{E1 --- Diseño del contrato y spikes de viabilidad}{27}{1}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Auditoría de acoplamiento a imágenes y anomalías & 4 & RE1 \\
+Diseño del contrato \texttt{fit/transform} (ADR-001) & 7 & RE1, RE2 \\
+Pre-registro v0.1 del protocolo experimental & 1 & RE6 \\
+Spike A: \texttt{optuna.enqueue\_trial} & 5 & RE5 \\
+Spike B: \texttt{pymfe} & 5 & RE3 \\
+Diseño de la interfaz de tarea (ADR-002) & 3 & RE1 \\
+Bitácora y rama de trabajo & 2 & --- \\
+\end{tabularx}
+
+\rutasemana{2}{E1 cierre y E2 inicio --- Núcleo agnóstico}{26}{2}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Implementar ADR-002: \texttt{tasks/}, las dos tareas, el calculador de métricas de
+clasificación y el parámetro \texttt{task} en los tres consumidores & 7 & RE1 \\
+\texttt{Pipeline.fit}, \texttt{transform} y \texttt{fit\_transform} con ajuste
+secuencial & 3 & RE1 \\
+Refactor de \texttt{evaluate\_pipeline}: ajuste solo con entrenamiento y clonado del
+pipeline & 6 & RE1 \\
+Prueba anti-fuga a nivel de protocolo y prueba de contaminación entre candidatos
+& 4 & RE1 \\
+Criterios de inclusión del corpus y lista candidata de datasets & 4 & RE4 \\
+Regresión y linter en verde tras cada paso & 2 & RE1 \\
+\end{tabularx}
+
+\rutasemana{3}{E2 y E8 --- Soporte de datos tabulares}{22}{6}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+\texttt{TabularDataLoader} y sus pruebas & 8 & RE2 \\
+Transformaciones tabulares con estado: escalado, imputación y codificación & 11 & RE2 \\
+Inicio de la documentación técnica & 3 & RE7 \\
+\end{tabularx}
+
+\rutasemana{4}{E2 cierre --- Hito: núcleo generalizado}{25}{3}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Selección de características expresada en fracción de columnas & 4 & RE2 \\
+Espacio de búsqueda tabular canónico y versionado; API de usuario en 20 líneas
+& 6 & RE1, RE5 \\
+Cobertura de al menos 70\% en los módulos nuevos y prueba anti-fuga tabular
+& 7 & RE1, RE2 \\
+Verificación de no-regresión completa y ejecución de punta a punta con imágenes
+& 3 & RE1 \\
+Documentación del núcleo y notebook tabular & 5 & RE7 \\
+\end{tabularx}
+
+\rutasemana{5}{E3 y E4 inicio --- Meta-características}{27}{1}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Extractor de meta-características sobre \texttt{pymfe}: grupos fijos, manejo de
+valores no finitos, submuestreo y cacheo & 11 & RE3 \\
+Pruebas del extractor: consistencia, determinismo y cobertura & 5 & RE3 \\
+Descarga y saneamiento del corpus; ficha por dataset & 6 & RE4 \\
+Cribado de sensibilidad al preprocesamiento & 4 & RE4 \\
+Pre-registro v0.2 & 1 & RE6 \\
+\end{tabularx}
+
+\rutasemana{6}{E4 --- Base de meta-conocimiento}{25}{3}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Esquema de la base: meta-características, pipeline ganador, métrica, semilla y versión
+del espacio & 5 & RE4 \\
+Harness de construcción: 50 ensayos por dataset, paralelo, cacheado y reanudable
+& 10 & RE4 \\
+Ejecución sobre el corpus completo y medición de tiempos reales & 5 & RE4 \\
+Pruebas del harness: completitud y reproducibilidad & 3 & RE4 \\
+Documentación & 2 & RE7 \\
+\end{tabularx}
+
+\rutasemana{7}{E4 cierre y E5 inicio --- Hitos: base y control de alcance}{25}{3}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Validación de la base: completitud y reproducibilidad & 4 & RE4 \\
+Análisis exploratorio de la diversidad de los pipelines ganadores & 3 & RE4 \\
+Recomendador por vecinos más cercanos, con normalización ajustada por pliegue
+& 8 & RE5 \\
+Integración del arranque en caliente en el motor Optuna & 6 & RE5 \\
+Control de alcance: decisión documentada sobre el agrupamiento & 2 & --- \\
+Documentación & 2 & RE7 \\
+\end{tabularx}
+
+\rutasemana{8}{E5 --- Recomendador meta-aprendido}{24}{4}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Estrategias de recomendación y sus pruebas & 9 & RE5 \\
+Validación de las configuraciones contra la versión del espacio & 6 & RE5 \\
+Evaluación preliminar sobre datasets retenidos & 5 & RE5 \\
+Cobertura, linter y verificación de tipos & 2 & RE5 \\
+Documentación & 2 & RE7 \\
+\end{tabularx}
+
+\rutasemana{9}{E5 cierre y E6 inicio --- Hito: recomendador funcional}{23}{5}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Cierre del recomendador: API pública y documentación & 3 & RE5 \\
+Pre-registro v1.0, congelado antes de ejecutar cualquier experimento & 4 & RE6 \\
+Harness de validación dejando un dataset fuera: pliegues, semillas y curvas por ensayo
+& 11 & RE6 \\
+Pruebas del harness con un corpus sintético de juguete & 4 & RE6 \\
+Documentación & 1 & RE7 \\
+\end{tabularx}
+
+\rutasemana{10}{E6 ejecución y E7 --- Experimentos y reportes}{22}{6}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Ejecución completa de arranque en frío contra arranque en caliente & 6 & RE6 \\
+Análisis estadístico: prueba de Wilcoxon, medianas y robustez de la censura
+& 5 & RE6 \\
+Reportes comparativos: extensión del generador de reportes & 7 & RE6 \\
+Redacción de resultados & 4 & RE7 \\
+\end{tabularx}
+
+\rutasemana{11}{E6 y E7 cierre --- Validación y análisis}{23}{5}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Verificación de generalización por tarea: caso completo de anomalías en imágenes
+& 7 & RE6 \\
+Análisis de causas y ablación con recomendador aleatorio & 6 & RE6 \\
+Análisis estratificado por sensibilidad al preprocesamiento & 1 & RE6 \\
+Reportes finales y reproducibilidad de punta a punta & 5 & RE6 \\
+Redacción de resultados y discusión & 4 & RE7 \\
+\end{tabularx}
+
+\rutasemana{12}{E8 --- Documentación y entrega}{21}{7}
+\begin{tabularx}{\textwidth}{@{}Yrl@{}}
+Documentación técnica, manual de uso y README & 7 & RE7 \\
+Verificación con evidencia de los criterios de éxito de ingeniería & 5 & RE7 \\
+Informe final & 6 & RE7 \\
+Revisión con el profesor tutor y ajustes & 3 & RE7 \\
+\end{tabularx}
+
+\vspace{0.6em}
+\noindent\rule{\textwidth}{0.4pt}\par
+\noindent\textbf{Total planificado:} 290\,h comprometidas y 46\,h de reserva, sobre una
+capacidad de \presupuesto\,h. El colchón es del 13,7\%.
+
+\newpage
 \section*{Bitácora}
 
 % ============================================================
@@ -152,9 +310,23 @@
  nada. La auditoría encontró además dos funciones que fallan en silencio cuando hay más
  de dos clases; el ADR-002 lo evita agrupándolas junto con las métricas.}
 
-\cierresemana{1}{20}{26}{Etapa E1 completa: los siete puntos de la semana quedaron
- cerrados. Se adelantó además trabajo de la semana 2 (el contrato \texttt{fit/transform}
+\cierresemana{1}{20}{27}{Los siete puntos de la semana quedaron cerrados. La etapa E1 no
+ termina aquí: abarca las semanas 1 y 2, y se cierra con los criterios de inclusión del
+ corpus. Se adelantó además trabajo de la semana 2 (el contrato \texttt{fit/transform}
  ya implementado y probado). Las horas son estimadas, no medidas con cronómetro.}
+
+\semana{2}{2026-08-10 a 2026-08-16 --- E1 cierre y E2 inicio: núcleo agnóstico}
+
+\entrada{2026-08-10}{5}
+{Implementé el registro de tareas: el módulo \texttt{autopipe/tasks/} con las dos tareas
+ (detección de anomalías y clasificación) y el calculador de métricas macro. Moví las
+ funciones de anomalías fuera del motor de búsqueda para que no quedaran duplicadas.
+ Añadí también a este documento la hoja de ruta de las doce semanas.}
+{Las cuatro decisiones que dependen de la tarea quedaron en una sola estructura, que es
+ lo que evita el fallo silencioso con multiclase que encontró la auditoría. Los motores
+ todavía no usan el registro: eso va junto con el refactor de
+ \texttt{evaluate\_pipeline}, para no tocar dos veces la función más delicada del
+ núcleo. Suite en 193 pruebas y 98\% de cobertura.}
 
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
@@ -176,21 +348,21 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 \toprule
 \textbf{Sem.} & \textbf{Etapas} & \textbf{Plan (h)} & \textbf{Real (h)} & \textbf{Observaciones} \\
 \midrule
-1  & E1                & 26 & 20 & E1 completa \\
+1  & E1                & 27 & 20 & 7 de 7 puntos cerrados \\
 2  & E1, E2            & 26 & --- & \\
-3  & E2, E8            & 26 & --- & \\
+3  & E2, E8            & 22 & --- & \\
 4  & E2, E8            & 25 & --- & Hito: núcleo generalizado \\
-5  & E3, E4, E8        & 25 & --- & \\
+5  & E3, E4, E8        & 27 & --- & \\
 6  & E4, E8            & 25 & --- & \\
-7  & E4, E5, E8        & 24 & --- & Hito: base y control de alcance \\
+7  & E4, E5, E8        & 25 & --- & Hito: base y control de alcance \\
 8  & E5, E8            & 24 & --- & \\
 9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
 10 & E6, E7, E8        & 22 & --- & \\
-11 & E6, E7, E8        & 22 & --- & \\
+11 & E6, E7, E8        & 23 & --- & \\
 12 & E8                & 21 & --- & Hito: cierre del proyecto \\
 \midrule
-\multicolumn{2}{@{}l}{\textbf{Total comprometido}} & \textbf{289} & --- & \\
-\multicolumn{2}{@{}l}{\textbf{Reserva de contingencia}} & \textbf{47} & --- & 14\,\% de \presupuesto\,h \\
+\multicolumn{2}{@{}l}{\textbf{Total comprometido}} & \textbf{290} & --- & \\
+\multicolumn{2}{@{}l}{\textbf{Reserva de contingencia}} & \textbf{46} & --- & 13,7\% de \presupuesto\,h \\
 \bottomrule
 \end{tabular}
 \end{center}
