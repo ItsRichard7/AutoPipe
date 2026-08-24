@@ -72,6 +72,17 @@
   \vspace{-6pt}\noindent\rule{\textwidth}{0.4pt}\par
 }
 
+% --- Cierre de semana ---------------------------------------
+% #1 número de semana  #2 horas reales  #3 horas planificadas  #4 nota
+\newcommand{\cierresemana}[4]{%
+  \par\medskip
+  \noindent\rule{\textwidth}{0.4pt}\par
+  \vspace{-2pt}
+  \noindent{\bfseries\color{tecnavy}Cierre de la semana #1.}\quad
+  #2\,h reales frente a #3\,h planificadas.\par
+  \noindent{\small\color{gris}#4}\par
+}
+
 % --- Resumen final (se calcula solo) ------------------------
 \newcommand{\resumen}{%
   \begin{center}
@@ -128,15 +139,22 @@
  Semana 1: los dos spikes (\texttt{enqueue\_trial} y \texttt{pymfe}) y el diseño de
  la interfaz de tarea.}
 
-\entrada{2026-08-06}{6}
-{Corrí los dos spikes que faltaban de la semana 1. El de Optuna comprobó que el
- arranque en caliente funciona como suponíamos. El de pymfe midió cuánto cuesta
- extraer las meta-características y dónde falla.}
-{Tomé dos decisiones: \texttt{n\_startup\_trials} queda en 10, con un análisis de
- sensibilidad a 5; y las medidas de complejidad se calculan sobre una muestra fija de
- 500 filas, porque de otro modo los datasets no son comparables entre sí. El hallazgo
- que más pesa: una recomendación mala puede ser peor que no recomendar nada. Para
- cerrar la etapa E1 falta el diseño de la interfaz de tarea.}
+\entrada{2026-08-06}{9}
+{Corrí los dos spikes que faltaban: el de Optuna comprobó que el arranque en caliente
+ funciona como suponíamos, y el de pymfe midió cuánto cuesta extraer las
+ meta-características y dónde falla. Preparé la presentación y el guion del video de
+ propuesta para el tutor. Cerré la etapa E1 con la auditoría de acoplamiento y el
+ diseño de la interfaz de tarea (ADR-002, aprobado).}
+{Dos decisiones salidas de los spikes: \texttt{n\_startup\_trials} queda en 10, con un
+ análisis de sensibilidad a 5; y las medidas de complejidad se calculan sobre una
+ muestra fija de 500 filas, porque de otro modo los datasets no son comparables entre
+ sí. El hallazgo que más pesa: una recomendación mala puede ser peor que no recomendar
+ nada. La auditoría encontró además dos funciones que fallan en silencio cuando hay más
+ de dos clases; el ADR-002 lo evita agrupándolas junto con las métricas.}
+
+\cierresemana{1}{20}{26}{Etapa E1 completa: los siete puntos de la semana quedaron
+ cerrados. Se adelantó además trabajo de la semana 2 (el contrato \texttt{fit/transform}
+ ya implementado y probado). Las horas son estimadas, no medidas con cronómetro.}
 
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
@@ -158,7 +176,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 \toprule
 \textbf{Sem.} & \textbf{Etapas} & \textbf{Plan (h)} & \textbf{Real (h)} & \textbf{Observaciones} \\
 \midrule
-1  & E1                & 26 & --- & \\
+1  & E1                & 26 & 20 & E1 completa \\
 2  & E1, E2            & 26 & --- & \\
 3  & E2, E8            & 26 & --- & \\
 4  & E2, E8            & 25 & --- & Hito: núcleo generalizado \\
