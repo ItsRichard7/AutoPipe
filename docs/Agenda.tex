@@ -128,6 +128,16 @@
  Semana 1: los dos spikes (\texttt{enqueue\_trial} y \texttt{pymfe}) y el diseño de
  la interfaz de tarea.}
 
+\entrada{2026-08-06}{6}
+{Corrí los dos spikes que faltaban de la semana 1. El de Optuna comprobó que el
+ arranque en caliente funciona como suponíamos. El de pymfe midió cuánto cuesta
+ extraer las meta-características y dónde falla.}
+{Tomé dos decisiones: \texttt{n\_startup\_trials} queda en 10, con un análisis de
+ sensibilidad a 5; y las medidas de complejidad se calculan sobre una muestra fija de
+ 500 filas, porque de otro modo los datasets no son comparables entre sí. El hallazgo
+ que más pesa: una recomendación mala puede ser peor que no recomendar nada. Para
+ cerrar la etapa E1 falta el diseño de la interfaz de tarea.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
@@ -177,7 +187,6 @@ viven en \texttt{docs/Preregistro.tex}, no aquí.
 \begin{itemize}[leftmargin=1.4em]
   \item Subir de 3 a 5 semillas por condición: depende del costo de cómputo real
         medido en la semana 6.
-  \item Tope de submuestreo para las meta-características del grupo de complejidad.
   \item Entrada o descarte del agrupamiento (\textit{clustering}) en el control de
         alcance de la semana 7.
 \end{itemize}
