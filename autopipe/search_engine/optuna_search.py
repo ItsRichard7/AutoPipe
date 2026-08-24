@@ -17,10 +17,10 @@ from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.base import BaseTransform
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.search_engine.grid_search import (
-    MINIMIZE_METRICS,
     evaluate_pipeline_safe,
     validate_metric,
 )
+from autopipe.tasks.anomaly import MINIMIZE_METRICS
 
 logger = logging.getLogger(__name__)
 

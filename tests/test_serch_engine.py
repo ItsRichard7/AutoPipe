@@ -7,12 +7,20 @@ import math
 
 import numpy as np
 import pytest
+from sklearn.linear_model import LogisticRegression
 
-from autopipe.pipeline.base import BaseTransform
+from autopipe.evaluator.metrics import MetricCalculator
+from autopipe.pipeline.base import BaseTransform, Dataset, StatefulTransform
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.pipeline.transforms import Resize
-from autopipe.search_engine.grid_search import GridSearchEngine
+from autopipe.search_engine.grid_search import (
+    GridSearchEngine,
+    evaluate_pipeline,
+    evaluate_pipeline_safe,
+    is_better,
+)
 from autopipe.search_engine.optuna_search import OptunaSearchEngine
+from autopipe.tasks import CLASSIFICATION
 
 
 class Identity(BaseTransform):
@@ -68,6 +76,197 @@ def separable_dataset() -> tuple[np.ndarray, np.ndarray]:
 @pytest.fixture
 def search_space() -> dict:
     return {"step": [Identity(), Zeroer()]}
+
+
+class RecordingCenterer(StatefulTransform):
+    """Centra por columna y **recuerda** con qué datos fue ajustada.
+
+    Sirve para verificar que el ajuste ocurre solo con el subconjunto de
+    entrenamiento y que un candidato no contamina al siguiente.
+    """
+
+    def __init__(self) -> None:
+        self.seen_: np.ndarray | None = None
+        self.fit_count = 0
+
+    def _fit(self, X: Dataset, y: np.ndarray | None = None) -> None:
+        self.seen_ = np.asarray(X, dtype=float).copy()
+        self.mean_ = np.asarray(X, dtype=float).mean(axis=0)
+        self.fit_count += 1
+
+    def _transform(self, X: Dataset) -> Dataset:
+        return np.asarray(X, dtype=float) - self.mean_
+
+    def get_params(self) -> dict:
+        return {}
+
+
+class MeanRegressorModel:
+    """Modelo mock determinista que predice según la media de cada fila."""
+
+    def fit(self, features: np.ndarray, labels: np.ndarray) -> "MeanRegressorModel":
+        self.threshold_ = float(np.mean(features))
+        return self
+
+    def predict(self, features: np.ndarray) -> np.ndarray:
+        return (features.mean(axis=1) >= self.threshold_).astype(int)
+
+
+# --------------------------------------------------------------------------- #
+# evaluate_pipeline: ajuste solo con entrenamiento y aislamiento de candidatos
+# --------------------------------------------------------------------------- #
+def _tabular_dataset() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Dataset donde entrenamiento y validación tienen escalas muy distintas."""
+    data = np.array([[0.0], [10.0], [1000.0], [1010.0]])
+    labels = np.array([0, 1, 0, 1])
+    return data, labels, np.array([0, 1]), np.array([2, 3])
+
+
+def test_pipeline_is_fitted_only_with_the_training_subset() -> None:
+    """Prueba anti-fuga a nivel de protocolo.
+
+    La transformación con estado debe ver **solo** las filas de entrenamiento.
+    Si el ajuste ocurriera sobre el dataset completo, ``seen_`` tendría cuatro
+    filas y las estadísticas de validación se habrían filtrado.
+    """
+    data, labels, train_idx, val_idx = _tabular_dataset()
+    centerer = RecordingCenterer()
+
+    evaluate_pipeline(
+        Pipeline([centerer]),
+        data,
+        labels,
+        MeanRegressorModel(),
+        "auc_roc",
+        train_idx,
+        val_idx,
+        MetricCalculator(),
+    )
+
+    # El pipeline se clona, así que la instancia original nunca se ajusta.
+    assert centerer.fit_count == 0
+    assert centerer.seen_ is None
+
+
+def test_the_fitted_clone_only_saw_training_rows() -> None:
+    """Verifica sobre el clon que el ajuste usó únicamente el entrenamiento."""
+    data, labels, train_idx, val_idx = _tabular_dataset()
+    pipeline = Pipeline([RecordingCenterer()])
+    fitted: list[RecordingCenterer] = []
+
+    original_fit = RecordingCenterer._fit
+
+    def spy(self: RecordingCenterer, X: Dataset, y: np.ndarray | None = None) -> None:
+        original_fit(self, X, y)
+        fitted.append(self)
+
+    RecordingCenterer._fit = spy  # type: ignore[method-assign]
+    try:
+        evaluate_pipeline(
+            pipeline, data, labels, MeanRegressorModel(), "auc_roc",
+            train_idx, val_idx, MetricCalculator(),
+        )
+    finally:
+        RecordingCenterer._fit = original_fit  # type: ignore[method-assign]
+
+    assert len(fitted) == 1
+    np.testing.assert_allclose(fitted[0].seen_, data[train_idx])
+
+
+def test_candidates_sharing_an_instance_do_not_contaminate_each_other() -> None:
+    """Prueba de contaminación entre candidatos.
+
+    Los motores construyen cada candidato tomando instancias del espacio de
+    búsqueda, de modo que la misma transformación aparece en varios pipelines.
+    Evaluar dos candidatos que comparten una instancia debe dar el mismo
+    resultado que evaluarlos por separado. Sin el clonado, el estado del primero
+    se arrastraría al segundo.
+    """
+    data, labels, train_idx, val_idx = _tabular_dataset()
+    compartida = RecordingCenterer()
+
+    def evaluar(pipeline: Pipeline) -> float:
+        valor, _ = evaluate_pipeline(
+            pipeline, data, labels, MeanRegressorModel(), "auc_roc",
+            train_idx, val_idx, MetricCalculator(),
+        )
+        return valor
+
+    en_secuencia = [evaluar(Pipeline([compartida])), evaluar(Pipeline([compartida]))]
+    aislados = [
+        evaluar(Pipeline([RecordingCenterer()])),
+        evaluar(Pipeline([RecordingCenterer()])),
+    ]
+
+    assert en_secuencia == aislados
+    assert compartida.fit_count == 0
+
+
+def test_evaluate_pipeline_accepts_a_list_of_samples() -> None:
+    """El conjunto de entrada puede ser una lista y no solo un arreglo."""
+    data = [np.array([0.0]), np.array([10.0]), np.array([1000.0]), np.array([1010.0])]
+    labels = np.array([0, 1, 0, 1])
+
+    valor, metrics = evaluate_pipeline(
+        Pipeline([RecordingCenterer()]), data, labels, MeanRegressorModel(),
+        "auc_roc", np.array([0, 1]), np.array([2, 3]), MetricCalculator(),
+    )
+
+    assert set(metrics) == {"auc_roc", "f1", "precision", "recall", "false_positive_rate"}
+
+
+# --------------------------------------------------------------------------- #
+# evaluate_pipeline con tarea de clasificación
+# --------------------------------------------------------------------------- #
+def test_evaluate_pipeline_uses_the_requested_task() -> None:
+    """Con la tarea de clasificación, las métricas y las claves son las suyas."""
+    rng = np.random.default_rng(0)
+    data = rng.normal(size=(40, 3))
+    labels = rng.integers(0, 4, 40)
+
+    valor, metrics = evaluate_pipeline(
+        Pipeline([]),
+        data,
+        labels,
+        LogisticRegression(max_iter=200),
+        "macro_f1",
+        np.arange(0, 30),
+        np.arange(30, 40),
+        CLASSIFICATION.build_metric_calculator(0.5),
+        task="classification",
+    )
+
+    assert set(metrics) == set(CLASSIFICATION.valid_metrics)
+    assert valor == metrics["macro_f1"]
+
+
+def test_failed_evaluation_returns_the_metric_keys_of_the_task() -> None:
+    """Un candidato inevaluable devuelve NaN en las claves de **su** tarea."""
+    imagenes = [np.zeros((4, 4)), np.zeros((6, 6)), np.zeros((4, 4)), np.zeros((6, 6))]
+    labels = np.array([0, 1, 0, 1])
+
+    valor, metrics = evaluate_pipeline_safe(
+        Pipeline([Identity()]), imagenes, labels, MeanThresholdModel(), "macro_f1",
+        np.array([0, 1]), np.array([2, 3]),
+        CLASSIFICATION.build_metric_calculator(0.5), task="classification",
+    )
+
+    assert math.isnan(valor)
+    assert set(metrics) == set(CLASSIFICATION.valid_metrics)
+
+
+@pytest.mark.parametrize(
+    ("metric", "task", "esperado"),
+    [
+        ("false_positive_rate", None, True),
+        ("auc_roc", None, False),
+        ("macro_f1", "classification", False),
+    ],
+)
+def test_is_better_direction_depends_on_the_task(
+    metric: str, task: str | None, esperado: bool
+) -> None:
+    assert is_better(0.1, 0.9, metric, task) is esperado
 
 
 # --------------------------------------------------------------------------- #
