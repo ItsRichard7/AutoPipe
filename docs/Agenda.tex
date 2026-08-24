@@ -340,6 +340,19 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  una sola pasada el ajuste solo con entrenamiento, el clonado del pipeline y las llamadas
  dependientes de la tarea.}
 
+\entrada{2026-08-12}{6}
+{Refactoricé \texttt{evaluate\_pipeline}, que era el cambio más delicado de la semana:
+ ahora el pipeline se ajusta solo con el subconjunto de entrenamiento, se clona antes de
+ ajustarse, y las métricas y predicciones dependen de la tarea. Nueve pruebas nuevas,
+ entre ellas la anti-fuga a nivel de protocolo y la de contaminación entre candidatos.}
+{El cambio se propagó a \texttt{evaluate\_pipeline\_safe}, \texttt{is\_better} y
+ \texttt{validate\_metric}, que decidían con constantes globales de anomalías. Las cuatro
+ aceptan la tarea como parámetro opcional y resuelven a anomalías cuando no se indica,
+ así que nada existente se rompe: los tests migrados afirman valores numéricos concretos
+ y siguen en verde, lo que demuestra que el refactor no alteró ningún resultado. Suite en
+ 211 pruebas y 98\% de cobertura. Falta conectar el parámetro de tarea en los dos motores
+ y en \texttt{ParallelRunner}.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
