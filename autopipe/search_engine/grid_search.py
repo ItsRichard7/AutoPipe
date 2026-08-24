@@ -16,11 +16,14 @@ from autopipe.evaluator.metrics import MetricCalculator
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.base import BaseTransform
 from autopipe.pipeline.pipeline import Pipeline
+from autopipe.tasks.anomaly import (
+    MINIMIZE_METRICS,
+    VALID_METRICS,
+    normalize_predictions,
+    predict_scores,
+)
 
 logger = logging.getLogger(__name__)
-
-VALID_METRICS = ("auc_roc", "f1", "precision", "recall", "false_positive_rate")
-MINIMIZE_METRICS = ("false_positive_rate",)
 
 
 def _transform_to_matrix(pipeline: Pipeline, images: Sequence[np.ndarray]) -> np.ndarray:
@@ -35,51 +38,6 @@ def _transform_to_matrix(pipeline: Pipeline, images: Sequence[np.ndarray]) -> np
     """
     rows = [np.asarray(pipeline.apply(image)).ravel() for image in images]
     return np.vstack(rows)
-
-
-def _normalize_predictions(raw: np.ndarray) -> np.ndarray:
-    """Normaliza las predicciones del modelo a etiquetas binarias {0, 1}.
-
-    Soporta la convención de scikit-learn para detección de anomalías
-    (``-1`` = anomalía, ``1`` = normal) y etiquetas {0, 1}; cualquier otro
-    valor se binariza con umbral 0.5.
-
-    Args:
-        raw: Predicciones crudas del modelo.
-
-    Returns:
-        Arreglo de enteros con valores en {0, 1} (1 = anomalía).
-    """
-    raw = np.asarray(raw)
-    unique = set(np.unique(raw).tolist())
-    if unique <= {0, 1}:
-        return raw.astype(int)
-    if unique <= {-1, 1}:
-        return (raw == -1).astype(int)
-    return (raw >= 0.5).astype(int)
-
-
-def _predict_scores(model: object, features: np.ndarray) -> np.ndarray | None:
-    """Obtiene puntajes de anomalía continuos del modelo para el AUC-ROC.
-
-    Prioriza ``predict_proba`` (clasificadores), luego ``score_samples`` y
-    ``decision_function`` (detectores de anomalías, cuyo signo se invierte para
-    que un valor mayor indique mayor anomalía).
-
-    Args:
-        model: Modelo base ya entrenado.
-        features: Matriz de características de validación.
-
-    Returns:
-        Arreglo de puntajes, o ``None`` si el modelo no expone ninguno.
-    """
-    if hasattr(model, "predict_proba"):
-        return np.asarray(model.predict_proba(features))[:, 1]
-    if hasattr(model, "score_samples"):
-        return -np.asarray(model.score_samples(features))
-    if hasattr(model, "decision_function"):
-        return -np.asarray(model.decision_function(features))
-    return None
 
 
 def evaluate_pipeline(
@@ -115,8 +73,8 @@ def evaluate_pipeline(
     features = _transform_to_matrix(pipeline, images)
     model = copy.deepcopy(base_model)
     model.fit(features[train_idx], labels[train_idx])
-    predictions = _normalize_predictions(model.predict(features[val_idx]))
-    scores = _predict_scores(model, features[val_idx])
+    predictions = normalize_predictions(model.predict(features[val_idx]))
+    scores = predict_scores(model, features[val_idx])
     metrics = metric_calculator.calculate(labels[val_idx], predictions, scores)
     return metrics[metric], metrics
 
