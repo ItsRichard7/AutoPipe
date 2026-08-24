@@ -315,6 +315,19 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  corpus. Se adelantó además trabajo de la semana 2 (el contrato \texttt{fit/transform}
  ya implementado y probado). Las horas son estimadas, no medidas con cronómetro.}
 
+\semana{2}{2026-08-10 a 2026-08-16 --- E1 cierre y E2 inicio: núcleo agnóstico}
+
+\entrada{2026-08-10}{5}
+{Implementé el registro de tareas: el módulo \texttt{autopipe/tasks/} con las dos tareas
+ (detección de anomalías y clasificación) y el calculador de métricas macro. Moví las
+ funciones de anomalías fuera del motor de búsqueda para que no quedaran duplicadas.
+ Añadí también a este documento la hoja de ruta de las doce semanas.}
+{Las cuatro decisiones que dependen de la tarea quedaron en una sola estructura, que es
+ lo que evita el fallo silencioso con multiclase que encontró la auditoría. Los motores
+ todavía no usan el registro: eso va junto con el refactor de
+ \texttt{evaluate\_pipeline}, para no tocar dos veces la función más delicada del
+ núcleo. Suite en 193 pruebas y 98\% de cobertura.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
