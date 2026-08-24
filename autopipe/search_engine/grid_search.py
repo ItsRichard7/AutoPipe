@@ -14,30 +14,54 @@ import numpy as np
 
 from autopipe.evaluator.metrics import MetricCalculator
 from autopipe.evaluator.splitter import DataSplitter
-from autopipe.pipeline.base import BaseTransform
+from autopipe.pipeline.base import BaseTransform, Dataset
 from autopipe.pipeline.pipeline import Pipeline
-from autopipe.tasks.anomaly import (
-    MINIMIZE_METRICS,
-    VALID_METRICS,
-    normalize_predictions,
-    predict_scores,
-)
+from autopipe.tasks import DEFAULT_TASK, Task, get_task
 
 logger = logging.getLogger(__name__)
 
 
-def _transform_to_matrix(pipeline: Pipeline, images: Sequence[np.ndarray]) -> np.ndarray:
-    """Aplica un pipeline a cada imagen y las aplana en una matriz de características.
+def _resolve_task(task: str | Task | None) -> Task:
+    """Resuelve la tarea, usando la de continuidad cuando no se especifica.
 
     Args:
-        pipeline: Pipeline de transformaciones a aplicar.
-        images: Conjunto de imágenes de entrada.
+        task: Nombre de la tarea, una instancia, o ``None``.
 
     Returns:
-        Matriz de forma ``(n_imágenes, n_características)``.
+        La tarea resuelta; :data:`~autopipe.tasks.DEFAULT_TASK` si es ``None``.
     """
-    rows = [np.asarray(pipeline.apply(image)).ravel() for image in images]
-    return np.vstack(rows)
+    return DEFAULT_TASK if task is None else get_task(task)
+
+
+def _select(data: Dataset, indices: np.ndarray) -> Dataset:
+    """Selecciona un subconjunto de muestras conservando el tipo del contenedor.
+
+    Args:
+        data: Conjunto completo de muestras.
+        indices: Índices de las muestras a seleccionar.
+
+    Returns:
+        El subconjunto, como arreglo si la entrada era un arreglo y como lista
+        en caso contrario.
+    """
+    if isinstance(data, np.ndarray):
+        return data[indices]
+    return [data[index] for index in indices]
+
+
+def _to_feature_matrix(samples: Dataset) -> np.ndarray:
+    """Aplana cada muestra y las apila en una matriz de características.
+
+    Para datos tabulares cada muestra ya es unidimensional y el aplanado no
+    tiene efecto, de modo que la misma función sirve a ambas modalidades.
+
+    Args:
+        samples: Muestras ya transformadas.
+
+    Returns:
+        Matriz de forma ``(n_muestras, n_características)``.
+    """
+    return np.vstack([np.asarray(sample).ravel() for sample in samples])
 
 
 def evaluate_pipeline(
@@ -49,32 +73,52 @@ def evaluate_pipeline(
     train_idx: np.ndarray,
     val_idx: np.ndarray,
     metric_calculator: MetricCalculator,
+    task: str | Task | None = None,
 ) -> tuple[float, dict]:
-    """Evalúa un pipeline entrenando una copia del modelo base.
+    """Evalúa un pipeline ajustándolo únicamente con el subconjunto de entrenamiento.
 
-    El modelo base se clona con ``copy.deepcopy`` para que cada pipeline se
-    evalúe sobre un modelo sin entrenar e idéntico, preservando la
-    reproducibilidad.
+    El pipeline se **clona** antes de ajustarse. Los motores de búsqueda
+    construyen cada candidato tomando instancias del espacio de búsqueda, de modo
+    que la misma transformación aparece en muchos candidatos; sin el clonado, una
+    transformación con estado contaminaría a los candidatos siguientes y habría
+    además una condición de carrera bajo el backend ``loky``.
+
+    El modelo base se clona por la misma razón: cada pipeline se evalúa sobre un
+    modelo sin entrenar e idéntico, lo que preserva la reproducibilidad.
+
+    El ajuste del pipeline se realiza **solo con ``train_idx``**. Ajustarlo con
+    el dataset completo filtraría hacia el entrenamiento las estadísticas del
+    subconjunto de validación (véase ``docs/adr/ADR-001-contrato-fit-transform.md``).
 
     Args:
-        pipeline: Pipeline a evaluar.
-        images: Conjunto de imágenes de entrada.
-        labels: Etiquetas binarias del dataset.
+        pipeline: Pipeline a evaluar. No se modifica: se clona internamente.
+        images: Conjunto de muestras de entrada.
+        labels: Etiquetas del dataset.
         base_model: Modelo base compatible con la interfaz ``fit``/``predict``.
         metric: Nombre de la métrica objetivo.
         train_idx: Índices de entrenamiento.
         val_idx: Índices de validación.
-        metric_calculator: Calculador de métricas.
+        metric_calculator: Calculador de métricas, que debe provenir de la misma
+            tarea que se pasa en ``task``.
+        task: Tarea de aprendizaje, por nombre o instancia. Si es ``None`` se usa
+            la detección de anomalías, por continuidad con la librería base.
 
     Returns:
         Tupla ``(valor_objetivo, métricas)`` con el valor de la métrica objetivo
         y el diccionario completo de métricas.
     """
-    features = _transform_to_matrix(pipeline, images)
+    resolved = _resolve_task(task)
+    fitted = copy.deepcopy(pipeline)
+
+    train_features = _to_feature_matrix(
+        fitted.fit_transform(_select(images, train_idx), labels[train_idx])
+    )
+    val_features = _to_feature_matrix(fitted.transform(_select(images, val_idx)))
+
     model = copy.deepcopy(base_model)
-    model.fit(features[train_idx], labels[train_idx])
-    predictions = normalize_predictions(model.predict(features[val_idx]))
-    scores = predict_scores(model, features[val_idx])
+    model.fit(train_features, labels[train_idx])
+    predictions = resolved.normalize_predictions(model.predict(val_features))
+    scores = resolved.predict_scores(model, val_features)
     metrics = metric_calculator.calculate(labels[val_idx], predictions, scores)
     return metrics[metric], metrics
 
@@ -88,6 +132,7 @@ def evaluate_pipeline_safe(
     train_idx: np.ndarray,
     val_idx: np.ndarray,
     metric_calculator: MetricCalculator,
+    task: str | Task | None = None,
 ) -> tuple[float, dict]:
     """Evalúa un pipeline tolerando fallos de evaluación.
 
@@ -100,38 +145,54 @@ def evaluate_pipeline_safe(
 
     Args:
         pipeline: Pipeline a evaluar.
-        images: Conjunto de imágenes de entrada.
-        labels: Etiquetas binarias del dataset.
+        images: Conjunto de muestras de entrada.
+        labels: Etiquetas del dataset.
         base_model: Modelo base compatible con ``fit``/``predict``.
         metric: Nombre de la métrica objetivo.
         train_idx: Índices de entrenamiento.
         val_idx: Índices de validación.
         metric_calculator: Calculador de métricas.
+        task: Tarea de aprendizaje, por nombre o instancia.
 
     Returns:
         Tupla ``(valor_objetivo, métricas)``; ambas con ``NaN`` si el pipeline
-        no se pudo evaluar.
+        no se pudo evaluar. Las claves del diccionario son las de la tarea.
     """
     try:
         return evaluate_pipeline(
-            pipeline, images, labels, base_model, metric, train_idx, val_idx, metric_calculator
+            pipeline,
+            images,
+            labels,
+            base_model,
+            metric,
+            train_idx,
+            val_idx,
+            metric_calculator,
+            task,
         )
     except (ValueError, cv2.error) as exc:
         logger.warning("El pipeline %r no se pudo evaluar: %s", pipeline, exc)
         nan = float("nan")
-        return nan, {name: nan for name in VALID_METRICS}
+        return nan, {name: nan for name in _resolve_task(task).valid_metrics}
 
 
-def is_better(candidate: float, current: float | None, metric: str) -> bool:
+def is_better(
+    candidate: float,
+    current: float | None,
+    metric: str,
+    task: str | Task | None = None,
+) -> bool:
     """Indica si ``candidate`` mejora al mejor valor actual para la métrica dada.
 
-    Para ``false_positive_rate`` un valor menor es mejor; para el resto un valor
-    mayor es mejor. Los valores ``NaN`` nunca se consideran mejores.
+    La dirección de la mejora la decide la tarea: en detección de anomalías un
+    valor menor es mejor para ``false_positive_rate`` y mayor para el resto. Los
+    valores ``NaN`` nunca se consideran mejores.
 
     Args:
         candidate: Valor candidato de la métrica.
         current: Mejor valor actual, o ``None`` si aún no hay ninguno.
         metric: Nombre de la métrica objetivo.
+        task: Tarea de aprendizaje, por nombre o instancia.
 
     Returns:
         ``True`` si el candidato mejora al actual.
@@ -140,24 +201,23 @@ def is_better(candidate: float, current: float | None, metric: str) -> bool:
         return False
     if current is None or math.isnan(current):
         return True
-    if metric in MINIMIZE_METRICS:
+    if _resolve_task(task).is_minimized(metric):
         return candidate < current
     return candidate > current
 
 
-def validate_metric(metric: str) -> None:
-    """Valida que la métrica objetivo esté soportada.
+def validate_metric(metric: str, task: str | Task | None = None) -> None:
+    """Valida que la métrica objetivo esté soportada por la tarea.
 
     Args:
         metric: Nombre de la métrica objetivo.
+        task: Tarea de aprendizaje, por nombre o instancia. Si es ``None`` se
+            valida contra las métricas de detección de anomalías.
 
     Raises:
-        ValueError: Si la métrica no está en :data:`VALID_METRICS`.
+        ValueError: Si la métrica no pertenece a las de la tarea.
     """
-    if metric not in VALID_METRICS:
-        raise ValueError(
-            f"Métrica no soportada: {metric!r}. Use una de {VALID_METRICS}."
-        )
+    _resolve_task(task).validate_metric(metric)
 
 
 class GridSearchEngine:
