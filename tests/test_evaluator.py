@@ -9,8 +9,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from sklearn.metrics import f1_score
 
-from autopipe.evaluator.metrics import MetricCalculator
+from autopipe.evaluator.metrics import ClassificationMetricCalculator, MetricCalculator
 from autopipe.evaluator.splitter import DataSplitter
 
 
@@ -183,3 +184,62 @@ def test_single_class_auc_is_nan(caplog: pytest.LogCaptureFixture) -> None:
     assert math.isnan(metrics["auc_roc"])
     assert metrics["recall"] == pytest.approx(0.75)
     assert any("AUC-ROC" in record.message for record in caplog.records)
+
+
+# --------------------------------------------------------------------------- #
+# ClassificationMetricCalculator
+# --------------------------------------------------------------------------- #
+def test_classification_metrics_expose_the_expected_keys() -> None:
+    metrics = ClassificationMetricCalculator().calculate(
+        np.array([0, 1, 2]), np.array([0, 1, 2])
+    )
+
+    assert set(metrics) == {
+        "macro_f1",
+        "accuracy",
+        "balanced_accuracy",
+        "macro_precision",
+        "macro_recall",
+    }
+
+
+def test_perfect_multiclass_prediction_scores_one() -> None:
+    labels = np.array([0, 1, 2, 3, 4, 0, 1, 2, 3, 4])
+    metrics = ClassificationMetricCalculator().calculate(labels, labels)
+
+    assert all(value == pytest.approx(1.0) for value in metrics.values())
+
+
+def test_macro_f1_matches_scikit_learn() -> None:
+    y_true = np.array([0, 0, 1, 1, 2, 2, 3, 3])
+    y_pred = np.array([0, 1, 1, 2, 2, 3, 3, 0])
+    metrics = ClassificationMetricCalculator().calculate(y_true, y_pred)
+
+    assert metrics["macro_f1"] == pytest.approx(
+        f1_score(y_true, y_pred, average="macro", zero_division=0)
+    )
+
+
+def test_macro_average_weights_every_class_equally() -> None:
+    """En un problema desbalanceado, acertar solo la clase mayoritaria no basta.
+
+    La exactitud queda alta y el macro-F1 bajo: es la razón por la que el
+    anteproyecto fija macro-F1 como métrica primaria de clasificación.
+    """
+    y_true = np.array([0] * 9 + [1])
+    y_pred = np.array([0] * 10)
+    metrics = ClassificationMetricCalculator().calculate(y_true, y_pred)
+
+    assert metrics["accuracy"] == pytest.approx(0.9)
+    assert metrics["macro_f1"] < 0.5
+
+
+def test_classification_metrics_ignore_the_score_argument() -> None:
+    y_true = np.array([0, 1, 2])
+    y_pred = np.array([0, 1, 1])
+    calculator = ClassificationMetricCalculator()
+
+    sin_score = calculator.calculate(y_true, y_pred)
+    con_score = calculator.calculate(y_true, y_pred, y_score=np.array([0.1, 0.2, 0.3]))
+
+    assert sin_score == con_score

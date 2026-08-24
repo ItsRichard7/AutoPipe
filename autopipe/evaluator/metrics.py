@@ -1,5 +1,5 @@
 # autopipe/evaluator/metrics.py
-"""Cálculo de métricas de evaluación para detección de anomalías."""
+"""Cálculo de métricas de evaluación por tarea de aprendizaje."""
 
 from __future__ import annotations
 
@@ -7,6 +7,8 @@ import logging
 
 import numpy as np
 from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
     confusion_matrix,
     f1_score,
     precision_score,
@@ -106,3 +108,51 @@ class MetricCalculator:
             )
             return float("nan")
         return float(roc_auc_score(y_true, scores))
+
+
+class ClassificationMetricCalculator:
+    """Calcula métricas macro de clasificación, binaria o multiclase.
+
+    Expone la misma forma de llamada que :class:`MetricCalculator`
+    (``calculate(y_true, y_pred, y_score=None) -> dict``), de modo que los
+    motores de búsqueda no distinguen entre una y otra.
+
+    A diferencia de la detección de anomalías, aquí las predicciones son
+    **etiquetas de clase** y se usan tal cual: no se binarizan ni se reinterpretan.
+    Las métricas se promedian con ``average="macro"``, que pesa todas las clases
+    por igual con independencia de su frecuencia, conforme a la métrica primaria
+    de clasificación fijada en el anteproyecto.
+    """
+
+    def calculate(
+        self,
+        y_true: np.ndarray,
+        y_pred: np.ndarray,
+        y_score: np.ndarray | None = None,
+    ) -> dict:
+        """Calcula las métricas de clasificación.
+
+        Args:
+            y_true: Etiquetas verdaderas de clase.
+            y_pred: Etiquetas de clase predichas por el modelo.
+            y_score: Ignorado. Existe por uniformidad con
+                :meth:`MetricCalculator.calculate`; ninguna de las métricas
+                macro requiere puntajes continuos.
+
+        Returns:
+            Diccionario con las claves ``macro_f1``, ``accuracy``,
+            ``balanced_accuracy``, ``macro_precision`` y ``macro_recall``.
+        """
+        y_true = np.asarray(y_true)
+        y_pred = np.asarray(y_pred)
+        return {
+            "macro_f1": float(f1_score(y_true, y_pred, average="macro", zero_division=0)),
+            "accuracy": float(accuracy_score(y_true, y_pred)),
+            "balanced_accuracy": float(balanced_accuracy_score(y_true, y_pred)),
+            "macro_precision": float(
+                precision_score(y_true, y_pred, average="macro", zero_division=0)
+            ),
+            "macro_recall": float(
+                recall_score(y_true, y_pred, average="macro", zero_division=0)
+            ),
+        }
