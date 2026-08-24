@@ -328,6 +328,18 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{evaluate\_pipeline}, para no tocar dos veces la función más delicada del
  núcleo. Suite en 193 pruebas y 98\% de cobertura.}
 
+\entrada{2026-08-11}{3}
+{Implementé \texttt{fit}, \texttt{transform} y \texttt{fit\_transform} en
+ \texttt{Pipeline}, con ajuste secuencial: cada paso se ajusta sobre la salida del paso
+ anterior. Nueve pruebas nuevas, entre ellas la anti-fuga a nivel de pipeline.}
+{Es lo único correcto al encadenar transformaciones con estado, porque lo que un
+ escalador aprende depende de lo que hicieron los pasos previos. Decisión de eficiencia:
+ \texttt{fit} ajusta el último paso pero no lo transforma, porque esa salida se
+ descartaría y sobre imágenes el costo no es despreciable. Suite en 202 pruebas y 98\% de
+ cobertura. Lo siguiente es el refactor de \texttt{evaluate\_pipeline}, que absorbe en
+ una sola pasada el ajuste solo con entrenamiento, el clonado del pipeline y las llamadas
+ dependientes de la tarea.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
