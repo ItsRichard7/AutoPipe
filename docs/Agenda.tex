@@ -353,6 +353,18 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  211 pruebas y 98\% de cobertura. Falta conectar el parámetro de tarea en los dos motores
  y en \texttt{ParallelRunner}.}
 
+\entrada{2026-08-13}{3}
+{Conecté la tarea en los tres consumidores: los dos motores de búsqueda y el ejecutor
+ paralelo. Ahora se elige con un parámetro del constructor y todo lo demás se deriva de
+ ella. Siete pruebas nuevas. Con esto el núcleo agnóstico (RE1) queda completo.}
+{La métrica objetivo pasa a ser opcional: si no se indica, se usa la de la tarea. Para el
+ código existente no cambia nada, porque la métrica por defecto de anomalías es la misma
+ que estaba escrita; y construir el motor con clasificación optimiza macro-F1 sin decir
+ nada más. La prueba que más pesa corre el ejecutor con dos procesos, para verificar que
+ la tarea sobrevive a la serialización de \texttt{loky}. Detecté además que
+ \texttt{n\_startup\_trials} debe fijarse antes de la semana 6, no en la 7 como dice el
+ cronograma: la construcción del corpus usa el mismo motor.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
