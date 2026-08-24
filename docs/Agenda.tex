@@ -365,6 +365,24 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{n\_startup\_trials} debe fijarse antes de la semana 6, no en la 7 como dice el
  cronograma: la construcción del corpus usa el mismo motor.}
 
+\entrada{2026-08-14}{4}
+{Fijé los criterios de inclusión del corpus y generé la lista candidata con un script
+ reproducible que consulta OpenML. Partí de la suite curada CC18 (72 datasets) y apliqué
+ los criterios del anteproyecto: quedan 52 candidatos, con las fichas de cada uno.}
+{Hallazgo importante: hay familias de datasets que comparten origen. Los cuatro
+ \texttt{mfeat-*} son cuatro representaciones de las \textbf{mismas} 2\,000 instancias, así que
+ incluir varias rompería la independencia entre pliegues del protocolo y inflaría la
+ ventaja del arranque en caliente. Propongo una regla de un dataset por familia, para
+ recoger en el pre-registro v0.2. La cobertura de diversidad que exige el pre-registro se
+ cumple con holgura. Con esto cierra la etapa E1.}
+
+\cierresemana{2}{21}{26}{Núcleo agnóstico (RE1) completo: contrato \texttt{fit/transform},
+ registro de tareas, refactor del protocolo de evaluación con ajuste solo con
+ entrenamiento, y tarea seleccionable en los tres consumidores. Etapa E1 cerrada con los
+ criterios del corpus. Suite en 218 pruebas y 98\% de cobertura. Pendientes que arrastro:
+ fijar \texttt{n\_startup\_trials} antes de la semana 6 y arreglar la configuración de
+ \texttt{mypy}.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
@@ -386,7 +404,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 \textbf{Sem.} & \textbf{Etapas} & \textbf{Plan (h)} & \textbf{Real (h)} & \textbf{Observaciones} \\
 \midrule
 1  & E1                & 27 & 20 & 7 de 7 puntos cerrados \\
-2  & E1, E2            & 26 & --- & \\
+2  & E1, E2            & 26 & 21 & RE1 completo, E1 cerrada \\
 3  & E2, E8            & 22 & --- & \\
 4  & E2, E8            & 25 & --- & Hito: núcleo generalizado \\
 5  & E3, E4, E8        & 27 & --- & \\
