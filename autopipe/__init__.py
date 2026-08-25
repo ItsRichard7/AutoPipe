@@ -24,15 +24,19 @@ from autopipe.parallel_runner import ParallelRunner
 from autopipe.pipeline import (
     BaseTransform,
     CLAHETransform,
+    EncodeCategorical,
     GammaCorrection,
     GaussianBlur,
     GrayscaleConversion,
+    ImputeMissing,
     MedianFilter,
     Normalize,
     NotFittedError,
     Pipeline,
     Resize,
+    ScaleNumeric,
     StatefulTransform,
+    TabularTransform,
 )
 from autopipe.reporter import ReportGenerator
 from autopipe.search_engine import GridSearchEngine, OptunaSearchEngine
@@ -66,6 +70,10 @@ __all__ = [
     "MedianFilter",
     "GammaCorrection",
     "GrayscaleConversion",
+    "TabularTransform",
+    "ImputeMissing",
+    "ScaleNumeric",
+    "EncodeCategorical",
     "GridSearchEngine",
     "OptunaSearchEngine",
     "ParallelRunner",

@@ -13,10 +13,20 @@ Public API:
     MedianFilter     built-in median filter transform
     GammaCorrection  built-in gamma correction transform
     GrayscaleConversion  built-in RGB-to-grayscale transform
+    TabularTransform     base class for stateful tabular transforms
+    ImputeMissing        fills missing values with a statistic learned on train
+    ScaleNumeric         scales numeric columns with statistics learned on train
+    EncodeCategorical    encodes categorical columns with categories seen on train
 """
 
 from autopipe.pipeline.base import BaseTransform, NotFittedError, StatefulTransform
 from autopipe.pipeline.pipeline import Pipeline
+from autopipe.pipeline.tabular_transforms import (
+    EncodeCategorical,
+    ImputeMissing,
+    ScaleNumeric,
+    TabularTransform,
+)
 from autopipe.pipeline.transforms import (
     CLAHETransform,
     GammaCorrection,
@@ -39,4 +49,8 @@ __all__ = [
     "MedianFilter",
     "GammaCorrection",
     "GrayscaleConversion",
+    "TabularTransform",
+    "ImputeMissing",
+    "ScaleNumeric",
+    "EncodeCategorical",
 ]
