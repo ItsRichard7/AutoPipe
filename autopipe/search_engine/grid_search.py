@@ -33,34 +33,66 @@ def _resolve_task(task: str | Task | None) -> Task:
     return DEFAULT_TASK if task is None else get_task(task)
 
 
+def _es_tabla(data: object) -> bool:
+    """Indica si el objeto es una tabla con indexación posicional tipo pandas.
+
+    Se comprueba por capacidades y no por tipo para que este módulo no tenga que
+    importar pandas: el soporte tabular es opcional y las transformaciones de
+    imagen no lo necesitan.
+
+    Args:
+        data: Objeto a inspeccionar.
+
+    Returns:
+        ``True`` si expone ``iloc`` y ``to_numpy``.
+    """
+    return hasattr(data, "iloc") and hasattr(data, "to_numpy")
+
+
 def _select(data: Dataset, indices: np.ndarray) -> Dataset:
     """Selecciona un subconjunto de muestras conservando el tipo del contenedor.
 
     Args:
         data: Conjunto completo de muestras.
-        indices: Índices de las muestras a seleccionar.
+        indices: Índices posicionales de las muestras a seleccionar.
 
     Returns:
-        El subconjunto, como arreglo si la entrada era un arreglo y como lista
-        en caso contrario.
+        El subconjunto: filas de la tabla si la entrada era una tabla, un arreglo
+        si era un arreglo, y una lista en cualquier otro caso.
     """
+    if _es_tabla(data):
+        return data.iloc[indices]
     if isinstance(data, np.ndarray):
         return data[indices]
     return [data[index] for index in indices]
 
 
 def _to_feature_matrix(samples: Dataset) -> np.ndarray:
-    """Aplana cada muestra y las apila en una matriz de características.
+    """Convierte las muestras transformadas en una matriz numérica.
 
-    Para datos tabulares cada muestra ya es unidimensional y el aplanado no
-    tiene efecto, de modo que la misma función sirve a ambas modalidades.
+    Una tabla se convierte de una vez, porque recorrerla daría sus columnas y no
+    sus filas. En los demás casos se aplana cada muestra y se apilan: para datos
+    tabulares ya numéricos cada fila es unidimensional y el aplanado no tiene
+    efecto, de modo que la misma función sirve a ambas modalidades.
 
     Args:
-        samples: Muestras ya transformadas.
+        samples: Muestras ya transformadas por el pipeline.
 
     Returns:
         Matriz de forma ``(n_muestras, n_características)``.
+
+    Raises:
+        ValueError: Si una tabla conserva columnas no numéricas, lo que indica
+            que al pipeline le falta un paso de codificación.
     """
+    if _es_tabla(samples):
+        try:
+            return samples.to_numpy(dtype=float)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "La tabla transformada conserva columnas no numéricas; el pipeline "
+                "necesita un paso de codificación antes de entrenar el modelo."
+            ) from exc
     return np.vstack([np.asarray(sample).ravel() for sample in samples])
 
 

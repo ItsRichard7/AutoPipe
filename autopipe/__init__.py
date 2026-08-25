@@ -14,7 +14,7 @@ Main modules:
 __version__ = "0.1.0"
 __author__ = "Ricardo Antonio Borbón Mena"
 
-from autopipe.data_loader import ImageDataLoader
+from autopipe.data_loader import ImageDataLoader, TabularDataLoader
 from autopipe.evaluator import (
     ClassificationMetricCalculator,
     DataSplitter,
@@ -46,6 +46,7 @@ from autopipe.tasks import (
 
 __all__ = [
     "ImageDataLoader",
+    "TabularDataLoader",
     "DataSplitter",
     "MetricCalculator",
     "ClassificationMetricCalculator",
