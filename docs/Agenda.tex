@@ -383,6 +383,23 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  fijar \texttt{n\_startup\_trials} antes de la semana 6 y arreglar la configuración de
  \texttt{mypy}.}
 
+\semana{3}{2026-08-17 a 2026-08-23 --- E2 y E8: soporte de datos tabulares}
+
+\entrada{2026-08-17}{5}
+{Implementé el \texttt{TabularDataLoader}: carga desde CSV o desde una tabla en memoria,
+ separa la etiqueta, la codifica a enteros y reporta qué columnas son numéricas y cuáles
+ categóricas. Veintidós pruebas nuevas, una de ellas recorriendo el protocolo de
+ evaluación completo.}
+{Decisión que gobierna todo lo que viene: el cargador devuelve una tabla y no una matriz
+ numérica. Es lo que permite que las transformaciones detecten solas qué columnas son
+ categóricas; si el tipo de columna hubiera que pasarlo como parámetro, el espacio de
+ búsqueda dependería del dataset y las configuraciones dejarían de ser transferibles, que
+ es justo lo que el arranque en caliente necesita. Dos helpers del núcleo aprendieron a
+ tratar tablas, detectándolas por capacidades y no por tipo para que el camino de imágenes
+ no tenga que importar pandas. Declaré pandas en \texttt{pyproject.toml}. Incidente: un
+ \texttt{git pull} falló porque OneDrive tenía bloqueado un archivo; verifiqué que los
+ restos coincidían con lo commiteado antes de limpiarlos.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
