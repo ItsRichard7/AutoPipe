@@ -19,6 +19,7 @@ dependencies = [
     "Pillow>=10.0",
     # Numerical / data
     "numpy>=1.26",
+    "pandas>=2.0",       # tabular datasets (TabularDataLoader, tabular transforms)
     # ML models interface
     "scikit-learn>=1.4",
     # Hyperparameter search

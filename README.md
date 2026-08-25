@@ -1,24 +1,32 @@
 # AutoPipe
 
-**Automatic Pipeline Selection for Anomaly Detection in Image Datasets**
+**Task-agnostic Automatic Preprocessing Pipeline Selection**
 
-AutoPipe is a Python library that automates the selection of preprocessing pipelines for image anomaly detection. Given a dataset and a base anomaly detection model, it searches over a configurable space of image transformations (noise reduction, contrast enhancement, normalization, resizing, etc.), evaluates combinations in parallel, and returns the best-performing pipeline along with a reproducible report.
+AutoPipe is a Python library that automates the selection of preprocessing pipelines for machine learning. Given a dataset, a learning task and a base model, it searches over a configurable space of transformations, evaluates combinations in parallel, and returns the best-performing pipeline along with a reproducible report.
 
-The library **does not train or implement the base model** — it consumes any model exposing a scikit-learn–style `fit`/`predict` interface (e.g. `IsolationForest`, `OneClassSVM`) or a PyTorch model.
+Two task families are supported today:
 
-> Developed as part of CE-1114 – Proyecto de Aplicación de la Ingeniería en Computadores,
-> Instituto Tecnológico de Costa Rica, I Semester 2026.
+- **Anomaly detection** on image datasets (the original scope, preserved unchanged).
+- **Classification**, binary or multiclass, on tabular datasets.
+
+The library **does not train or implement the base model** — it consumes any model exposing a scikit-learn–style `fit`/`predict` interface (e.g. `KNeighborsClassifier`, `IsolationForest`, `OneClassSVM`) or a PyTorch model.
+
+> Started as CE-1114 – Proyecto de Aplicación de la Ingeniería en Computadores
+> (I Semester 2026) and currently being extended as a Graduation Project (TFG),
+> Instituto Tecnológico de Costa Rica.
 
 ---
 
 ## Features
 
-- Modular pipeline definition via `BaseTransform` subclasses
-- Built-in transforms: `GaussianBlur`, `Normalize`, `Resize`, `CLAHETransform`, `MedianFilter`
+- Modular pipeline definition via `BaseTransform` subclasses, with optional `fit`/`transform` semantics for **stateful** transforms
+- Built-in image transforms: `GaussianBlur`, `Normalize`, `Resize`, `CLAHETransform`, `MedianFilter`, `GammaCorrection`, `GrayscaleConversion`
+- Built-in tabular transforms: `ImputeMissing`, `ScaleNumeric`, `EncodeCategorical`
+- Pluggable **learning tasks**: metrics, optimization direction and prediction handling travel together, selected with a single constructor argument
 - Automatic pipeline search with **Grid Search** or **Bayesian optimization** (Optuna, TPE + median pruning)
 - Every step is also tried as **skipped** automatically, so the search can drop transforms that hurt performance (skipped steps simply don't appear in the winning pipeline or its saved config)
 - Parallel evaluation with `joblib` (loky backend, Windows-safe), with measured speedup
-- Configurable metrics: AUC-ROC, F1-score, precision, recall, false positive rate
+- **No data leakage**: pipelines are fitted on the training subset only, and cloned per candidate so stateful transforms cannot contaminate each other
 - Reproducible results: same seed ⇒ same winning pipeline; winning config saved as JSON/YAML and re-runnable
 - Report generation: **HTML always**, **PDF optional** (pdfkit + wkhtmltopdf, tolerant if the binary is missing)
 
@@ -42,9 +50,42 @@ source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-## Quick Start
+## Quick Start — tabular classification
 
-The whole high-level flow takes fewer than 20 lines and requires no knowledge of the internals:
+The whole high-level flow takes fewer than 20 statements and requires no knowledge of the internals. This snippet is a condensed version of [`examples/tabular_quickstart.py`](examples/tabular_quickstart.py), which is executed by the test suite:
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+from autopipe import (
+    EncodeCategorical, GridSearchEngine, ImputeMissing, ScaleNumeric, TabularDataLoader,
+)
+
+# 1. Load the dataset (a CSV path or an in-memory DataFrame; last column is the target)
+features, labels = TabularDataLoader("path/to/dataset.csv").load()
+
+# 2. Define the preprocessing search space (one option list per step, in pipeline order)
+search_space = {
+    "imputation": [ImputeMissing("mean"), ImputeMissing("median")],
+    "encoding": [EncodeCategorical("onehot"), EncodeCategorical("ordinal")],
+    "scaling": [ScaleNumeric("standard"), ScaleNumeric("minmax")],
+}
+
+# 3. Run the search. The task drives metrics, so macro-F1 is used by default.
+engine = GridSearchEngine(search_space, random_state=42, task="classification")
+best_pipeline, metrics, results = engine.run(
+    features, labels, base_model=KNeighborsClassifier(n_neighbors=5),
+)
+
+print(f"Best pipeline: {best_pipeline}")
+print(f"macro-F1: {metrics['macro_f1']:.4f}")
+```
+
+Transforms are fitted **on the training subset only**, so no statistic from the validation subset can leak into the training data.
+
+## Quick Start — image anomaly detection
+
+The original flow is unchanged:
 
 ```python
 from sklearn.ensemble import IsolationForest
@@ -136,14 +177,17 @@ pipeline = ReportGenerator.rebuild_pipeline(config)   # built-in transforms only
 ```
 AutoPipe/
 ├── autopipe/          # main package
-│   ├── data_loader/     # ImageDataLoader
-│   ├── pipeline/        # BaseTransform, transforms, Pipeline
+│   ├── data_loader/     # ImageDataLoader, TabularDataLoader
+│   ├── pipeline/        # BaseTransform, StatefulTransform, transforms, Pipeline
+│   ├── tasks/           # Task registry: anomaly detection, classification
 │   ├── search_engine/   # GridSearchEngine, OptunaSearchEngine
-│   ├── evaluator/       # DataSplitter, MetricCalculator
+│   ├── evaluator/       # DataSplitter, metric calculators
 │   ├── parallel_runner/ # ParallelRunner
 │   └── reporter/        # ReportGenerator
 ├── tests/
 ├── examples/
+├── scripts/           # reproducible utilities (corpus candidate listing)
+├── spikes/            # feasibility experiments
 ├── docs/
 └── configs/
 ```
@@ -164,22 +208,45 @@ pytest --cov-report=html
 > Note: the `coverage` C-tracer is currently incompatible with NumPy on Python 3.14.
 > Use Python 3.12 (or 3.10/3.11) for the test suite.
 
-## Supported Metrics
+## Supported Tasks and Metrics
+
+The task is selected with the `task` argument of `GridSearchEngine`, `OptunaSearchEngine` and `ParallelRunner`. It defaults to `"anomaly_detection"`, so existing code keeps its behaviour. If `metric` is omitted, the task's primary metric is used.
+
+### `anomaly_detection` (default)
 
 | Metric | Key |
 |---|---|
-| AUC-ROC | `auc_roc` |
+| AUC-ROC (primary) | `auc_roc` |
 | F1-score | `f1` |
 | Precision | `precision` |
 | Recall | `recall` |
 | False Positive Rate | `false_positive_rate` |
 
-All metrics are maximized during search except `false_positive_rate`, which is minimized.
+All are maximized except `false_positive_rate`, which is minimized.
+
+### `classification`
+
+| Metric | Key |
+|---|---|
+| Macro F1-score (primary) | `macro_f1` |
+| Accuracy | `accuracy` |
+| Balanced accuracy | `balanced_accuracy` |
+| Macro precision | `macro_precision` |
+| Macro recall | `macro_recall` |
+
+All are maximized. Macro averaging weights every class equally, so a majority-class predictor scores poorly even on imbalanced datasets.
+
+## Documentation
+
+- [`docs/GUIA-tecnica.md`](docs/GUIA-tecnica.md) — technical guide (Spanish): architecture, the transform contract, what the evaluation protocol guarantees, and common errors.
+- [`docs/adr/`](docs/adr/) — architecture decision records.
 
 ## Out of Scope
 
-- Multi-class classification, semantic segmentation, or object detection
-- Training or architecture optimization of the anomaly detection model itself
+- Text, time series, or graph data
+- Semantic segmentation and object detection
+- Training or architecture optimization of the user's base model
+- Generative data augmentation (e.g. GANs)
 - REST API or graphical user interface
 
 ## Author

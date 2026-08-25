@@ -383,6 +383,64 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  fijar \texttt{n\_startup\_trials} antes de la semana 6 y arreglar la configuración de
  \texttt{mypy}.}
 
+\semana{3}{2026-08-17 a 2026-08-23 --- E2 y E8: soporte de datos tabulares}
+
+\entrada{2026-08-17}{5}
+{Implementé el \texttt{TabularDataLoader}: carga desde CSV o desde una tabla en memoria,
+ separa la etiqueta, la codifica a enteros y reporta qué columnas son numéricas y cuáles
+ categóricas. Veintidós pruebas nuevas, una de ellas recorriendo el protocolo de
+ evaluación completo.}
+{Decisión que gobierna todo lo que viene: el cargador devuelve una tabla y no una matriz
+ numérica. Es lo que permite que las transformaciones detecten solas qué columnas son
+ categóricas; si el tipo de columna hubiera que pasarlo como parámetro, el espacio de
+ búsqueda dependería del dataset y las configuraciones dejarían de ser transferibles, que
+ es justo lo que el arranque en caliente necesita. Dos helpers del núcleo aprendieron a
+ tratar tablas, detectándolas por capacidades y no por tipo para que el camino de imágenes
+ no tenga que importar pandas. Declaré pandas en \texttt{pyproject.toml}. Incidente: un
+ \texttt{git pull} falló porque OneDrive tenía bloqueado un archivo; verifiqué que los
+ restos coincidían con lo commiteado antes de limpiarlos.}
+
+\entrada{2026-08-18}{4}
+{Implementé las tres transformaciones tabulares con estado: imputación de faltantes,
+ escalado numérico (estándar, minmax y robusto) y codificación de categóricas (one-hot y
+ ordinal). Todas sobre una base común que exige una tabla, recuerda las columnas del
+ ajuste y resuelve el contrato por muestra.}
+{Ninguna recibe nombres ni posiciones de columnas: cada una detecta sola sobre qué
+ columnas actuar a partir de los tipos de la tabla. Si el tipo de columna fuera un
+ parámetro, el espacio de búsqueda dependería del dataset y las configuraciones dejarían
+ de ser transferibles. Lo más delicado fue la codificación: las categorías se aprenden
+ solo del entrenamiento, así que una categoría que aparezca únicamente en validación no
+ puede crear una columna nueva; si lo hiciera, las matrices de entrenamiento y validación
+ tendrían anchos distintos.}
+
+\entrada{2026-08-19}{3}
+{Escribí las 42 pruebas de las transformaciones tabulares, incluidas tres anti-fuga (una
+ por transformación) y dos de punta a punta que llevan un pipeline tabular completo por el
+ protocolo de evaluación con kNN y macro-F1. Módulo al 100\% de cobertura y suite en 282
+ pruebas, 99\% global.}
+{Revisando la cobertura encontré una rama que saltaba en silencio una columna ausente y la
+ rellenaba con ceros: el mismo tipo de fallo mudo que había detectado la auditoría. La
+ cambié por una validación explícita que dice qué columnas faltan. También quedaron
+ cubiertos los casos degenerados que producirían división por cero o valores nulos: columna
+ constante y columna enteramente vacía en el entrenamiento.}
+
+\entrada{2026-08-20}{3}
+{Escribí la guía técnica (\texttt{docs/GUIA-tecnica.md}) y actualicé el README, que seguía
+ siendo el del proyecto base. Añadí un ejemplo ejecutable del flujo tabular completo y una
+ prueba que cuenta sus instrucciones y lo ejecuta.}
+{El README afirmaba que la clasificación multiclase estaba fuera de alcance, que es lo
+ contrario de lo que hace el proyecto ahora; era lo primero que iba a leer cualquiera,
+ incluido el tutor. La prueba del ejemplo convierte en verificable el criterio de éxito de
+ las 20 líneas: cuenta instrucciones y no líneas físicas, porque el límite de 100
+ caracteres obliga a partir una instrucción en varias líneas y contar líneas mediría el
+ formato en lugar de la complejidad. El flujo tabular usa 13 instrucciones.}
+
+\cierresemana{3}{15}{22}{Soporte de datos tabulares (RE2) completo: cargador, las tres
+ transformaciones con estado y la documentación técnica iniciada. Suite en 285 pruebas y
+ 99\% de cobertura. Quedan pendientes de semanas anteriores: fijar
+ \texttt{n\_startup\_trials} antes de la semana 6, la regla de un dataset por familia en el
+ pre-registro v0.2, y la configuración de \texttt{mypy}.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
@@ -405,7 +463,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 \midrule
 1  & E1                & 27 & 20 & 7 de 7 puntos cerrados \\
 2  & E1, E2            & 26 & 21 & RE1 completo, E1 cerrada \\
-3  & E2, E8            & 22 & --- & \\
+3  & E2, E8            & 22 & 15 & RE2 completo \\
 4  & E2, E8            & 25 & --- & Hito: núcleo generalizado \\
 5  & E3, E4, E8        & 27 & --- & \\
 6  & E4, E8            & 25 & --- & \\

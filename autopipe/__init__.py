@@ -14,7 +14,7 @@ Main modules:
 __version__ = "0.1.0"
 __author__ = "Ricardo Antonio Borbón Mena"
 
-from autopipe.data_loader import ImageDataLoader
+from autopipe.data_loader import ImageDataLoader, TabularDataLoader
 from autopipe.evaluator import (
     ClassificationMetricCalculator,
     DataSplitter,
@@ -24,15 +24,19 @@ from autopipe.parallel_runner import ParallelRunner
 from autopipe.pipeline import (
     BaseTransform,
     CLAHETransform,
+    EncodeCategorical,
     GammaCorrection,
     GaussianBlur,
     GrayscaleConversion,
+    ImputeMissing,
     MedianFilter,
     Normalize,
     NotFittedError,
     Pipeline,
     Resize,
+    ScaleNumeric,
     StatefulTransform,
+    TabularTransform,
 )
 from autopipe.reporter import ReportGenerator
 from autopipe.search_engine import GridSearchEngine, OptunaSearchEngine
@@ -46,6 +50,7 @@ from autopipe.tasks import (
 
 __all__ = [
     "ImageDataLoader",
+    "TabularDataLoader",
     "DataSplitter",
     "MetricCalculator",
     "ClassificationMetricCalculator",
@@ -65,6 +70,10 @@ __all__ = [
     "MedianFilter",
     "GammaCorrection",
     "GrayscaleConversion",
+    "TabularTransform",
+    "ImputeMissing",
+    "ScaleNumeric",
+    "EncodeCategorical",
     "GridSearchEngine",
     "OptunaSearchEngine",
     "ParallelRunner",
