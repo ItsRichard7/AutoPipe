@@ -5,12 +5,16 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from typing import cast
 
 import numpy as np
 
-Dataset = Sequence[np.ndarray] | np.ndarray
-"""Conjunto de muestras: secuencia de arreglos, o un arreglo cuyas filas son
-las muestras (el caso de los datos tabulares)."""
+from autopipe.protocols import TableLike
+
+Dataset = Sequence[np.ndarray] | np.ndarray | TableLike
+"""Conjunto de muestras: una secuencia de arreglos, un arreglo cuyas filas son
+las muestras, o una tabla con indexación posicional (el caso de los datos
+tabulares)."""
 
 
 class NotFittedError(RuntimeError):
@@ -98,7 +102,11 @@ class BaseTransform(ABC):
         Returns:
             Lista con las muestras transformadas, en el mismo orden.
         """
-        return [self.apply(sample) for sample in X]
+        # La implementación por defecto recorre las muestras una por una, de modo
+        # que solo aplica a conjuntos iterables por muestra. Las transformaciones
+        # que reciben tablas sobrescriben este método, porque recorrer una tabla
+        # daría sus columnas y no sus filas.
+        return [self.apply(sample) for sample in cast(Sequence[np.ndarray], X)]
 
     def fit_transform(self, X: Dataset, y: np.ndarray | None = None) -> Dataset:
         """Ajusta la transformación con ``X`` y devuelve ``X`` transformado.

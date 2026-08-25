@@ -15,6 +15,7 @@ from optuna.samplers import TPESampler
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.base import BaseTransform
 from autopipe.pipeline.pipeline import Pipeline
+from autopipe.protocols import BaseModel
 from autopipe.search_engine.grid_search import (
     evaluate_pipeline_safe,
     validate_metric,
@@ -38,6 +39,7 @@ class OptunaSearchEngine:
     Attributes:
         search_space (dict): Mapeo de nombre de paso a lista de transformaciones.
         n_trials (int): Número de pruebas de optimización.
+        n_startup_trials (int): Ensayos aleatorios antes de que TPE modele.
         seed (int | None): Semilla del sampler.
         task (Task): Tarea de aprendizaje que gobierna métricas y predicciones.
         splitter (DataSplitter): Particionador train/validación.
@@ -52,6 +54,7 @@ class OptunaSearchEngine:
         random_state: int | None = None,
         threshold: float = 0.5,
         task: str | Task = DEFAULT_TASK,
+        n_startup_trials: int = 10,
     ) -> None:
         """Inicializa el motor de búsqueda con Optuna.
 
@@ -63,9 +66,17 @@ class OptunaSearchEngine:
             threshold: Umbral para binarizar predicciones continuas.
             task: Tarea de aprendizaje, por nombre o instancia. Por defecto es la
                 detección de anomalías, por continuidad con la librería base.
+            n_startup_trials: Ensayos muestreados al azar antes de que TPE empiece
+                a modelar. Se declara de forma explícita, aunque coincida con el
+                valor por defecto de Optuna, porque de él dependen los resultados:
+                si una versión futura de la librería cambiara ese valor, los
+                experimentos dejarían de ser reproducibles en silencio. El spike A
+                midió además que interactúa con el arranque en caliente (véase
+                ``docs/spikes/SPIKE-A-enqueue-trial.md``).
         """
         self.search_space = search_space
         self.n_trials = n_trials
+        self.n_startup_trials = n_startup_trials
         self.seed = random_state
         self.task = get_task(task)
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
@@ -75,7 +86,7 @@ class OptunaSearchEngine:
         self,
         images: Sequence[np.ndarray],
         labels: np.ndarray,
-        base_model: object,
+        base_model: BaseModel,
         metric: str | None = None,
     ) -> tuple[Pipeline, dict, list[dict]]:
         """Ejecuta la búsqueda con Optuna.
@@ -135,7 +146,7 @@ class OptunaSearchEngine:
 
         study = optuna.create_study(
             direction=direction,
-            sampler=TPESampler(seed=self.seed),
+            sampler=TPESampler(seed=self.seed, n_startup_trials=self.n_startup_trials),
             pruner=MedianPruner(),
         )
         study.optimize(objective, n_trials=self.n_trials)

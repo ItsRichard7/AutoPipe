@@ -8,6 +8,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from autopipe.protocols import BaseModel, MetricCalculatorLike
+
 
 @dataclass(frozen=True)
 class Task:
@@ -49,9 +51,9 @@ class Task:
     valid_metrics: tuple[str, ...]
     default_metric: str
     minimize_metrics: tuple[str, ...]
-    build_metric_calculator: Callable[[float], object]
+    build_metric_calculator: Callable[[float], MetricCalculatorLike]
     normalize_predictions: Callable[[np.ndarray], np.ndarray]
-    predict_scores: Callable[[object, np.ndarray], np.ndarray | None]
+    predict_scores: Callable[[BaseModel, np.ndarray], np.ndarray | None]
 
     def __post_init__(self) -> None:
         """Valida la coherencia interna de la tarea.

@@ -12,6 +12,8 @@ dataset pueda inyectarse como arranque en caliente en otro.
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import pandas as pd
 
@@ -101,7 +103,7 @@ class TabularTransform(StatefulTransform):
         """
         self._check_fitted()
         fila = pd.DataFrame([list(np.asarray(sample, dtype=object))], columns=self.columns_)
-        return self._transform(fila).to_numpy()[0]
+        return cast(pd.DataFrame, self._transform(fila)).to_numpy()[0]
 
 
 class ImputeMissing(TabularTransform):
