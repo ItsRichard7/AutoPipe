@@ -400,6 +400,30 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{git pull} falló porque OneDrive tenía bloqueado un archivo; verifiqué que los
  restos coincidían con lo commiteado antes de limpiarlos.}
 
+\entrada{2026-08-18}{4}
+{Implementé las tres transformaciones tabulares con estado: imputación de faltantes,
+ escalado numérico (estándar, minmax y robusto) y codificación de categóricas (one-hot y
+ ordinal). Todas sobre una base común que exige una tabla, recuerda las columnas del
+ ajuste y resuelve el contrato por muestra.}
+{Ninguna recibe nombres ni posiciones de columnas: cada una detecta sola sobre qué
+ columnas actuar a partir de los tipos de la tabla. Si el tipo de columna fuera un
+ parámetro, el espacio de búsqueda dependería del dataset y las configuraciones dejarían
+ de ser transferibles. Lo más delicado fue la codificación: las categorías se aprenden
+ solo del entrenamiento, así que una categoría que aparezca únicamente en validación no
+ puede crear una columna nueva; si lo hiciera, las matrices de entrenamiento y validación
+ tendrían anchos distintos.}
+
+\entrada{2026-08-19}{3}
+{Escribí las 42 pruebas de las transformaciones tabulares, incluidas tres anti-fuga (una
+ por transformación) y dos de punta a punta que llevan un pipeline tabular completo por el
+ protocolo de evaluación con kNN y macro-F1. Módulo al 100\% de cobertura y suite en 282
+ pruebas, 99\% global.}
+{Revisando la cobertura encontré una rama que saltaba en silencio una columna ausente y la
+ rellenaba con ceros: el mismo tipo de fallo mudo que había detectado la auditoría. La
+ cambié por una validación explícita que dice qué columnas faltan. También quedaron
+ cubiertos los casos degenerados que producirían división por cero o valores nulos: columna
+ constante y columna enteramente vacía en el entrenamiento.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
