@@ -67,6 +67,10 @@ target-version = "py310"
 select = ["E", "F", "I"]   # pycodestyle + pyflakes + isort
 
 [tool.mypy]
-python_version = "3.10"
+# La librería declara soporte desde 3.10, pero la verificación de tipos se hace
+# contra 3.12: los stubs de numpy instalados usan sintaxis PEP 695, que mypy solo
+# acepta con python_version >= 3.12. Con 3.10 fallaba antes de analizar una sola
+# línea del proyecto.
+python_version = "3.12"
 strict = false
 ignore_missing_imports = true

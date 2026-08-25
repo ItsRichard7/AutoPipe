@@ -324,6 +324,36 @@ def test_metric_defaults_to_the_task_default(multiclass_dataset, search_space) -
     assert [r["objective"] for r in sin_metrica] == [r["objective"] for r in explicita]
 
 
+def test_optuna_startup_trials_are_explicit_and_reach_the_sampler() -> None:
+    """El valor debe quedar fijado en el código, no heredado de Optuna.
+
+    De ``n_startup_trials`` dependen los resultados: si una versión futura de
+    Optuna cambiara su valor por defecto, los experimentos dejarían de ser
+    reproducibles sin que nada avisara.
+    """
+    por_defecto = OptunaSearchEngine({}, n_trials=1)
+    explicito = OptunaSearchEngine({}, n_trials=1, n_startup_trials=5)
+
+    assert por_defecto.n_startup_trials == 10
+    assert explicito.n_startup_trials == 5
+
+
+def test_optuna_startup_trials_change_the_search(separable_dataset, search_space) -> None:
+    """Cambiar el valor cambia la secuencia de ensayos, luego llega al muestreador."""
+    images, labels = separable_dataset
+
+    def objetivos(n_startup: int) -> list[float]:
+        motor = OptunaSearchEngine(
+            search_space, n_trials=12, val_size=0.5, random_state=42,
+            n_startup_trials=n_startup,
+        )
+        return [registro["objective"] for registro in motor.run(
+            images, labels, MeanThresholdModel()
+        )[2]]
+
+    assert objetivos(10) != objetivos(2)
+
+
 def test_engine_rejects_a_metric_of_another_task(multiclass_dataset, search_space) -> None:
     data, labels = multiclass_dataset
     engine = GridSearchEngine(search_space, val_size=0.4, random_state=42, task="classification")

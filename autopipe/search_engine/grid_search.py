@@ -8,14 +8,15 @@ import itertools
 import logging
 import math
 from collections.abc import Sequence
+from typing import cast
 
 import cv2
 import numpy as np
 
-from autopipe.evaluator.metrics import MetricCalculator
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.base import BaseTransform, Dataset
 from autopipe.pipeline.pipeline import Pipeline
+from autopipe.protocols import BaseModel, MetricCalculatorLike, TableLike
 from autopipe.tasks import DEFAULT_TASK, Task, get_task
 
 logger = logging.getLogger(__name__)
@@ -61,10 +62,10 @@ def _select(data: Dataset, indices: np.ndarray) -> Dataset:
         si era un arreglo, y una lista en cualquier otro caso.
     """
     if _es_tabla(data):
-        return data.iloc[indices]
+        return cast(TableLike, data).iloc[indices]
     if isinstance(data, np.ndarray):
         return data[indices]
-    return [data[index] for index in indices]
+    return [cast(Sequence[np.ndarray], data)[index] for index in indices]
 
 
 def _to_feature_matrix(samples: Dataset) -> np.ndarray:
@@ -87,24 +88,25 @@ def _to_feature_matrix(samples: Dataset) -> np.ndarray:
     """
     if _es_tabla(samples):
         try:
-            return samples.to_numpy(dtype=float)
+            return cast(TableLike, samples).to_numpy(dtype=float)
         except (TypeError, ValueError) as exc:
             raise ValueError(
                 "La tabla transformada conserva columnas no numéricas; el pipeline "
                 "necesita un paso de codificación antes de entrenar el modelo."
             ) from exc
-    return np.vstack([np.asarray(sample).ravel() for sample in samples])
+    muestras = cast(Sequence[np.ndarray], samples)
+    return np.vstack([np.asarray(sample).ravel() for sample in muestras])
 
 
 def evaluate_pipeline(
     pipeline: Pipeline,
     images: Sequence[np.ndarray],
     labels: np.ndarray,
-    base_model: object,
+    base_model: BaseModel,
     metric: str,
     train_idx: np.ndarray,
     val_idx: np.ndarray,
-    metric_calculator: MetricCalculator,
+    metric_calculator: MetricCalculatorLike,
     task: str | Task | None = None,
 ) -> tuple[float, dict]:
     """Evalúa un pipeline ajustándolo únicamente con el subconjunto de entrenamiento.
@@ -159,11 +161,11 @@ def evaluate_pipeline_safe(
     pipeline: Pipeline,
     images: Sequence[np.ndarray],
     labels: np.ndarray,
-    base_model: object,
+    base_model: BaseModel,
     metric: str,
     train_idx: np.ndarray,
     val_idx: np.ndarray,
-    metric_calculator: MetricCalculator,
+    metric_calculator: MetricCalculatorLike,
     task: str | Task | None = None,
 ) -> tuple[float, dict]:
     """Evalúa un pipeline tolerando fallos de evaluación.
@@ -298,7 +300,7 @@ class GridSearchEngine:
         self,
         images: Sequence[np.ndarray],
         labels: np.ndarray,
-        base_model: object,
+        base_model: BaseModel,
         metric: str | None = None,
     ) -> tuple[Pipeline, dict, list[dict]]:
         """Ejecuta la búsqueda exhaustiva.

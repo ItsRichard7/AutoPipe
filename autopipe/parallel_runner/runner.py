@@ -13,6 +13,7 @@ from joblib import Parallel, delayed
 
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.pipeline import Pipeline
+from autopipe.protocols import BaseModel
 from autopipe.search_engine.grid_search import evaluate_pipeline, validate_metric
 from autopipe.tasks import DEFAULT_TASK, Task, get_task
 
@@ -69,7 +70,7 @@ class ParallelRunner:
         pipelines: Sequence[Pipeline],
         images: Sequence[np.ndarray],
         labels: np.ndarray,
-        base_model: object,
+        base_model: BaseModel,
         metric: str | None = None,
     ) -> list[dict]:
         """Evalúa todos los pipelines en paralelo y devuelve la tabla de resultados.
@@ -109,7 +110,7 @@ class ParallelRunner:
         pipelines: Sequence[Pipeline],
         images: Sequence[np.ndarray],
         labels: np.ndarray,
-        base_model: object,
+        base_model: BaseModel,
         metric: str | None = None,
     ) -> dict:
         """Compara la ejecución secuencial y paralela y calcula el speedup.
@@ -168,7 +169,7 @@ class ParallelRunner:
         pipelines: Sequence[Pipeline],
         images: Sequence[np.ndarray],
         labels: np.ndarray,
-        base_model: object,
+        base_model: BaseModel,
         metric: str,
         train_idx: np.ndarray,
         val_idx: np.ndarray,
