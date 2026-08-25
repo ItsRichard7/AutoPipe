@@ -441,6 +441,23 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{n\_startup\_trials} antes de la semana 6, la regla de un dataset por familia en el
  pre-registro v0.2, y la configuración de \texttt{mypy}.}
 
+\semana{4}{2026-08-24 a 2026-08-30 --- E2 cierre: hito del núcleo generalizado}
+
+\entrada{2026-08-24}{4}
+{Despejé los tres pendientes que arrastraba: arreglé la configuración de \texttt{mypy} y
+ dejé el paquete sin errores de tipos, fijé \texttt{n\_startup\_trials} de forma explícita
+ en el motor de Optuna, y documenté la regla de un dataset por familia con la lista de
+ familias verificada contra los candidatos reales.}
+{\texttt{mypy} destapó diez errores, ninguno de comportamiento: eran tres contratos que la
+ librería usa por duck-typing y que el sistema de tipos no conocía. Los escribí como
+ protocolos en \texttt{autopipe/protocols.py}, así que ahora el contrato del modelo base,
+ del calculador de métricas y de la tabla está verificado y no solo documentado.
+ \texttt{n\_startup\_trials} tenía que entrar antes de la semana 6, no en la 7 como decía
+ el cronograma, porque la construcción del corpus usa el mismo motor. La regla de familia
+ quedó en dos niveles: el de mismas instancias es obligatorio porque es un problema de
+ validez, y el de mismo origen es recomendable por diversidad. Aplicándola quedan 42
+ familias distintas, margen sobrado para los 15 a 25 del corpus.}
+
 % ------------------------------------------------------------
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
