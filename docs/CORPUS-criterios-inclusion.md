@@ -112,21 +112,55 @@ predicción de defectos de software del mismo repositorio (NASA MDP), con esquem
 características muy similares aunque de proyectos distintos. La dependencia es menor pero
 del mismo tipo.
 
-**Propuesta.** Añadir a la selección de la semana 5 una regla de **como máximo un dataset
-por familia de origen**, aplicada después del orden por sensibilidad y antes de las
-restricciones de diversidad ya pre-registradas. Con ella, los cuatro `mfeat-*` aportarían
-un solo dataset al corpus, y los seis de defectos de software, otro.
+### Regla de familia (aprobada el 2026-08-24)
 
-Esto no modifica los criterios de inclusión de la Sección 4.3.1: es una regla de
-**selección** entre candidatos elegibles, del mismo tipo que el desempate por sensibilidad
-ya acordado. Debe recogerse en el pre-registro v0.2, junto con la lista explícita de qué
-datasets se consideran de la misma familia.
+Se añade a la selección de la semana 5 una regla de **como máximo un dataset por familia
+de origen**, aplicada después del orden por sensibilidad y antes de las restricciones de
+diversidad ya pre-registradas.
+
+No modifica los criterios de inclusión de la Sección 4.3.1: es una regla de **selección**
+entre candidatos elegibles, del mismo tipo que el desempate por sensibilidad ya acordado.
+Se recogerá en el pre-registro v0.2 antes de ejecutar el cribado.
+
+La regla distingue dos niveles, porque el problema no tiene la misma gravedad en ambos:
+
+**Nivel 1 — mismas instancias.** Es un problema de validez y la regla es obligatoria.
+
+| Familia | Datasets | Por qué |
+|---|---|---|
+| Multiple Features (dígitos) | `mfeat-fourier`, `mfeat-karhunen`, `mfeat-morphological`, `mfeat-zernike` | Son cuatro descripciones de **las mismas 2 000 instancias** |
+
+**Nivel 2 — misma fuente o mismo esquema.** Las instancias son distintas, pero comparten
+origen y estructura. La regla es recomendable como medida de diversidad, no de validez.
+
+| Familia | Datasets | Por qué |
+|---|---|---|
+| NASA MDP (defectos de software) | `kc1`, `kc2`, `pc1`, `pc3`, `pc4`, `jm1` | Seis proyectos del mismo repositorio, con esquemas de características muy similares |
+| Reconocimiento de dígitos manuscritos | `optdigits`, `pendigits`, y el representante elegido de `mfeat-*` | Colecciones distintas del mismo dominio |
+
+La distinción importa: en el nivel 1 el meta-recomendador vería literalmente el dataset
+excluido dentro de su base de entrenamiento, y la independencia entre pliegues que supone
+el protocolo se rompería. En el nivel 2 solo hay similitud de dominio, que es una
+propiedad legítima que el recomendador debería poder aprovechar; limitarla protege la
+diversidad del corpus, no su validez.
+
+Efecto sobre los 52 candidatos:
+
+| Regla aplicada | Candidatos restantes |
+|---|---:|
+| Ninguna | 52 |
+| Nivel 1: los cuatro `mfeat-*` aportan uno | 49 |
+| \+ nivel 2, NASA MDP: los seis aportan uno | 44 |
+| \+ nivel 2, dígitos: los tres aportan uno | 42 |
+
+Con 42 familias distintas queda margen sobrado para elegir los 15 a 25 datasets del
+corpus, así que la regla no compite con el tamaño comprometido.
 
 ## Qué queda para la semana 5
 
 1. Aplicar el cribado de sensibilidad al preprocesamiento sobre los 52 candidatos, con el
    procedimiento ya pre-registrado.
-2. Aplicar la regla de familia propuesta arriba, una vez aprobada.
+2. Aplicar la regla de familia, ya aprobada.
 3. Aplicar las restricciones de diversidad y seleccionar los 15 a 25 finales.
 4. Verificar la licencia individual de los seleccionados.
 5. Registrar todo en el pre-registro v0.2, antes de ejecutar el cribado.
