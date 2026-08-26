@@ -12,7 +12,7 @@
 %
 %  Estándar de citación: IEEE. Las fuentes se administran en referencias.bib.
 %
-%  Requiere:  ./media con image1.png (logo TEC) e image2.png
+%  Requiere:  ./media con image1.png (logo TEC)
 %             ./referencias.bib
 %==============================================================================
 
@@ -238,69 +238,6 @@ keyword 5, keyword 6.}
 \listoftables
 \endgroup
 
-\vspace{1em}
-\guia{Lista de todas las tablas del documento con su número, descripción y
-número de página. Se genera automáticamente a partir de los \cmd{caption} de
-cada tabla.}
-
-\guia{Las tablas deben incluir un título descriptivo mediante \cmd{caption},
-colocado \emph{antes} del contenido de la tabla, para permitir su inclusión
-automática en el índice de tablas.}
-
-\guia{El primer ejemplo de tabla se suele utilizar cuando la información cabe
-en una sola celda. Si la información es mayor, es preferible utilizar el
-segundo ejemplo de tabla, que tiene mejores divisiones.}
-
-\vspace{1em}
-\noindent\textbf{Ejemplos de tabla}
-
-\begin{table}[H]
-\centering
-\caption{Primer ejemplo de tabla}
-\label{tab:ejemplo1}
-\begin{tabularx}{\textwidth}{CCCC}
-\toprule
-\textbf{Nombre} & \textbf{Descripción} & \textbf{Características} & \textbf{Observaciones} \\
-\midrule
-León    & Felino Africano & Melena imponente & Gran dentadura  \\
-Colibrí & Ave minúscula   & Aleteo rápido    & Consume néctar  \\
-Orca    & Cetáceo robusto & Gran nadado      & Forman colonias \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{Segundo ejemplo de tabla}
-\label{tab:ejemplo2}
-\begin{tabularx}{\textwidth}{>{\ancho{0.7}}C>{\ancho{0.9}}C>{\ancho{1.6}}L>{\ancho{0.8}}C}
-\toprule
-\textbf{Nombre} & \textbf{Descripción} & \textbf{Características} & \textbf{Observaciones} \\
-\midrule
-León & Felino Africano &
-  \begin{celdaitem}
-    \item Melena imponente
-    \item Rugido fuerte
-  \end{celdaitem} &
-  Es el ``rey de la selva'' \\
-\addlinespace
-Colibrí & Ave minúscula &
-  \begin{celdaitem}
-    \item Aleteo rápido
-    \item Colores vivos
-  \end{celdaitem} &
-  Consume néctar \\
-\addlinespace
-Orca & Cetáceo robusto &
-  \begin{celdaitem}
-    \item Gran nadado
-    \item Inteligencia avanzada
-  \end{celdaitem} &
-  Forman colonias \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 \clearpage
 %---------------------------------------------------- ÍNDICE DE FIGURAS ------
 \renewcommand{\listfigurename}{ÍNDICE DE FIGURAS}
@@ -310,25 +247,6 @@ Orca & Cetáceo robusto &
 \singlespacing
 \listoffigures
 \endgroup
-
-\vspace{1em}
-\guia{Lista de todas las figuras del documento con su número, descripción y
-número de página. Se genera automáticamente a partir de los \cmd{caption} de
-cada figura.}
-
-\guia{Las figuras deben incluir un título descriptivo mediante \cmd{caption},
-colocado \emph{después} de la imagen, para permitir su inclusión automática en
-el índice de figuras.}
-
-\vspace{1em}
-\noindent\textbf{Ejemplo de figura}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=8.2cm]{image2.png}
-\caption{Ejemplo de figura}
-\label{fig:ejemplo1}
-\end{figure}
 
 \clearpage
 %---------------------------------------------------- SIGLAS Y ACRÓNIMOS -----

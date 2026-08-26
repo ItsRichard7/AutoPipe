@@ -122,7 +122,7 @@ def evaluate_pipeline(
 
     El ajuste del pipeline se realiza **solo con ``train_idx``**. Ajustarlo con
     el dataset completo filtraría hacia el entrenamiento las estadísticas del
-    subconjunto de validación (véase ``docs/adr/ADR-001-contrato-fit-transform.md``).
+    subconjunto de validación (véase ``docs/decisiones/ADR-001-contrato-fit-transform.md``).
 
     Args:
         pipeline: Pipeline a evaluar. No se modifica: se clona internamente.

@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-08-13
 - **Etapa:** E1 cierre, entregable RE4
-- **Genera:** `docs/CORPUS-candidatos.md` mediante `scripts/list_corpus_candidates.py`
+- **Genera:** `docs/experimentos/CORPUS-candidatos.md` mediante `scripts/list_corpus_candidates.py`
 
 Este documento fija **cómo** se selecciona el corpus. Los criterios de inclusión son los
 del anteproyecto y no se alteran; lo que aquí se decide es el universo del que se parte y
@@ -74,7 +74,7 @@ independiente (un dataset puede incumplir más de uno):
 | Más de 100 características predictoras | 15 |
 | Número de clases fuera de [2, 10] | 5 |
 
-Las fichas están en `docs/CORPUS-candidatos.md`, regenerable con el script.
+Las fichas están en `docs/experimentos/CORPUS-candidatos.md`, regenerable con el script.
 
 ### Cobertura de las restricciones de diversidad
 

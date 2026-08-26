@@ -3,10 +3,10 @@
 
 Parte de la suite curada **OpenML-CC18** y aplica los criterios de inclusión de la
 Sección 4.3.1 del anteproyecto. Escribe una ficha por dataset superviviente en
-``docs/CORPUS-candidatos.md``.
+``docs/experimentos/CORPUS-candidatos.md``.
 
 Los criterios y las decisiones de procedimiento están documentados en
-``docs/CORPUS-criterios-inclusion.md``; este script solo los ejecuta.
+``docs/experimentos/CORPUS-criterios-inclusion.md``; este script solo los ejecuta.
 
 Requiere acceso a la API de OpenML.
 
@@ -24,7 +24,7 @@ import openml
 import pandas as pd
 
 SUITE = "OpenML-CC18"
-SALIDA = Path("docs/CORPUS-candidatos.md")
+SALIDA = Path("docs/experimentos/CORPUS-candidatos.md")
 
 # Criterios de inclusión de la Sección 4.3.1 del anteproyecto.
 MIN_INSTANCIAS = 500
@@ -195,7 +195,7 @@ def main() -> None:
             f"- **Generado:** {date.today().isoformat()}",
             f"- **Universo:** suite curada {SUITE} ({len(datos)} datasets)",
             "- **Criterios aplicados:** Sección 4.3.1 del anteproyecto",
-            "- **Decisiones de procedimiento:** `docs/CORPUS-criterios-inclusion.md`",
+            "- **Decisiones de procedimiento:** `docs/experimentos/CORPUS-criterios-inclusion.md`",
             "",
             "## Resumen",
             "",

@@ -6,7 +6,7 @@
 - **Etapa:** E1 (análisis y diseño de la generalización), entregable RE1
 - **Afecta a:** `autopipe/evaluator/`, `autopipe/search_engine/`,
   `autopipe/parallel_runner/`
-- **Insumo:** `docs/AUDITORIA-acoplamiento.md`
+- **Insumo:** `docs/decisiones/AUDITORIA-acoplamiento.md`
 
 ## Contexto
 
