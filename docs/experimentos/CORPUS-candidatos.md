@@ -6,7 +6,7 @@
 - **Generado:** 2026-08-24
 - **Universo:** suite curada OpenML-CC18 (72 datasets)
 - **Criterios aplicados:** Sección 4.3.1 del anteproyecto
-- **Decisiones de procedimiento:** `docs/CORPUS-criterios-inclusion.md`
+- **Decisiones de procedimiento:** `docs/experimentos/CORPUS-criterios-inclusion.md`
 
 ## Resumen
 

@@ -23,7 +23,7 @@ class Task:
     suelto —las métricas por un lado y la normalización de predicciones por
     otro— permitiría que una tarea nueva declarara sus métricas y heredara en
     silencio la normalización binaria, que es exactamente el modo de fallo
-    documentado en ``docs/AUDITORIA-acoplamiento.md``.
+    documentado en ``docs/decisiones/AUDITORIA-acoplamiento.md``.
 
     Todas las funciones almacenadas deben ser **funciones de módulo**, no
     lambdas ni closures: las tareas se envían a procesos de trabajo mediante el

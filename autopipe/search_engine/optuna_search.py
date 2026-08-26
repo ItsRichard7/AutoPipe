@@ -72,7 +72,7 @@ class OptunaSearchEngine:
                 si una versión futura de la librería cambiara ese valor, los
                 experimentos dejarían de ser reproducibles en silencio. El spike A
                 midió además que interactúa con el arranque en caliente (véase
-                ``docs/spikes/SPIKE-A-enqueue-trial.md``).
+                ``docs/experimentos/SPIKE-A-enqueue-trial.md``).
         """
         self.search_space = search_space
         self.n_trials = n_trials

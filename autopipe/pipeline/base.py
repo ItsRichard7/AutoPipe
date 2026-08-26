@@ -46,7 +46,7 @@ class BaseTransform(ABC):
     selección de características) deben sobrescribir :meth:`fit` y
     :meth:`transform` de forma explícita, para que el ajuste se realice
     únicamente con el subconjunto de entrenamiento y no se filtre información
-    de la validación (véase ``docs/adr/ADR-001-contrato-fit-transform.md``).
+    de la validación (véase ``docs/decisiones/ADR-001-contrato-fit-transform.md``).
     """
 
     @abstractmethod
@@ -142,7 +142,7 @@ class StatefulTransform(BaseTransform):
     El ajuste debe realizarse **solo con el subconjunto de entrenamiento**:
     ajustar con el dataset completo filtraría información de la validación e
     invalidaría la evaluación (véase
-    ``docs/adr/ADR-001-contrato-fit-transform.md``).
+    ``docs/decisiones/ADR-001-contrato-fit-transform.md``).
 
     Attributes:
         fitted (bool): ``True`` si la transformación ya fue ajustada.

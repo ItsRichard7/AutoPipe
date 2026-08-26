@@ -239,7 +239,8 @@ All are maximized. Macro averaging weights every class equally, so a majority-cl
 ## Documentation
 
 - [`docs/GUIA-tecnica.md`](docs/GUIA-tecnica.md) — technical guide (Spanish): architecture, the transform contract, what the evaluation protocol guarantees, and common errors.
-- [`docs/adr/`](docs/adr/) — architecture decision records.
+- [`docs/decisiones/`](docs/decisiones/) — architecture decision records and the coupling audit.
+- [`docs/experimentos/`](docs/experimentos/) — experimental pre-registration, feasibility spikes and corpus selection.
 
 ## Out of Scope
 

@@ -49,7 +49,7 @@ primaria de la tarea.
 **Las cuatro responsabilidades viajan juntas a propósito.** Un registro que separara las
 métricas de la normalización de predicciones permitiría que una tarea nueva declarara sus
 métricas y heredara en silencio la normalización binaria. Ese fallo existía y está
-documentado en `AUDITORIA-acoplamiento.md`: la normalización binaria convierte
+documentado en `decisiones/AUDITORIA-acoplamiento.md`: la normalización binaria convierte
 `[0, 1, 2, 3, 4]` en `[0, 1, 1, 1, 1]` sin levantar ninguna excepción.
 
 ## El contrato de transformación
@@ -186,14 +186,17 @@ Son candidatos descartados, no errores del programa.
 
 | Documento | Contenido |
 |---|---|
-| `adr/ADR-001-contrato-fit-transform.md` | Por qué el contrato se extendió y qué alternativas se rechazaron |
-| `adr/ADR-002-interfaz-de-tarea.md` | Diseño del registro de tareas |
-| `AUDITORIA-acoplamiento.md` | Qué dependía de imágenes y anomalías, con los fallos silenciosos encontrados |
-| `Preregistro.tex` | Protocolo experimental, fijado antes de ejecutar |
-| `CORPUS-criterios-inclusion.md` | Cómo se selecciona el corpus |
-| `spikes/SPIKE-A-enqueue-trial.md` | Viabilidad del arranque en caliente |
-| `spikes/SPIKE-B-pymfe.md` | Costo y robustez de la extracción de meta-características |
+| `decisiones/ADR-001-contrato-fit-transform.md` | Por qué el contrato se extendió y qué alternativas se rechazaron |
+| `decisiones/ADR-002-interfaz-de-tarea.md` | Diseño del registro de tareas |
+| `decisiones/AUDITORIA-acoplamiento.md` | Qué dependía de imágenes y anomalías, con los fallos silenciosos encontrados |
+| `experimentos/Preregistro.tex` | Protocolo experimental, fijado antes de ejecutar |
+| `experimentos/CORPUS-criterios-inclusion.md` | Cómo se selecciona el corpus |
+| `experimentos/SPIKE-A-enqueue-trial.md` | Viabilidad del arranque en caliente |
+| `experimentos/SPIKE-B-pymfe.md` | Costo y robustez de la extracción de meta-características |
 | `Agenda.tex` | Cronograma planificado y bitácora real |
+| `Informe/` | Informe de TFG y su bibliografía |
+| `anteproyecto/` | Anteproyecto aprobado, que fija el alcance comprometido |
+| `base/` | Documentación del proyecto base del que parte este TFG |
 
 ## Pendiente en esta guía
 

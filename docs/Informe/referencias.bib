@@ -1,0 +1,180 @@
+% =============================================================================
+%  referencias.bib — Bibliografía del Informe de TFG
+%  Estándar: IEEE (biblatex-ieee, backend biber)
+%
+%  Solo entran aquí fuentes efectivamente consultadas. Las entradas de ejemplo
+%  de la plantilla fueron eliminadas.
+%
+%  Bloque 1: fuentes bibliográficas consultadas para el anteproyecto y el
+%            marco teórico.
+%  Bloque 2: documentación de las herramientas de software efectivamente
+%            utilizadas, con la versión verificada en el entorno de desarrollo.
+%  Bloque 3: documentos propios del proyecto.
+% =============================================================================
+
+% =============================================================================
+%  1. Fuentes bibliográficas
+% =============================================================================
+
+@book{garcia2015preprocessing,
+  author    = {García, Salvador and Luengo, Julián and Herrera, Francisco},
+  title     = {Data Preprocessing in Data Mining},
+  publisher = {Springer},
+  address   = {Cham, Suiza},
+  year      = {2015},
+}
+
+@book{hutter2019automl,
+  editor    = {Hutter, Frank and Kotthoff, Lars and Vanschoren, Joaquin},
+  title     = {Automated Machine Learning: Methods, Systems, Challenges},
+  publisher = {Springer},
+  address   = {Cham, Suiza},
+  year      = {2019},
+}
+
+@inproceedings{feurer2015autosklearn,
+  author    = {Feurer, Matthias and Klein, Aaron and Eggensperger, Katharina
+               and Springenberg, Jost Tobias and Blum, Manuel and Hutter, Frank},
+  title     = {Efficient and robust automated machine learning},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {28},
+  pages     = {2962--2970},
+  year      = {2015},
+}
+
+@inproceedings{feurer2015warmstart,
+  author    = {Feurer, Matthias and Springenberg, Jost Tobias and Hutter, Frank},
+  title     = {Initializing Bayesian hyperparameter optimization via meta-learning},
+  booktitle = {Proc. 29th AAAI Conf. Artificial Intelligence (AAAI)},
+  pages     = {1128--1135},
+  year      = {2015},
+}
+
+@inproceedings{akiba2019optuna,
+  author    = {Akiba, Takuya and Sano, Shotaro and Yanase, Toshihiko
+               and Ohta, Takeru and Koyama, Masanori},
+  title     = {Optuna: A next-generation hyperparameter optimization framework},
+  booktitle = {Proc. 25th ACM SIGKDD Int. Conf. Knowledge Discovery \& Data Mining (KDD)},
+  pages     = {2623--2631},
+  year      = {2019},
+}
+
+@inproceedings{snoek2012practical,
+  author    = {Snoek, Jasper and Larochelle, Hugo and Adams, Ryan P.},
+  title     = {Practical Bayesian optimization of machine learning algorithms},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {25},
+  pages     = {2951--2959},
+  year      = {2012},
+}
+
+@book{brazdil2009metalearning,
+  author    = {Brazdil, Pavel and Giraud-Carrier, Christophe and Soares, Carlos
+               and Vilalta, Ricardo},
+  title     = {Metalearning: Applications to Data Mining},
+  publisher = {Springer},
+  address   = {Berlín, Alemania},
+  year      = {2009},
+}
+
+@article{vanschoren2018metalearning,
+  author  = {Vanschoren, Joaquin},
+  title   = {Meta-learning: A survey},
+  journal = {arXiv preprint arXiv:1810.03548},
+  year    = {2018},
+}
+
+@article{chandola2009anomaly,
+  author  = {Chandola, Varun and Banerjee, Arindam and Kumar, Vipin},
+  title   = {Anomaly detection: A survey},
+  journal = {ACM Computing Surveys},
+  volume  = {41},
+  number  = {3},
+  pages   = {1--58},
+  year    = {2009},
+}
+
+@inproceedings{bergmann2019mvtec,
+  author    = {Bergmann, Paul and Fauser, Michael and Sattlegger, David
+               and Steger, Carsten},
+  title     = {{MVTec AD} --- A comprehensive real-world dataset for unsupervised
+               anomaly detection},
+  booktitle = {Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {9592--9600},
+  year      = {2019},
+}
+
+@techreport{krizhevsky2009cifar,
+  author      = {Krizhevsky, Alex},
+  title       = {Learning multiple layers of features from tiny images},
+  institution = {University of Toronto},
+  address     = {Toronto, ON, Canadá},
+  type        = {Reporte técnico},
+  year        = {2009},
+}
+
+% =============================================================================
+%  2. Herramientas de software utilizadas
+%  La versión indicada es la verificada en el entorno de desarrollo del
+%  proyecto; el comportamiento descrito en el informe se midió sobre ella.
+% =============================================================================
+
+@manual{optuna-docs,
+  author       = {{Optuna Development Team}},
+  title        = {Optuna: A hyperparameter optimization framework --- Documentación, versión 4.9.0},
+  organization = {Preferred Networks},
+  year         = {2026},
+  url          = {https://optuna.readthedocs.io/},
+  urldate      = {2026-08-06},
+}
+
+@manual{pymfe-docs,
+  author       = {{PyMFE Development Team}},
+  title        = {{PyMFE}: Python Meta-Feature Extractor --- Documentación, versión 0.4.4},
+  year         = {2026},
+  url          = {https://pymfe.readthedocs.io/},
+  urldate      = {2026-08-06},
+}
+
+@manual{sklearn-docs,
+  author       = {{scikit-learn developers}},
+  title        = {scikit-learn: Machine Learning in Python --- Documentación, versión 1.9.0},
+  year         = {2026},
+  url          = {https://scikit-learn.org/stable/},
+  urldate      = {2026-08-19},
+}
+
+@online{openml-cc18,
+  author  = {{OpenML}},
+  title   = {{OpenML-CC18} Curated Classification benchmarking suite (Study 99)},
+  year    = {2026},
+  url     = {https://www.openml.org/search?type=benchmark&id=99},
+  urldate = {2026-08-24},
+}
+
+% =============================================================================
+%  3. Documentos propios del proyecto
+% =============================================================================
+
+@thesis{borbon2026autopipead,
+  author      = {Borbón Mena, Ricardo Antonio},
+  title       = {{AutoPipeAD}: Selección automática de pipelines de preprocesamiento
+                 para detección de anomalías en imágenes},
+  type        = {Proyecto de Aplicación de la Ingeniería en Computadores},
+  institution = {Instituto Tecnológico de Costa Rica},
+  address     = {Cartago, Costa Rica},
+  year        = {2026},
+  url         = {https://github.com/ItsRichard7/AutoPipeAD},
+  urldate     = {2026-08-04},
+}
+
+@techreport{borbon2026anteproyecto,
+  author      = {Borbón Mena, Ricardo Antonio},
+  title       = {Generalización de framework de selección automática de pipelines de
+                 preprocesamiento a múltiples tareas de aprendizaje automático mediante
+                 meta-aprendizaje: Anteproyecto},
+  institution = {Instituto Tecnológico de Costa Rica},
+  address     = {Cartago, Costa Rica},
+  type        = {Anteproyecto de Trabajo Final de Graduación},
+  year        = {2026},
+}
