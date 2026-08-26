@@ -1,0 +1,1593 @@
+%==============================================================================
+%  PLANTILLA — INFORME DE TRABAJO FINAL DE GRADUACIÓN (TFG)
+%  Instituto Tecnológico de Costa Rica
+%  Área Académica de Ingeniería en Computadores
+%
+%  Basada en la plantilla oficial Plantilla_informe_TFG.docx y en el documento
+%  "Lineamientos trabajos de graduación V4.1 (CE5601)".
+%
+%  Compilar con:   latexmk -pdf Plantilla_Informe_TFG.tex
+%  (encadena pdflatex -> biber -> pdflatex -> pdflatex, que es lo que hace
+%  falta para que cuadren los índices y la bibliografía IEEE).
+%
+%  Estándar de citación: IEEE. Las fuentes se administran en referencias.bib.
+%
+%  Requiere:  ./media con image1.png (logo TEC) e image2.png
+%             ./referencias.bib
+%==============================================================================
+
+\documentclass[12pt,letterpaper,oneside]{article}
+
+%------------------------------------------------------------------ Idioma ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+% es-tabla: fuerza «Tabla» en lugar de «Cuadro» (predeterminado de babel-spanish).
+% es-noquoting: evita que babel se apropie de los signos " y < >.
+\usepackage[spanish,es-tabla,es-noquoting]{babel}
+
+%----------------------------------------------------- Página y espaciado ----
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing                 % interlineado 1,5
+\usepackage{parskip}            % separación entre párrafos, sin sangría
+
+%------------------------------------------------------- Pie de página -------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[R]{\thepage}         % número de página a la derecha (como el .docx)
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[R]{\thepage}}
+
+%------------------------------------------------- Tablas, figuras, código ---
+\usepackage{graphicx}
+\graphicspath{{media/}{figuras/}}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{enumitem}
+\setlist{nosep,topsep=4pt}
+
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,labelsep=colon,skip=6pt}
+\captionsetup[table]{position=above}
+\captionsetup[figure]{position=below}
+
+% Columnas de ancho elástico para tabularx:
+%   C = centrada,  L = alineada a la izquierda
+% Anteponga \ancho{f} para darle a una columna f veces el ancho base
+% (la suma de los factores debe ser igual al número de columnas X).
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\ancho}[1]{\hsize=#1\hsize\linewidth=\hsize}
+
+% Lista para usar DENTRO de una celda de tabla: sin espacio superior, para que
+% la primera viñeta quede alineada con el texto de las demás columnas.
+\newlist{celdaitem}{itemize}{1}
+\setlist[celdaitem]{label=\textbullet,leftmargin=1.2em,nosep,topsep=0pt,
+                    partopsep=0pt,parsep=0pt,itemsep=2pt}
+
+% Un poco más de aire entre las filas de las tablas
+\renewcommand{\arraystretch}{1.15}
+
+%------------------------------------------------------------- Títulos -------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection.}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection.}{0.6em}{}
+\titlespacing*{\section}{0pt}{18pt}{10pt}
+\titlespacing*{\subsection}{0pt}{14pt}{8pt}
+\titlespacing*{\subsubsection}{0pt}{12pt}{6pt}
+\setcounter{secnumdepth}{3}     % numeración hasta 1.1.1
+\setcounter{tocdepth}{3}        % índice general hasta 1.1.1
+
+%--------------------------------------------------------- Hiperenlaces ------
+\usepackage[hidelinks,unicode]{hyperref}
+\hypersetup{
+  pdftitle   = {Generalización de framework de selección automática de pipelines de
+                preprocesamiento a múltiples tareas de aprendizaje automático mediante
+                meta-aprendizaje},
+  pdfauthor  = {Ricardo Antonio Borbón Mena},
+  pdfsubject = {Informe de Trabajo Final de Graduación},
+  pdflang    = {es-CR},
+  bookmarksnumbered = true
+}
+\usepackage{bookmark}
+
+%-------------------------------------------- Comando para el texto guía -----
+% Todo el texto de ayuda de la plantilla va dentro de \guia{...}. Aparece en
+% gris y cursiva para distinguirlo. BÓRRELO conforme escriba su informe; al
+% terminar no debe quedar ningún \guia en el documento.
+\usepackage{xcolor}
+\newcommand{\guia}[1]{{\itshape\color{gray!75!black}#1}}
+
+% Atajo para escribir nombres de comandos dentro del texto guía
+\newcommand{\cmd}[1]{\texttt{\textbackslash #1}}
+
+%------------------------------------------------------- Bibliografía --------
+% ESTÁNDAR DE CITACIÓN: IEEE  (decidido para este TFG; los lineamientos exigen
+% usar uno solo — APA 7 o IEEE — de forma rigurosa en TODO el documento).
+%
+% Las referencias se administran en el archivo referencias.bib.
+% En el texto se cita con \cite{clave}, que produce marcas numéricas [1], [2]…
+% Requiere compilar con biber (latexmk lo hace automáticamente).
+\usepackage{csquotes}   % requerido por biblatex cuando se usa babel
+\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
+\addbibresource{referencias.bib}
+
+% sorting=none: las referencias se numeran en el orden en que aparecen citadas
+% en el texto, como manda IEEE.
+
+%==============================================================================
+\begin{document}
+%==============================================================================
+
+%------------------------------------------------------------- PORTADA -------
+% La portada cuenta como página 1, pero su número no debe aparecer.
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+{\large\bfseries Instituto Tecnológico de Costa Rica\par}
+\vspace{0.4cm}
+{\large\bfseries Área Académica de Ingeniería en Computadores\par}
+\vspace{0.4cm}
+{\large\bfseries Programa de Licenciatura en Ingeniería en Computadores\par}
+
+\vspace{1.2cm}
+\includegraphics[width=7.7cm]{image1.png}
+
+\vspace{1.5cm}
+{\LARGE\bfseries Generalización de framework de selección automática de pipelines
+de preprocesamiento a múltiples tareas de aprendizaje automático mediante
+meta-aprendizaje\par}
+
+\vspace{1.5cm}
+{\large\bfseries Informe de Trabajo de Graduación para optar por el título de
+Ingeniero en Computadores con grado académico de Licenciatura\par}
+
+\vfill
+{\large\bfseries Ricardo Antonio Borbón Mena\par}
+\vspace{1cm}
+{\large\bfseries Cartago, noviembre, 2026\par}
+
+\end{titlepage}
+
+% A partir de aquí sí se numeran las páginas; la portada fue la número 1.
+\setcounter{page}{2}
+
+%--------------------------------------------------- HOJA DE APROBACIÓN ------
+\section*{Hoja de aprobación}
+\addcontentsline{toc}{section}{Hoja de aprobación}
+
+\guia{Esta sección será completada el día de la defensa.}
+
+\guia{Debe contener las firmas del profesor asesor y del tribunal evaluador.}
+
+\guia{El estudiante deberá digitalizarla e incluirla en el documento final.}
+
+\guia{Debe de borrar todo este texto, incluso el título; solo debe de ir la
+hoja de aprobación.}
+
+\clearpage
+%--------------------------------------------------------- DEDICATORIA -------
+\section*{Dedicatoria}
+\addcontentsline{toc}{section}{Dedicatoria}
+
+\guia{En esta sección puede dedicar su trabajo a una o varias personas. Debe
+ser breve y ocupar únicamente una página.}
+
+\clearpage
+%------------------------------------------------------ AGRADECIMIENTOS ------
+\section*{Agradecimientos}
+\addcontentsline{toc}{section}{Agradecimientos}
+
+\guia{Esta sección es una extensión de la dedicatoria. Incluya las personas,
+organizaciones o instituciones que contribuyeron al desarrollo del proyecto.
+Debe redactarse de forma formal y ocupar una página.}
+
+\clearpage
+%------------------------------------------------------------- RESUMEN -------
+\section*{Resumen}
+\addcontentsline{toc}{section}{Resumen}
+
+\guia{Redacte un resumen claro del proyecto en un máximo de 300 palabras. Debe
+incluir el \textbf{problema abordado}, el \textbf{objetivo del proyecto}, la
+\textbf{metodología utilizada}, los \textbf{resultados principales}, entre
+otros puntos que considere importante. A su vez, se debe incluir 6 palabras
+clave, de lo general a lo específico.}
+
+\vspace{1em}
+\noindent\textbf{Palabras clave:} \guia{palabra 1, palabra 2, palabra 3,
+palabra 4, palabra 5, palabra 6.}
+
+\clearpage
+%------------------------------------------------------------ ABSTRACT -------
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+\guia{Traducción fiel del resumen al idioma inglés. Debe mantener exactamente
+el mismo contenido y estructura. Incluya también las keywords utilizadas en el
+resumen.}
+
+\vspace{1em}
+\noindent\textbf{Keywords:} \guia{keyword 1, keyword 2, keyword 3, keyword 4,
+keyword 5, keyword 6.}
+
+\clearpage
+%------------------------------------------------------- ÍNDICE GENERAL ------
+% Se genera automáticamente a partir de los títulos. Compile dos o tres veces.
+\renewcommand{\contentsname}{ÍNDICE GENERAL}
+\phantomsection
+\addcontentsline{toc}{section}{ÍNDICE GENERAL}
+\begingroup
+\singlespacing
+\tableofcontents
+\endgroup
+
+\clearpage
+%----------------------------------------------------- ÍNDICE DE TABLAS ------
+\renewcommand{\listtablename}{ÍNDICE DE TABLAS}
+\phantomsection
+\addcontentsline{toc}{section}{ÍNDICE DE TABLAS}
+\begingroup
+\singlespacing
+\listoftables
+\endgroup
+
+\vspace{1em}
+\guia{Lista de todas las tablas del documento con su número, descripción y
+número de página. Se genera automáticamente a partir de los \cmd{caption} de
+cada tabla.}
+
+\guia{Las tablas deben incluir un título descriptivo mediante \cmd{caption},
+colocado \emph{antes} del contenido de la tabla, para permitir su inclusión
+automática en el índice de tablas.}
+
+\guia{El primer ejemplo de tabla se suele utilizar cuando la información cabe
+en una sola celda. Si la información es mayor, es preferible utilizar el
+segundo ejemplo de tabla, que tiene mejores divisiones.}
+
+\vspace{1em}
+\noindent\textbf{Ejemplos de tabla}
+
+\begin{table}[H]
+\centering
+\caption{Primer ejemplo de tabla}
+\label{tab:ejemplo1}
+\begin{tabularx}{\textwidth}{CCCC}
+\toprule
+\textbf{Nombre} & \textbf{Descripción} & \textbf{Características} & \textbf{Observaciones} \\
+\midrule
+León    & Felino Africano & Melena imponente & Gran dentadura  \\
+Colibrí & Ave minúscula   & Aleteo rápido    & Consume néctar  \\
+Orca    & Cetáceo robusto & Gran nadado      & Forman colonias \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Segundo ejemplo de tabla}
+\label{tab:ejemplo2}
+\begin{tabularx}{\textwidth}{>{\ancho{0.7}}C>{\ancho{0.9}}C>{\ancho{1.6}}L>{\ancho{0.8}}C}
+\toprule
+\textbf{Nombre} & \textbf{Descripción} & \textbf{Características} & \textbf{Observaciones} \\
+\midrule
+León & Felino Africano &
+  \begin{celdaitem}
+    \item Melena imponente
+    \item Rugido fuerte
+  \end{celdaitem} &
+  Es el ``rey de la selva'' \\
+\addlinespace
+Colibrí & Ave minúscula &
+  \begin{celdaitem}
+    \item Aleteo rápido
+    \item Colores vivos
+  \end{celdaitem} &
+  Consume néctar \\
+\addlinespace
+Orca & Cetáceo robusto &
+  \begin{celdaitem}
+    \item Gran nadado
+    \item Inteligencia avanzada
+  \end{celdaitem} &
+  Forman colonias \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\clearpage
+%---------------------------------------------------- ÍNDICE DE FIGURAS ------
+\renewcommand{\listfigurename}{ÍNDICE DE FIGURAS}
+\phantomsection
+\addcontentsline{toc}{section}{ÍNDICE DE FIGURAS}
+\begingroup
+\singlespacing
+\listoffigures
+\endgroup
+
+\vspace{1em}
+\guia{Lista de todas las figuras del documento con su número, descripción y
+número de página. Se genera automáticamente a partir de los \cmd{caption} de
+cada figura.}
+
+\guia{Las figuras deben incluir un título descriptivo mediante \cmd{caption},
+colocado \emph{después} de la imagen, para permitir su inclusión automática en
+el índice de figuras.}
+
+\vspace{1em}
+\noindent\textbf{Ejemplo de figura}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=8.2cm]{image2.png}
+\caption{Ejemplo de figura}
+\label{fig:ejemplo1}
+\end{figure}
+
+\clearpage
+%---------------------------------------------------- SIGLAS Y ACRÓNIMOS -----
+\section*{Siglas y acrónimos}
+\addcontentsline{toc}{section}{Siglas y acrónimos}
+
+\begin{description}[leftmargin=3.6cm,style=sameline,font=\bfseries]
+  \item[ADR] Registro de decisión de arquitectura (\emph{Architecture Decision Record})
+  \item[API] Interfaz de programación de aplicaciones (\emph{Application Programming Interface})
+  \item[AutoML] Aprendizaje automático automatizado (\emph{Automated Machine Learning})
+  \item[AUC-ROC] Área bajo la curva característica operativa del receptor
+        (\emph{Area Under the Receiver Operating Characteristic Curve})
+  \item[CC18] \emph{OpenML Curated Classification 2018}, colección curada de
+        conjuntos de datos de clasificación
+  \item[CSV] Valores separados por comas (\emph{Comma-Separated Values})
+  \item[IA] Inteligencia artificial
+  \item[IQR] Rango interquartílico (\emph{Interquartile Range})
+  \item[kNN] $k$ vecinos más cercanos (\emph{$k$-Nearest Neighbors})
+  \item[LODO] Exclusión de conjunto de datos (\emph{Leave-One-Dataset-Out})
+  \item[MVTec AD] \emph{MVTec Anomaly Detection}, conjunto de datos de referencia
+        para detección de anomalías industriales
+  \item[TEC] Instituto Tecnológico de Costa Rica
+  \item[TFG] Trabajo Final de Graduación
+  \item[TPE] Estimador de densidad de árbol de Parzen
+        (\emph{Tree-structured Parzen Estimator})
+  \item[UCI] Repositorio de aprendizaje automático de la Universidad de California,
+        Irvine
+\end{description}
+
+\clearpage
+%=============================== CUERPO DEL INFORME ===========================
+
+\section{Introducción}
+\label{sec:introduccion}
+
+El preprocesamiento de datos es una de las etapas que más incide en el desempeño de
+los modelos de aprendizaje automático \cite{garcia2015preprocessing}. La elección de
+las transformaciones aplicadas a los datos de entrada, su orden y sus parámetros
+determina en gran medida la calidad de las predicciones, y suele exigir un proceso
+manual de prueba y error que consume tiempo de experimentación y conocimiento experto.
+La automatización de esta etapa, dentro del campo conocido como aprendizaje automático
+automatizado (AutoML), busca reducir ese esfuerzo seleccionando de forma sistemática la
+combinación de transformaciones que maximiza una métrica objetivo
+\cite{hutter2019automl, feurer2015autosklearn}.
+
+Este proyecto parte de una librería existente, \textit{AutoPipeAD}
+\cite{borbon2026autopipead}, desarrollada por el autor en el curso CE-1114 y cuyo
+propósito es automatizar la selección de pipelines de preprocesamiento para la
+detección de anomalías en conjuntos de datos de imágenes. La librería define un espacio
+de transformaciones componibles, genera y evalúa combinaciones mediante optimización
+bayesiana con Optuna \cite{akiba2019optuna}, ejecuta las evaluaciones en paralelo y
+selecciona el pipeline de mejor desempeño, generando reportes reproducibles. Está
+organizada en una arquitectura modular de seis componentes desacoplados y fue probada
+sobre conjuntos de datos de referencia como MVTec AD \cite{bergmann2019mvtec} y
+CIFAR-10 \cite{krizhevsky2009cifar} con anomalías sintéticas.
+
+El presente Trabajo Final de Graduación, cuyo alcance quedó fijado en el anteproyecto
+aprobado \cite{borbon2026anteproyecto}, evoluciona esa librería hacia
+\textit{AutoPipe}: un framework agnóstico a la tarea de aprendizaje, con una capa de
+meta-aprendizaje que recomienda configuraciones iniciales de búsqueda a partir de las
+características descriptivas del conjunto de datos.
+
+\subsubsection{Descripción de la organización}
+
+El proyecto se desarrolla en el Instituto Tecnológico de Costa Rica (TEC), institución
+pública de educación superior universitaria creada mediante la Ley No. 4777 del 10 de
+junio de 1971, dedicada a la docencia, la investigación y la extensión en los campos de
+la ciencia y la tecnología. Su campus central se ubica en Cartago, Costa Rica, y cuenta
+con sedes y centros académicos adicionales en distintas regiones del país.
+
+Dentro del TEC, el proyecto se enmarca en la unidad académica responsable del programa
+de Licenciatura en Ingeniería en Computadores, que articula la formación en las áreas de
+electrónica digital, arquitectura de computadores, sistemas embebidos, redes, software e
+inteligencia artificial. El trabajo se desarrolla bajo la supervisión de un profesor
+asesor asignado por la unidad académica.
+
+A diferencia de un proyecto realizado con una contraparte empresarial, este trabajo
+tiene un carácter académico e investigativo: su contraparte es la propia unidad
+académica, y su producto es una librería de software de uso abierto orientada a la
+comunidad de investigadores e ingenieros de aprendizaje automático. En consecuencia, no
+existe información confidencial de una organización externa que deba protegerse, y todos
+los artefactos del proyecto —código, documentación y resultados experimentales— son
+públicos.
+
+\subsubsection{Descripción del área de conocimiento del proyecto}
+
+El proyecto se ubica en el área de conocimiento de inteligencia artificial y aprendizaje
+automático, dentro del eje de computación y software de la carrera de Ingeniería en
+Computadores. Aborda el diseño y la implementación de un framework de software para la
+selección automática de pipelines de preprocesamiento, integrando tres cuerpos de
+técnicas:
+
+\begin{itemize}
+  \item \textbf{Optimización de hiperparámetros.} La búsqueda del pipeline se plantea
+        como un problema de optimización sobre un espacio de configuraciones discreto,
+        resuelto mediante optimización bayesiana \cite{snoek2012practical} en lugar de
+        búsqueda exhaustiva.
+  \item \textbf{Meta-aprendizaje.} La transferencia de conocimiento entre conjuntos de
+        datos permite orientar una búsqueda nueva con la experiencia acumulada en
+        búsquedas anteriores \cite{vanschoren2018metalearning, brazdil2009metalearning}.
+  \item \textbf{Ingeniería de software y experimentación reproducible.} El producto es
+        una librería con contratos de extensión explícitos, suite de pruebas de
+        regresión y control de semillas, sobre la que se ejecuta un protocolo
+        experimental definido de antemano.
+\end{itemize}
+
+La combinación de las tres es lo que caracteriza el aporte desde la Ingeniería en
+Computadores: no se trata solo de aplicar un algoritmo de aprendizaje, sino de diseñar
+la arquitectura de software que hace que ese algoritmo sea extensible, verificable y
+reproducible.
+
+\subsubsection{Trabajos similares encontrados}
+
+La selección automática de pipelines de preprocesamiento es un problema estudiado dentro
+del campo del AutoML \cite{hutter2019automl}. La Tabla~\ref{tab:trabajos-similares}
+compara los trabajos directamente relacionados con este proyecto.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comparación con trabajos previos relacionados}
+\label{tab:trabajos-similares}
+\begin{tabularx}{\textwidth}{>{\ancho{0.55}}L>{\ancho{1.0}}L>{\ancho{1.45}}L}
+\toprule
+\textbf{Trabajo} & \textbf{Enfoque} & \textbf{Relación con este proyecto} \\
+\midrule
+\textit{auto-sklearn}
+\cite{feurer2015autosklearn, feurer2015warmstart} &
+Sistema AutoML que selecciona conjuntamente el modelo y su preprocesamiento dentro de un
+catálogo cerrado de estimadores, e inicializa la optimización bayesiana con
+configuraciones recomendadas por meta-aprendizaje. &
+Es el antecedente más cercano y la fuente del mecanismo de arranque en caliente que este
+proyecto adopta. Se diferencia en tres puntos: el modelo base permanece como componente
+externo configurable en lugar de elegirse de un catálogo; el espacio de búsqueda se
+compone de transformaciones extensibles por la persona que usa la librería, de modo que
+la capa de meta-aprendizaje se especializa exclusivamente en el preprocesamiento; y se
+incluye la detección de anomalías, familia de tareas que las herramientas generalistas
+de AutoML no cubren. \\
+\addlinespace
+Inicialización de la optimización bayesiana mediante meta-aprendizaje
+\cite{feurer2015warmstart} &
+Demuestra que inyectar configuraciones iniciales derivadas de meta-características de
+conjuntos de datos previos acelera la convergencia de la optimización bayesiana. &
+Aporta el fundamento de la hipótesis central del proyecto. Este trabajo lo aplica a un
+espacio de búsqueda distinto —el de pipelines de preprocesamiento— y lo valida con un
+protocolo propio de exclusión de conjunto de datos. \\
+\addlinespace
+\textit{AutoPipeAD} \cite{borbon2026autopipead} &
+Librería del propio autor que automatiza la selección de pipelines de preprocesamiento
+para detección de anomalías en imágenes, con búsqueda en malla y bayesiana, evaluación
+paralela y reportes reproducibles. &
+Es el punto de partida directo: aporta la arquitectura modular, el motor de búsqueda y la
+infraestructura de evaluación. Sus limitaciones —una sola tarea, una sola modalidad de
+datos y ausencia de memoria entre ejecuciones— son precisamente lo que este proyecto
+resuelve. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Planteamiento del problema}
+
+\subsubsection{Contexto del problema}
+
+La construcción de un modelo de aprendizaje automático exige, antes del entrenamiento,
+decidir cómo se preprocesan los datos: qué transformaciones se aplican —por ejemplo
+normalización, escalado, codificación de variables categóricas, imputación de valores
+faltantes, reducción de ruido o redimensionamiento—, en qué orden y con qué parámetros
+\cite{garcia2015preprocessing}. El espacio de combinaciones posibles es amplio, y la
+mejor combinación depende tanto de la tarea —clasificación, agrupamiento, detección de
+anomalías \cite{chandola2009anomaly}— como de las características particulares del
+conjunto de datos. En la práctica, esta selección se realiza de forma manual y guiada
+por la experiencia, lo que la vuelve costosa en tiempo y dependiente de conocimiento
+experto.
+
+La librería \textit{AutoPipeAD} automatiza esa selección, pero únicamente para la tarea
+de detección de anomalías sobre conjuntos de datos de imágenes. Su motor de búsqueda, su
+mecanismo de paralelización, su abstracción de pipelines componibles y su generación de
+reportes reproducibles son, por diseño, independientes del dominio. El acoplamiento a
+imágenes y a la detección de anomalías se concentra, en cambio, en unos pocos puntos
+concretos del código, lo que impide que la herramienta cumpla su propósito original de
+ser de propósito general.
+
+Por otra parte, cada vez que la librería se enfrenta a un conjunto de datos nuevo
+ejecuta la búsqueda partiendo desde cero, sin aprovechar información de búsquedas
+anteriores sobre conjuntos de datos similares. Dado que la búsqueda automática consume
+tiempo de cómputo proporcional al número de combinaciones evaluadas, repetir el proceso
+completo para cada conjunto de datos nuevo representa una oportunidad de mejora
+identificable.
+
+\subsubsection{Justificación del problema}
+
+\textbf{Innovación.} La generalización del framework a múltiples tareas, combinada con
+una capa de meta-aprendizaje que recomienda configuraciones iniciales de búsqueda a
+partir de meta-características del conjunto de datos, constituye un aporte que va más
+allá de la ingeniería incremental. Mientras que la selección automática de pipelines es
+un problema estudiado en AutoML \cite{hutter2019automl}, la transferencia de conocimiento
+entre conjuntos de datos para acelerar específicamente la selección de pipelines de
+preprocesamiento sigue siendo un área con margen de aporte
+\cite{brazdil2009metalearning}, y permite formular una hipótesis verificable.
+
+\textbf{Evidencia del problema.} El acoplamiento al dominio de imágenes y a la detección
+de anomalías es directamente observable en el diseño de la librería: su componente de
+carga de datos asume una estructura de directorios propia de imágenes y su componente de
+evaluación calcula métricas específicas de detección de anomalías. El arranque en frío es
+igualmente verificable: el motor de búsqueda no consume ni produce ninguna base de
+conocimiento entre ejecuciones, por lo que cada nueva búsqueda parte siempre desde cero.
+La auditoría de acoplamiento realizada como parte de este trabajo, descrita en la
+Sección~\ref{sec:trabajo-realizado}, confirma y precisa ese diagnóstico.
+
+\textbf{Valor generado.} Para la comunidad de investigadores e ingenieros de aprendizaje
+automático, una herramienta que automatice el preprocesamiento de forma agnóstica a la
+tarea reduce el tiempo de experimentación y la dependencia de conocimiento experto. La
+capa de meta-aprendizaje añade valor al reducir el costo de cómputo de la búsqueda, lo
+que se traduce en menor tiempo y menor consumo energético por experimento. Al área de
+conocimiento aporta un artefacto de software reutilizable y un estudio experimental
+reproducible sobre la efectividad del arranque en caliente meta-aprendido, sea el
+resultado positivo o negativo.
+
+\subsubsection{Enunciado del problema}
+
+¿Cómo generalizar la selección automática de pipelines de preprocesamiento a múltiples
+tareas de aprendizaje automático y reducir el costo de la búsqueda en conjuntos de datos
+nuevos aprovechando, mediante meta-aprendizaje, el conocimiento acumulado sobre conjuntos
+de datos previos?
+
+\subsection{Objetivos del proyecto}
+
+\subsubsection{Objetivo general}
+
+Generalizar el framework \textit{AutoPipeAD} de selección automática de pipelines de
+preprocesamiento a múltiples tareas de aprendizaje automático e incorporar una capa de
+meta-aprendizaje que recomiende configuraciones iniciales de búsqueda a partir de las
+meta-características del conjunto de datos, con el fin de reducir el costo de exploración
+en conjuntos de datos nuevos manteniendo la reproducibilidad de los resultados.
+
+\subsubsection{Objetivos específicos}
+
+\begin{enumerate}
+  \item Disponer de un núcleo agnóstico a la tarea que resuelva detección de anomalías y
+        clasificación tabular sobre una misma arquitectura, verificado por la suite de
+        pruebas de regresión de la librería base en verde y por pruebas que demuestren la
+        ausencia de fuga de información entre los subconjuntos de entrenamiento y
+        validación.
+
+  \item Contar con una base de meta-conocimiento que asocie, para un corpus de conjuntos
+        de datos públicos, sus meta-características con los pipelines de mejor desempeño
+        hallados por la búsqueda, completa y reproducible bajo semillas controladas.
+
+  \item Obtener un recomendador meta-aprendido capaz de producir configuraciones
+        iniciales válidas y ejecutables para un conjunto de datos no visto, integradas en
+        el motor de búsqueda como ensayos iniciales.
+
+  \item Determinar, con evidencia estadística, si el arranque en caliente meta-aprendido
+        reduce el costo de la búsqueda frente al arranque en frío, mediante validación
+        cruzada por exclusión de conjunto de datos y reportes reproducibles.
+\end{enumerate}
+
+Los cuatro objetivos están redactados como logros verificables y no como actividades: en
+cada uno, el criterio que permite declararlo alcanzado está enunciado dentro del propio
+objetivo. La correspondencia entre estos objetivos, sus actividades y sus entregables se
+detalla en el marco metodológico (Sección~\ref{sec:marco-metodologico}).
+
+\subsection{Alcances, entregables y limitaciones del proyecto}
+\label{sec:alcances}
+
+\subsubsection{Alcance}
+
+Para administrar el presupuesto de 336 horas con un margen de riesgo explícito, el
+alcance se organiza en dos niveles.
+
+El \textbf{alcance mínimo comprometido} constituye el criterio de completitud del
+proyecto: el núcleo agnóstico a la tarea con soporte para detección de anomalías —caso de
+continuidad de \textit{AutoPipeAD}— y clasificación sobre datos tabulares; el extractor
+de meta-características; la base de meta-conocimiento sobre un corpus acotado de
+conjuntos de datos públicos; el recomendador de arranque en caliente integrado con el
+motor de búsqueda; la validación experimental por exclusión de conjunto de datos; y la
+documentación técnica con el manual de uso.
+
+Las \textbf{extensiones deseables} se abordan únicamente si el avance verificado del
+alcance mínimo lo permite: el soporte de agrupamiento, cuya evaluación no supervisada
+requiere un protocolo propio; la ampliación del corpus de meta-conocimiento; y un
+meta-modelo de recomendación más sofisticado que el recomendador por vecinos más
+cercanos. La decisión de incorporarlas o descartarlas se toma en un punto de control de
+alcance situado en la séptima semana del cronograma.
+
+\subsubsection{Entregables}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Entregables del proyecto}
+\label{tab:entregables}
+\begin{tabularx}{\textwidth}{>{\ancho{0.45}}C>{\ancho{1.0}}L>{\ancho{1.55}}L}
+\toprule
+\textbf{\#} & \textbf{Entregable} & \textbf{Descripción} \\
+\midrule
+RE1 & Núcleo agnóstico a la tarea &
+Refactorización de \textit{AutoPipeAD} con una interfaz de tarea y un registro de
+métricas que soportan detección de anomalías y clasificación. \\
+\addlinespace
+RE2 & Soporte de datos tabulares &
+Cargador de conjuntos de datos tabulares y transformaciones de preprocesamiento tabular
+—escalado, codificación, imputación y selección de características— construidas sobre la
+extensión del contrato de transformación con semántica de ajuste y transformación. \\
+\addlinespace
+RE3 & Extractor de meta-características &
+Componente que calcula un vector de meta-características descriptivas de un conjunto de
+datos: estadísticas, teórico-informativas y de complejidad. \\
+\addlinespace
+RE4 & Base de meta-conocimiento &
+Estructura de datos que asocia, para un corpus de conjuntos de datos públicos, sus
+meta-características con los pipelines de mejor desempeño hallados por la búsqueda. \\
+\addlinespace
+RE5 & Recomendador meta-aprendido &
+Modelo que, dadas las meta-características de un conjunto de datos nuevo, produce
+configuraciones iniciales de arranque en caliente para el motor de búsqueda. \\
+\addlinespace
+RE6 & Experimentos y reportes comparativos &
+Conjunto de experimentos reproducibles y reportes que comparan arranque en frío contra
+arranque en caliente y documentan la generalización por tarea. \\
+\addlinespace
+RE7 & Documentación y código entregado &
+Documentación técnica, manual de uso y código fuente del framework en repositorio. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Limitaciones}
+
+\begin{itemize}
+  \item El alcance comprometido se restringe a datos tabulares y a las familias de tareas
+        de clasificación y detección de anomalías. No se cubren texto, series temporales
+        ni grafos.
+  \item El framework no entrena ni optimiza el modelo base, que permanece como componente
+        externo configurable a través de una interfaz compatible con scikit-learn
+        \cite{sklearn-docs}. El único modelo entrenado dentro del proyecto es el
+        meta-modelo interno del recomendador.
+  \item El aumento de datos mediante técnicas generativas queda fuera de alcance por las
+        restricciones de tiempo y de hardware, y se documenta como trabajo futuro.
+  \item La paralelización permanece limitada al hardware local; no se contempla
+        distribución en clústeres ni en infraestructura de nube.
+  \item El tamaño del corpus de meta-conocimiento está acotado por el presupuesto de
+        cómputo y de tiempo, lo que limita el alcance estadístico de las conclusiones
+        sobre el meta-aprendizaje.
+  \item La validación se realiza sobre conjuntos de datos públicos; no se garantiza la
+        transferencia de los resultados a conjuntos propietarios o a dominios
+        sustancialmente distintos de los del corpus.
+  \item El proyecto se ejecuta de forma individual con un presupuesto de 336 horas
+        distribuidas en doce semanas, lo que constituye la restricción más fuerte sobre
+        la profundidad alcanzable en cada componente.
+\end{itemize}
+
+\clearpage
+%------------------------------------------------------------------------------
+\section{Marco de referencia teórico}
+\label{sec:marco-teorico}
+
+Este capítulo establece el sistema de conceptos sobre el que se apoya el proyecto. Se
+organiza siguiendo la cadena lógica que va del problema a la solución propuesta: primero
+el preprocesamiento como etapa determinante del desempeño; luego su automatización dentro
+del AutoML y el mecanismo de búsqueda empleado; después el meta-aprendizaje como forma de
+transferir conocimiento entre conjuntos de datos; y finalmente los dos elementos que
+permiten medir el resultado, que son las métricas por tarea y el protocolo de validación.
+
+La Figura~\ref{fig:mapa-conceptual} presenta el mapa conceptual del capítulo.
+
+\begin{figure}[H]
+\centering
+\begin{tabularx}{0.95\textwidth}{C}
+\toprule
+\textbf{Preprocesamiento de datos} \\
+\emph{Determina el desempeño del modelo; su selección manual es costosa} \\
+\midrule
+$\downarrow$ \\
+\midrule
+\textbf{AutoML: selección automática de pipelines} \\
+\emph{Búsqueda sobre un espacio de transformaciones componibles} \\
+\midrule
+$\downarrow$ \\
+\midrule
+\textbf{Optimización bayesiana (TPE)} \\
+\emph{Explora el espacio con menos evaluaciones que la búsqueda exhaustiva} \\
+\midrule
+$\downarrow$ \\
+\midrule
+\textbf{Meta-aprendizaje y arranque en caliente} \\
+\emph{Meta-características $\rightarrow$ recomendación $\rightarrow$ ensayos iniciales} \\
+\midrule
+$\downarrow$ \\
+\midrule
+\textbf{Medición: métricas por tarea y validación por exclusión de conjunto de datos} \\
+\emph{Permite decidir si el arranque en caliente reduce el costo de la búsqueda} \\
+\bottomrule
+\end{tabularx}
+\caption{Mapa conceptual del marco teórico}
+\label{fig:mapa-conceptual}
+\end{figure}
+
+\subsection{Preprocesamiento de datos y su efecto en el desempeño}
+
+El preprocesamiento comprende el conjunto de operaciones que transforman los datos crudos
+en una representación apta para el entrenamiento: escalado de variables numéricas,
+imputación de valores faltantes, codificación de variables categóricas, selección de
+características y, en el caso de imágenes, operaciones como reducción de ruido, ajuste de
+contraste o redimensionamiento \cite{garcia2015preprocessing}. Su relevancia no es
+accesoria: la calidad de la representación acota el desempeño alcanzable por cualquier
+modelo posterior, de modo que dos pipelines distintos sobre los mismos datos y el mismo
+modelo pueden producir resultados sustancialmente diferentes.
+
+Dos propiedades del preprocesamiento resultan determinantes para el diseño de este
+proyecto. La primera es que el efecto de una transformación \textbf{depende del modelo}: los
+modelos basados en distancias, como $k$ vecinos más cercanos, son sensibles al escalado,
+mientras que los basados en particiones del espacio de características lo son mucho menos.
+La segunda es que muchas transformaciones tienen \textbf{estado}: el escalado, la imputación y
+la codificación requieren estimar cantidades a partir de los datos —medias, medianas,
+catálogos de categorías— antes de poder aplicarse. Esta segunda propiedad tiene una
+consecuencia metodológica que se desarrolla en la Sección~\ref{sec:trabajo-realizado}: si
+esas cantidades se estiman sobre el conjunto completo en lugar de solo sobre el
+subconjunto de entrenamiento, se produce fuga de información y la evaluación deja de ser
+válida.
+
+\subsection{Aprendizaje automático automatizado}
+
+El AutoML busca automatizar las decisiones de diseño que tradicionalmente toma una
+persona experta: selección de modelo, ajuste de hiperparámetros y, en el caso que
+interesa aquí, selección del preprocesamiento \cite{hutter2019automl}. Formalmente, la
+selección de un pipeline puede plantearse como un problema de optimización sobre un
+espacio de configuraciones: dado un espacio $\mathcal{P}$ de pipelines posibles, un
+modelo base fijo y una métrica objetivo $m$, se busca el pipeline $p^\ast \in \mathcal{P}$
+que maximiza $m$ evaluada sobre un subconjunto de validación.
+
+El tamaño de $\mathcal{P}$ crece de forma multiplicativa con el número de pasos y de
+alternativas por paso, lo que vuelve impracticable la evaluación exhaustiva en cuanto el
+espacio contiene más de unos pocos pasos. De ahí la necesidad de una estrategia de
+búsqueda que no evalúe todas las combinaciones.
+
+\textit{auto-sklearn} \cite{feurer2015autosklearn} es el sistema de referencia en este
+campo: combina selección de modelo y de preprocesamiento mediante optimización bayesiana,
+y utiliza meta-aprendizaje para inicializar la búsqueda. Su diferencia con este proyecto,
+detallada en la Tabla~\ref{tab:trabajos-similares}, es que el modelo base forma parte del
+espacio de búsqueda, mientras que aquí permanece como componente externo fijo, lo que
+permite atribuir las diferencias de desempeño observadas al preprocesamiento y no al
+modelo.
+
+\subsection{Optimización bayesiana como estrategia de búsqueda}
+
+La optimización bayesiana aborda la optimización de funciones costosas de evaluar
+construyendo un modelo probabilístico de la función objetivo y usándolo para decidir qué
+configuración evaluar a continuación \cite{snoek2012practical}. La decisión equilibra
+explotación —evaluar donde el modelo predice buenos valores— y exploración —evaluar donde
+la incertidumbre es alta—, de modo que el número de evaluaciones necesarias es
+típicamente mucho menor que en búsqueda aleatoria o exhaustiva.
+
+Este proyecto emplea la implementación de Optuna \cite{akiba2019optuna}, cuyo muestreador
+predeterminado es el estimador de densidad de árbol de Parzen (TPE). A diferencia de los
+métodos basados en procesos gaussianos, TPE modela las densidades condicionales de las
+configuraciones que produjeron buenos y malos resultados, lo que lo hace especialmente
+adecuado para espacios de búsqueda con variables categóricas y condicionales, como es el
+caso de un espacio de pipelines donde cada paso puede además omitirse.
+
+Dos aspectos del comportamiento de TPE resultan relevantes para el diseño experimental.
+El primero es que el muestreador no comienza a modelar de inmediato: durante un número
+configurable de ensayos iniciales muestrea al azar, y solo después construye el modelo de
+densidades \cite{optuna-docs}. El segundo es que Optuna permite inyectar configuraciones
+concretas para que se evalúen como primeros ensayos del estudio, mecanismo sobre el que se
+implementa el arranque en caliente. Ambos aspectos fueron verificados experimentalmente en
+este trabajo, como se describe en la Sección~\ref{sec:trabajo-realizado}.
+
+\subsection{Meta-aprendizaje y arranque en caliente}
+
+El meta-aprendizaje estudia cómo aprender de la experiencia acumulada en múltiples tareas
+de aprendizaje para mejorar el desempeño en tareas nuevas
+\cite{vanschoren2018metalearning, brazdil2009metalearning}. En el contexto de la
+optimización de hiperparámetros, la forma más directa de aplicarlo es el
+\textit{arranque en caliente}: en lugar de iniciar la búsqueda desde configuraciones
+aleatorias, se inicia desde configuraciones que resultaron buenas en conjuntos de datos
+similares \cite{feurer2015warmstart}.
+
+El mecanismo requiere tres piezas:
+
+\begin{enumerate}
+  \item Una \textbf{descripción cuantitativa} de cada conjunto de datos, denominada vector
+        de meta-características. Suele agrupar cuatro tipos de medidas: generales, como el
+        número de instancias y de atributos; estadísticas, como los momentos de las
+        distribuciones marginales; teórico-informativas, como entropías e información
+        mutua; y de complejidad, que son medidas geométricas sobre la separabilidad de las
+        clases.
+  \item Una \textbf{base de meta-conocimiento} que asocie, para un corpus de conjuntos de
+        datos, su vector de meta-características con las configuraciones que mejor
+        funcionaron en ellos.
+  \item Un \textbf{mecanismo de recomendación} que, dado el vector de un conjunto de datos
+        nuevo, seleccione configuraciones de la base. El enfoque habitual, y el adoptado
+        en este proyecto, es la búsqueda de los vecinos más cercanos en el espacio de
+        meta-características.
+\end{enumerate}
+
+La extracción de meta-características se realiza con \textit{pymfe}
+\cite{pymfe-docs}, librería que implementa los grupos de medidas descritos arriba. La
+elección de una librería estándar en lugar de una implementación propia responde a la
+mitigación de un riesgo identificado en el anteproyecto: la heterogeneidad de los
+conjuntos de datos públicos dificulta la extracción uniforme de meta-características, y
+una implementación establecida cubre más casos límite que una escrita para el proyecto.
+
+\subsection{Evaluación: métricas por tarea y protocolo de validación}
+
+Cada familia de tareas requiere métricas propias. Para la \textbf{detección de anomalías}
+\cite{chandola2009anomaly}, planteada como clasificación binaria con clases muy
+desbalanceadas, la métrica primaria de este proyecto es el área bajo la curva
+característica operativa del receptor (AUC-ROC), que evalúa la capacidad de ordenamiento
+del modelo con independencia del umbral de decisión. Para la \textbf{clasificación}, la
+métrica primaria es el F1 macro, que promedia el F1 de cada clase con igual peso; a
+diferencia de la exactitud, penaliza a un modelo que acierte solo en la clase
+mayoritaria, propiedad necesaria cuando el corpus contiene conjuntos de datos
+desbalanceados.
+
+Para decidir si el arranque en caliente aporta valor no basta comparar el desempeño final,
+porque ambas condiciones convergen a valores parecidos con presupuesto suficiente. Lo que
+debe medirse es el \textbf{costo de la búsqueda}: cuántos ensayos hacen falta para
+alcanzar un desempeño objetivo. La comparación se realiza mediante validación cruzada por
+exclusión de conjunto de datos (LODO), que para cada conjunto de datos del corpus
+construye la base de meta-conocimiento con los restantes y evalúa sobre el excluido. Este
+protocolo es el análogo, a nivel de conjuntos de datos, de la validación cruzada
+convencional a nivel de instancias, y su supuesto es que los conjuntos de datos del corpus
+son independientes entre sí. La verificación de ese supuesto resultó ser un hallazgo
+relevante de este trabajo y se discute en la Sección~\ref{sec:trabajo-realizado}.
+
+El corpus se construye a partir de conjuntos de datos públicos de OpenML, y en particular
+de la colección curada OpenML-CC18 \cite{openml-cc18}, cuya justificación como universo de
+candidatos se detalla en el capítulo siguiente.
+
+\clearpage
+%------------------------------------------------------------------------------
+\section{Marco metodológico}
+\label{sec:marco-metodologico}
+
+Este capítulo describe la estrategia seguida para resolver el problema y las tácticas
+concretas empleadas en cada etapa. Se presenta primero la naturaleza del trabajo y la
+justificación de la estrategia elegida, luego la secuencia del proceso, y finalmente el
+desglose que asocia cada objetivo específico con sus actividades, entregables,
+herramientas y estrategias de verificación.
+
+\subsection{Naturaleza del trabajo y estrategia elegida}
+
+El proyecto combina dos modalidades. Por una parte corresponde al desarrollo de un nuevo
+producto, en tanto evoluciona una librería existente hacia un framework agnóstico a la
+tarea e incorpora una capa de meta-aprendizaje que la herramienta actual no posee. Por
+otra parte incorpora una componente de investigación teórico-práctica, dado que formula y
+evalúa empíricamente una hipótesis verificable: si el arranque en caliente meta-aprendido
+reduce el costo de la búsqueda frente al arranque en frío.
+
+La estrategia adoptada responde a tres decisiones metodológicas.
+
+\textbf{Evolución sobre reinvención.} Se reutiliza la arquitectura modular existente y se
+construye sobre sus decisiones de diseño consolidadas —motor de búsqueda, paralelización y
+modelo base externo configurable— en lugar de reescribir el framework. La consecuencia
+práctica es que la suite de pruebas de la librería base, con 134 pruebas y una cobertura
+del 97\,\%, funciona como red de regresión durante toda la refactorización: cualquier
+cambio que rompa el caso de uso original se detecta de inmediato.
+
+\textbf{Desarrollo iterativo e incremental con verificación continua.} El trabajo se
+organiza en etapas secuenciales donde cada una construye sobre los resultados de la
+anterior, y cada incremento se acompaña de sus pruebas. La verificación no se posterga a
+una fase de validación final: la suite completa, el analizador de estilo y el verificador
+de tipos se ejecutan en cada incremento.
+
+\textbf{Decisiones de diseño y de protocolo documentadas antes de implementar o medir.}
+Las decisiones arquitectónicas se registran en documentos de decisión de arquitectura
+(ADR) que consignan el contexto, las alternativas consideradas, la decisión tomada y sus
+consecuencias, antes de escribir el código correspondiente. De forma análoga, y por
+tratarse de un trabajo con componente experimental, las decisiones del protocolo de
+medición se fijan en un documento de pre-registro versionado y fechado, cerrado antes de
+ejecutar los experimentos que gobierna. El propósito es impedir que las reglas de análisis
+se ajusten después de conocer los resultados.
+
+Complementariamente, antes de comprometer trabajo sobre supuestos técnicos no verificados
+se ejecutan \textit{spikes}: experimentos acotados cuyo único objetivo es medir la
+viabilidad de un mecanismo. Esta táctica se aplicó a los dos supuestos de mayor riesgo del
+proyecto, la inyección de ensayos iniciales en el motor de búsqueda y el costo de la
+extracción de meta-características.
+
+\subsection{Secuencia del proceso}
+
+El proceso se organiza en las ocho etapas de la
+Tabla~\ref{tab:etapas}, donde cada una produce los insumos de la siguiente.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Etapas del proceso y su encadenamiento}
+\label{tab:etapas}
+\begin{tabularx}{\textwidth}{>{\ancho{0.42}}C>{\ancho{1.05}}L>{\ancho{1.53}}L}
+\toprule
+\textbf{\#} & \textbf{Etapa} & \textbf{Insumo que produce para la siguiente} \\
+\midrule
+E1 & Análisis y diseño de la generalización &
+Contrato de transformación con semántica de ajuste, interfaz de tarea y criterios de
+inclusión del corpus. \\
+\addlinespace
+E2 & Implementación del núcleo agnóstico y soporte tabular &
+Núcleo capaz de evaluar clasificación tabular sin fuga de información. \\
+\addlinespace
+E3 & Implementación del extractor de meta-características &
+Vector de meta-características reproducible para cualquier conjunto de datos. \\
+\addlinespace
+E4 & Construcción de la base de meta-conocimiento &
+Corpus descrito y sus pipelines ganadores. \\
+\addlinespace
+E5 & Implementación del recomendador meta-aprendido &
+Configuraciones iniciales inyectables en el motor de búsqueda. \\
+\addlinespace
+E6 & Diseño experimental y validación &
+Mediciones de costo de búsqueda en ambas condiciones. \\
+\addlinespace
+E7 & Generación de reportes y análisis de resultados &
+Evidencia sobre la hipótesis y sobre la generalización por tarea. \\
+\addlinespace
+E8 & Documentación y entrega &
+Documentación técnica, manual de uso y código en repositorio. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La Figura~\ref{fig:flujo-solucion} resume el flujo de la solución en ejecución, una vez
+construidos todos los componentes. Los bloques sombreados corresponden a componentes
+nuevos o extendidos respecto de la librería base.
+
+\begin{figure}[H]
+\centering
+\begin{tabularx}{0.95\textwidth}{C}
+\toprule
+Conjunto de datos (tabular o imágenes) $+$ tarea de aprendizaje \\
+\midrule
+$\downarrow$ \\
+\midrule
+\textbf{Extractor de meta-características} $\rightarrow$
+\textbf{recomendador meta-aprendido} $\rightarrow$ configuraciones iniciales \\
+\midrule
+$\downarrow$ \\
+\midrule
+Motor de búsqueda con arranque en caliente $\rightarrow$ evaluación paralela
+$\rightarrow$ selección \\
+\midrule
+$\downarrow$ \\
+\midrule
+Pipeline de mejor desempeño $+$ reporte reproducible \\
+\bottomrule
+\end{tabularx}
+\caption{Flujo de la solución con la capa de meta-aprendizaje}
+\label{fig:flujo-solucion}
+\end{figure}
+
+\subsection{Desglose por objetivo específico}
+
+Las Tablas~\ref{tab:desglose} y~\ref{tab:desglose-2} desglosan cada objetivo específico en
+sus actividades principales, los entregables que produce, las técnicas y herramientas
+empleadas y las estrategias de verificación y validación aplicadas.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Desglose del marco metodológico: objetivos específicos 1 y 2}
+\label{tab:desglose}
+\begin{tabularx}{\textwidth}{>{\ancho{0.8}}L>{\ancho{1.32}}L>{\ancho{0.62}}C>{\ancho{0.9}}L>{\ancho{1.36}}L}
+\toprule
+\textbf{Objetivo} & \textbf{Actividades principales} & \textbf{Entrega\-bles} &
+\textbf{Técnicas y herramientas} & \textbf{Verificación y validación} \\
+\midrule
+\textbf{OE1.} Núcleo agnóstico a la tarea con clasificación tabular &
+\begin{celdaitem}
+  \item Auditoría del acoplamiento a imágenes y anomalías
+  \item Diseño del contrato de ajuste y transformación
+  \item Diseño de la interfaz de tarea y del registro de métricas
+  \item Refactorización del protocolo de evaluación
+  \item Cargador y transformaciones tabulares
+\end{celdaitem} &
+RE1, RE2 &
+Python, scikit-learn, pandas, patrón estrategia, ADR, \texttt{pytest}, \texttt{ruff},
+\texttt{mypy} &
+\begin{celdaitem}
+  \item Suite de regresión de la librería base en verde, sin editar
+  \item Prueba de ausencia de fuga entre entrenamiento y validación
+  \item Prueba de aislamiento entre candidatos de la búsqueda
+  \item Cobertura mínima del 70\,\% en módulos nuevos
+\end{celdaitem} \\
+\addlinespace
+\textbf{OE2.} Base de meta-conocimiento completa y reproducible &
+\begin{celdaitem}
+  \item Implementación del extractor de meta-características
+  \item Selección del corpus según criterios de inclusión
+  \item Ejecución paralela de la búsqueda sobre el corpus
+  \item Registro de meta-características y pipelines ganadores
+\end{celdaitem} &
+RE3, RE4 &
+\textit{pymfe}, OpenML, \texttt{joblib}, Optuna &
+\begin{celdaitem}
+  \item Consistencia y determinismo del vector sobre conjuntos de control
+  \item Completitud de la base para todo el corpus
+  \item Reproducibilidad: misma semilla, mismo pipeline ganador
+\end{celdaitem} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Desglose del marco metodológico: objetivos específicos 3 y 4}
+\label{tab:desglose-2}
+\begin{tabularx}{\textwidth}{>{\ancho{0.8}}L>{\ancho{1.32}}L>{\ancho{0.62}}C>{\ancho{0.9}}L>{\ancho{1.36}}L}
+\toprule
+\textbf{Objetivo} & \textbf{Actividades principales} & \textbf{Entrega\-bles} &
+\textbf{Técnicas y herramientas} & \textbf{Verificación y validación} \\
+\midrule
+\textbf{OE3.} Recomendador que produce configuraciones válidas y ejecutables &
+\begin{celdaitem}
+  \item Construcción del meta-modelo por vecinos más cercanos
+  \item Generación de configuraciones a partir de meta-características
+  \item Integración con el motor de búsqueda como ensayos iniciales
+\end{celdaitem} &
+RE5 &
+scikit-learn, Optuna &
+\begin{celdaitem}
+  \item Validación de que cada configuración recomendada es válida en la versión vigente
+        del espacio de búsqueda
+  \item Evaluación preliminar sobre conjuntos de datos retenidos
+\end{celdaitem} \\
+\addlinespace
+\textbf{OE4.} Evidencia estadística sobre la reducción del costo de búsqueda &
+\begin{celdaitem}
+  \item Pre-registro del protocolo antes de ejecutar
+  \item Instrumentación de la validación por exclusión de conjunto de datos
+  \item Ejecución de arranque en frío contra arranque en caliente
+  \item Análisis estadístico y generación de reportes
+\end{celdaitem} &
+RE6, RE7 &
+Validación LODO, prueba de rangos con signo de Wilcoxon, \texttt{scipy}, reportes
+HTML y PDF &
+\begin{celdaitem}
+  \item Comparación pareada por conjunto de datos con significancia estadística
+  \item Análisis de robustez frente a la regla de censura
+  \item Verificación de la generalización por tarea
+  \item Revisión de resultados con el profesor asesor
+\end{celdaitem} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Criterios de éxito}
+
+Para que la validación sea verificable, los criterios de éxito quedaron fijados de
+antemano en el anteproyecto \cite{borbon2026anteproyecto} y se resumen a continuación.
+
+\textbf{Corpus y presupuesto de búsqueda.} Entre 15 y 25 conjuntos de datos públicos de
+clasificación tabular, con licencia de uso abierto, entre 500 y 50\,000 instancias, no más
+de 100 características, ausencia de datos de imagen o texto embebidos y un máximo de 10
+clases. La construcción de la base de meta-conocimiento ejecuta 50 ensayos de búsqueda por
+conjunto de datos, con semillas controladas y resultados cacheados.
+
+\textbf{Métricas primarias.} F1 macro para clasificación y AUC-ROC para detección de
+anomalías; las demás métricas se reportan con fines descriptivos.
+
+\textbf{Protocolo de comparación.} Para cada conjunto de datos del corpus, la base de
+meta-conocimiento se construye con los restantes y se comparan dos condiciones sobre el
+excluido, ambas con un presupuesto de 30 ensayos y las mismas semillas: arranque en frío,
+que es la búsqueda estándar, y arranque en caliente, la misma búsqueda con cinco
+configuraciones recomendadas inyectadas como ensayos iniciales. En ambas se emplea el mismo
+modelo base fijo, un clasificador sensible al preprocesamiento, de modo que las diferencias
+observadas sean atribuibles al pipeline y no al modelo. Se miden dos variables: los ensayos
+necesarios para alcanzar al menos el 95\,\% del mejor valor hallado por el arranque en frío
+con el presupuesto completo, y el mejor valor alcanzado tras la mitad del presupuesto.
+
+\textbf{Criterio de la hipótesis.} Se considera confirmada si el arranque en caliente
+reduce la mediana de ensayos hasta el objetivo en al menos un 30\,\% respecto del arranque
+en frío, con significancia estadística según la prueba de rangos con signo de Wilcoxon
+pareada por conjunto de datos con $\alpha = 0{,}05$. Si el criterio no se alcanza, el
+análisis riguroso de las causas y la generalización del framework constituyen por sí mismos
+resultados defendibles.
+
+\textbf{Criterios de éxito de ingeniería.} Con independencia del resultado de la hipótesis:
+la suite de regresión de la librería base se mantiene en verde tras la refactorización; los
+módulos nuevos alcanzan al menos un 70\,\% de cobertura de pruebas; los resultados son
+reproducibles, en el sentido de que la misma semilla produce el mismo pipeline ganador; y
+el flujo completo para la persona que usa la librería se mantiene expresable en no más de
+20 líneas de código.
+
+\subsection{Decisiones de protocolo precisadas durante el desarrollo}
+
+Al implementar el protocolo se identificaron puntos que los criterios de éxito no
+especificaban y que, de resolverse después de observar los resultados, habrían constituido
+grados de libertad indebidos. Se fijaron por escrito en el pre-registro, sin modificar
+ningún criterio ya comprometido. La Tabla~\ref{tab:decisiones-protocolo} los resume.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Decisiones de protocolo precisadas y su justificación}
+\label{tab:decisiones-protocolo}
+\begin{tabularx}{\textwidth}{>{\ancho{0.95}}L>{\ancho{1.0}}L>{\ancho{1.05}}L}
+\toprule
+\textbf{Punto no especificado} & \textbf{Decisión} & \textbf{Justificación} \\
+\midrule
+Modelo base concreto, entre las dos opciones admitidas &
+$k$ vecinos más cercanos con configuración congelada &
+Opera sobre distancias, de modo que escalado, imputación y selección de características
+afectan la métrica de forma sustantiva. Un modelo insensible al preprocesamiento
+produciría un efecto piso que vaciaría la comparación. \\
+\addlinespace
+Parametrización de las transformaciones &
+Toda cantidad dependiente del conjunto de datos se expresa en términos relativos &
+El arranque en caliente transfiere configuraciones entre conjuntos de datos; un parámetro
+absoluto no significa lo mismo en dos conjuntos distintos y puede ser inválido en el
+receptor. \\
+\addlinespace
+Número de semillas por condición &
+Tres semillas, idénticas en ambas condiciones, agregadas por mediana &
+Una sola corrida produce una observación pareada ruidosa, y una conclusión que dependa de
+la semilla obtenida no es defendible. No altera el presupuesto de ensayos ni el
+emparejamiento. \\
+\addlinespace
+Casos en que una condición no alcanza el objetivo &
+Se asigna el presupuesto más uno, de forma simétrica, y se reporta el recuento; se
+recalcula el análisis con castigos más severos &
+El arranque en frío no puede quedar censurado, porque el objetivo se define a partir de su
+propio mejor valor. La regla solo puede afectar al arranque en caliente, y por eso
+requiere una garantía explícita de robustez. \\
+\addlinespace
+Lateralidad de la prueba estadística &
+Una cola en la dirección de la hipótesis, reportando también el valor de dos colas &
+La hipótesis es direccional. Declarar la lateralidad de antemano y reportar ambos valores
+impide que la elección se convierta en un grado de libertad oculto. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\clearpage
+%------------------------------------------------------------------------------
+\section{Descripción del trabajo realizado}
+\label{sec:trabajo-realizado}
+
+\subsection{Descripción del proceso de solución}
+
+Esta sección describe el trabajo ejecutado hasta la fecha de redacción. Cubre las etapas
+E1 y E2 del marco metodológico, correspondientes a los entregables RE1 y RE2, y el inicio
+de RE4 y RE7. Las etapas E3 a E7 están en curso y su descripción se completará conforme
+avancen.
+
+\subsubsection{Auditoría del acoplamiento: punto de partida verificado}
+
+El primer paso fue determinar, sobre el código y no sobre supuestos, qué partes de la
+librería base dependían de imágenes y de la detección de anomalías. El anteproyecto
+sostenía que el acoplamiento se concentraba en la carga de datos y en el cálculo de
+métricas. La auditoría confirmó ese diagnóstico en lo esencial, pero lo corrigió en dos
+direcciones.
+
+Por una parte, redujo el trabajo previsto: el componente de partición de datos resultó
+completamente independiente de la tarea, y el generador de reportes deriva las columnas de
+métricas de los resultados en lugar de tomarlas de una lista fija, de modo que ninguno
+requería modificación.
+
+Por otra parte —y este fue el hallazgo determinante— identificó \textbf{dos funciones
+adicionales, dentro del motor de búsqueda, específicas de la detección de anomalías y de
+fallo silencioso}. La normalización de predicciones binariza la salida del modelo, de modo
+que ante un problema de cinco clases convierte el vector $[0,1,2,3,4]$ en $[0,1,1,1,1]$; y
+la obtención de puntajes continuos toma una sola columna de la matriz de probabilidades,
+descartando cuatro de cinco columnas en un problema multiclase. Ninguna de las dos levanta
+excepción: producen métricas plausibles y equivocadas. Ambos comportamientos se verificaron
+ejecutando el código, no leyéndolo.
+
+La consecuencia de diseño fue directa: la abstracción de tarea debía agrupar cuatro
+responsabilidades y no dos. Separar las métricas de la normalización de predicciones
+habría permitido que una tarea nueva declarara sus métricas y heredara en silencio la
+normalización binaria, que es exactamente el modo de fallo documentado.
+
+\subsubsection{Riesgo técnico crítico: el contrato de transformación}
+
+El contrato de transformación de la librería base expone una única operación, aplicable a
+una muestra a la vez y sin estado. De forma coherente, el protocolo de evaluación
+transformaba el conjunto de datos completo \emph{antes} de partirlo en entrenamiento y
+validación, lo cual es inofensivo mientras las transformaciones no tengan estado.
+
+El preprocesamiento tabular invalida ese supuesto. El escalado necesita la media y la
+desviación de las columnas; la imputación, la media o la moda; la codificación, el catálogo
+de categorías. Todas esas cantidades deben estimarse \textbf{únicamente con el subconjunto
+de entrenamiento}: estimarlas sobre el conjunto completo introduce información de la
+validación en la transformación aplicada al entrenamiento, sesga el desempeño medido y
+anula la validez de los experimentos.
+
+Este era el riesgo técnico central del proyecto, y se resolvió en el diseño antes de
+escribir cualquier transformación tabular. La Tabla~\ref{tab:alternativas-contrato}
+compara las alternativas consideradas.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Alternativas consideradas para extender el contrato de transformación}
+\label{tab:alternativas-contrato}
+\begin{tabularx}{\textwidth}{>{\ancho{0.8}}L>{\ancho{0.48}}C>{\ancho{1.72}}L}
+\toprule
+\textbf{Alternativa} & \textbf{Decisión} & \textbf{Razón} \\
+\midrule
+Añadir ajuste y transformación como métodos abstractos al contrato existente &
+Rechazada &
+Obligaría a modificar las siete transformaciones de imagen y rompería cualquier
+transformación personalizada ya escrita contra el contrato publicado. \\
+\addlinespace
+Sustituir la operación por muestra por una operación por lote &
+Rechazada &
+Cambia una interfaz pública en uso por los ejemplos y por la suite de regresión, sin
+ganancia funcional. \\
+\addlinespace
+Definir un contrato separado para lo tabular, sin relación con el existente &
+Rechazada &
+Obligaría a duplicar la composición de pipelines y los motores de búsqueda, lo que
+contradice la estrategia de evolución sobre reinvención. \\
+\addlinespace
+Añadir ajuste y transformación como métodos \textbf{concretos}, con implementación por
+defecto sin estado, más una subclase que exige el ajuste de forma explícita &
+\textbf{Adoptada} &
+Ninguna transformación existente requiere cambios: heredan un ajuste que no aprende nada y
+una transformación por lote que reproduce el comportamiento anterior. Las
+transformaciones con estado heredan de la subclase, que registra el ajuste y rechaza
+transformar antes de ajustar. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La decisión se acompañó de un segundo hallazgo obtenido al leer los motores de búsqueda:
+cada candidato se construye tomando instancias del espacio de búsqueda, de modo que
+\textbf{la misma instancia de transformación aparece en muchos candidatos}. Con
+transformaciones sin estado eso es inofensivo, pero en cuanto el ajuste almacene estado en
+el objeto, un candidato contaminaría a los siguientes, y bajo el backend de paralelización
+habría además una condición de carrera entre procesos. La solución fue clonar el pipeline
+dentro del protocolo de evaluación, por la misma razón por la que ya se clonaba el modelo
+base.
+
+El protocolo de evaluación resultante garantiza cuatro propiedades, cada una con su prueba
+asociada: el pipeline se ajusta solo con el subconjunto de entrenamiento; el pipeline se
+clona antes de ajustarse; el modelo base se clona; y todos los candidatos comparten la
+misma partición, para que la comparación sea justa. Las dos primeras pruebas están escritas
+para \emph{fallar} si alguien revierte el cambio: la de fuga usa un conjunto de datos donde
+entrenamiento y validación tienen escalas deliberadamente distintas y verifica que la
+transformación ajustada vio solo las filas de entrenamiento; la de aislamiento evalúa dos
+candidatos que comparten una instancia con estado y comprueba que el resultado coincide con
+evaluarlos por separado.
+
+\subsubsection{Spikes de viabilidad}
+
+Antes de construir el recomendador y el extractor de meta-características se ejecutaron dos
+experimentos acotados para medir supuestos sobre los que descansaba el resto del proyecto.
+
+\textbf{Spike A: inyección de ensayos iniciales.} Verificó que las configuraciones
+inyectadas se consumen como primeros ensayos del estudio y en orden; que cuentan dentro del
+presupuesto de ensayos; que la secuencia es reproducible con la misma semilla; y que el
+podador configurado no interviene cuando el objetivo no reporta valores intermedios. También
+documentó dos comportamientos peligrosos en direcciones opuestas: un índice fuera de rango
+aborta el estudio completo, mientras que una clave desconocida se ignora en silencio. Ambos
+obligan a validar cada configuración recomendada contra la versión vigente del espacio de
+búsqueda antes de inyectarla.
+
+El resultado más relevante del spike fue, sin embargo, otro. Comparando cinco formas de
+arranque sobre un problema controlado, con diez semillas y dos geometrías distintas de la
+función objetivo, se observó que el mecanismo funciona cuando las recomendaciones son
+buenas —el objetivo se alcanza en el primer ensayo—, pero que \textbf{recomendaciones
+plausibles y equivocadas resultan peores que no recomendar nada, e incluso peores que
+recomendar al azar}. La explicación es el mecanismo del muestreador: varios puntos
+agrupados con puntajes altos forman una región que el modelo interpreta como buena, y la
+búsqueda se concentra ahí en lugar de explorar. Este resultado convierte en medible el
+riesgo principal del proyecto y eleva la importancia de la ablación con un recomendador
+aleatorio, ya prevista como análisis de control.
+
+\textbf{Spike B: costo de la extracción de meta-características.} Midió el tiempo de
+extracción por grupo de meta-características sobre tamaños crecientes. Los grupos general,
+estadístico y teórico-informativo cuestan menos de tres segundos en conjunto incluso en el
+techo de 50\,000 instancias. El grupo de complejidad, en cambio, escala con un exponente
+medido de 1{,}91 —comportamiento cuadrático, coherente con medidas basadas en distancias— y
+su costo extrapolado para un solo conjunto de datos en ese techo es de unos 22 minutos.
+
+El spike identificó además que el grupo de complejidad no admite valores faltantes: lanza
+una excepción sin mensaje. Imputar antes de extraer resuelve el fallo por completo. Este es
+el riesgo de heterogeneidad de los conjuntos de datos públicos, anticipado en el
+anteproyecto, materializado y con mitigación verificada.
+
+Ambos spikes produjeron decisiones de configuración que se documentaron en el pre-registro
+antes de que existiera cualquier resultado experimental: la fijación explícita del número de
+ensayos iniciales del muestreador, y el submuestreo del grupo de complejidad a un tamaño fijo
+igual para todos los conjuntos de datos.
+
+\subsubsection{Núcleo agnóstico a la tarea}
+
+La interfaz de tarea se implementó como una estructura de datos inmutable que agrupa las
+cuatro responsabilidades identificadas por la auditoría: el conjunto de métricas válidas, la
+dirección de optimización, la normalización de predicciones y la obtención de puntajes
+continuos. Se descartó una jerarquía de clases porque una tarea no tiene comportamiento
+propio que extender: es una colección de decisiones. La estructura valida su propia
+coherencia al construirse y es serializable, requisito para que pueda viajar a los procesos
+de trabajo de la evaluación paralela.
+
+La tarea se selecciona en el constructor de los motores de búsqueda y del ejecutor paralelo,
+nunca en la firma de la operación de búsqueda, de modo que ninguna interfaz pública en uso
+cambió. Su valor por defecto es la detección de anomalías, con lo que el comportamiento del
+caso de uso original se preserva de forma exacta. La métrica objetivo pasó a ser opcional: si
+no se indica, se usa la métrica primaria de la tarea, lo que permite construir el motor para
+clasificación y obtener F1 macro sin indicar nada más.
+
+La Tabla~\ref{tab:tareas} contrasta las dos tareas implementadas.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comportamiento dependiente de la tarea}
+\label{tab:tareas}
+\begin{tabularx}{\textwidth}{>{\ancho{0.5}}L>{\ancho{1.25}}L>{\ancho{1.25}}L}
+\toprule
+\textbf{Aspecto} & \textbf{Detección de anomalías} & \textbf{Clasificación} \\
+\midrule
+Métricas &
+AUC-ROC, F1, precisión, exhaustividad, tasa de falsos positivos &
+F1 macro, exactitud, exactitud balanceada, precisión macro, exhaustividad macro \\
+Métrica primaria & AUC-ROC & F1 macro \\
+Se minimiza & Tasa de falsos positivos & Ninguna \\
+Normalización de predicciones &
+Se normalizan a dos clases, admitiendo la convención de signo de scikit-learn &
+Se usan las etiquetas de clase tal cual, sin reinterpretar \\
+Puntajes continuos &
+Probabilidad de la clase positiva, o función de decisión con signo invertido &
+No se usan; ninguna métrica macro se calcula sobre un ordenamiento \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Soporte de datos tabulares}
+
+El cargador tabular admite un archivo de valores separados por comas o una tabla en memoria,
+separa la columna objetivo, codifica las etiquetas a enteros conservando los valores
+originales y reporta qué columnas son numéricas y cuáles categóricas. Para etiquetas que ya
+son binarias la codificación es la identidad, con lo que se preserva la convención de la
+detección de anomalías.
+
+La decisión de diseño que gobierna el resto del soporte tabular es que el cargador devuelve
+una \textbf{tabla con tipos} y no una matriz numérica. La razón no es de comodidad: las
+transformaciones tabulares necesitan saber qué columnas son categóricas para codificarlas, y
+si esa información se pasara como parámetro —por ejemplo, una lista de posiciones de
+columna— el espacio de búsqueda dependería del conjunto de datos y las configuraciones
+dejarían de ser transferibles entre conjuntos, que es precisamente lo que el arranque en
+caliente necesita. Conservando los tipos, cada transformación detecta por sí misma sobre qué
+columnas actuar.
+
+Se implementaron tres transformaciones con estado: imputación de faltantes, escalado
+numérico con tres métodos y codificación de categóricas con dos métodos. Todas heredan de
+una base común que exige una tabla, recuerda las columnas del ajuste, valida que estén
+presentes al transformar y resuelve el contrato por muestra. Ninguna recibe nombres ni
+posiciones de columnas, propiedad que una prueba parametrizada vigila de forma permanente.
+
+El punto más delicado fue la codificación. Las categorías se aprenden solo del subconjunto
+de entrenamiento, de modo que una categoría que aparezca únicamente en validación no puede
+crear una columna nueva: en codificación indicadora produce ceros en todas las columnas de
+ese grupo, y en codificación ordinal recibe un código reservado. Es lo que garantiza que la
+matriz de validación tenga el mismo ancho que la de entrenamiento. La forma directa de
+resolver el problema —aplicar la codificación por separado a cada subconjunto— rompe esa
+garantía en silencio y entrega al modelo matrices de anchos distintos.
+
+Para que una tabla pudiera recorrer el protocolo de evaluación, dos funciones auxiliares
+aprendieron a tratarla: la selección de subconjuntos usa indexación posicional, porque
+recorrer una tabla con indexación ordinaria devolvería sus columnas en lugar de sus filas, y
+la conversión a matriz de características la convierte de una sola vez. Ambas detectan la
+tabla \emph{por capacidades y no por tipo}, de modo que los módulos del núcleo no importan
+la librería de manipulación de tablas: el soporte tabular es opcional y el camino de
+imágenes no debe pagar ese costo de importación.
+
+\subsubsection{Criterios de inclusión del corpus}
+
+La selección del corpus parte de la colección curada OpenML-CC18 \cite{openml-cc18}, de 72
+conjuntos de datos, en lugar de filtrar el repositorio completo de OpenML. La razón es de
+reproducibilidad: el repositorio completo contiene versiones duplicadas, metadatos
+incompletos y cargas defectuosas, de modo que filtrarlo por tamaño produciría una lista que
+habría que depurar a mano sin criterio replicable. La colección curada tiene metadatos
+verificados e identidad estable.
+
+Aplicando los criterios de inclusión sobre esa colección quedan 52 conjuntos de datos
+candidatos. Los descartes se reparten en seis por número de instancias fuera del rango
+admitido, quince por exceder las 100 características predictoras y cinco por número de
+clases fuera del rango. La generación de la lista está automatizada en un script que
+consulta la interfaz de OpenML, de modo que puede regenerarse y auditarse.
+
+La revisión de la lista resultante produjo un hallazgo con implicaciones sobre la validez
+del protocolo experimental. El corpus candidato contiene \textbf{familias de conjuntos de
+datos que comparten origen}, y en un caso comparten las propias instancias: cuatro de los
+candidatos son cuatro descripciones distintas del mismo conjunto de 2\,000 imágenes de
+dígitos manuscritos, cada una con un conjunto de características diferente. Si el corpus
+incluyera varias de ellas y la validación por exclusión dejara una fuera, el recomendador
+seguiría teniendo ese mismo conjunto de datos en su base de entrenamiento bajo otra
+representación: el supuesto de independencia entre pliegues dejaría de cumplirse y la
+ventaja medida del arranque en caliente saldría inflada por una vía difícil de detectar en
+los resultados finales.
+
+En consecuencia se añadió una regla de selección de a lo sumo un conjunto de datos por
+familia de origen, con dos niveles: obligatorio cuando las instancias son las mismas, por
+tratarse de un problema de validez, y recomendable cuando solo se comparte la fuente o el
+esquema de características, por tratarse de una cuestión de diversidad. Aplicada a los 52
+candidatos, la regla deja 42 familias distintas, margen suficiente para seleccionar los 15 a
+25 conjuntos de datos comprometidos.
+
+\subsubsection{Estado de los entregables}
+
+La Tabla~\ref{tab:estado-entregables} resume el estado de los entregables a la fecha.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Estado de los entregables a la fecha de redacción}
+\label{tab:estado-entregables}
+\begin{tabularx}{\textwidth}{>{\ancho{0.4}}C>{\ancho{1.3}}L>{\ancho{0.55}}C>{\ancho{1.75}}L}
+\toprule
+\textbf{\#} & \textbf{Entregable} & \textbf{Estado} & \textbf{Evidencia} \\
+\midrule
+RE1 & Núcleo agnóstico a la tarea & Completo &
+Interfaz de tarea con dos tareas implementadas; protocolo de evaluación con ajuste solo
+sobre entrenamiento y aislamiento entre candidatos; suite de regresión en verde. \\
+\addlinespace
+RE2 & Soporte de datos tabulares & Parcial &
+Cargador y tres transformaciones con estado, con flujo completo verificado. Pendiente la
+selección de características y el espacio de búsqueda canónico. \\
+\addlinespace
+RE3 & Extractor de meta-características & No iniciado &
+Viabilidad y costo medidos en el spike B; decisiones de configuración registradas. \\
+\addlinespace
+RE4 & Base de meta-conocimiento & Parcial &
+Criterios de inclusión definidos y lista de 52 candidatos generada de forma reproducible. \\
+\addlinespace
+RE5 & Recomendador meta-aprendido & No iniciado &
+Mecanismo de inyección verificado en el spike A. \\
+\addlinespace
+RE6 & Experimentos y reportes & No iniciado &
+Protocolo pre-registrado; decisiones de medición fijadas. \\
+\addlinespace
+RE7 & Documentación y código & Parcial &
+Guía técnica, documentos de decisión de arquitectura, informes de spikes y ejemplo
+ejecutable del flujo tabular. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Análisis de los resultados obtenidos}
+
+\subsubsection{Criterios de éxito de ingeniería: estado verificado}
+
+Los criterios de éxito de ingeniería son independientes del resultado de la hipótesis
+experimental y ya pueden evaluarse. La Tabla~\ref{tab:criterios-ingenieria} presenta su
+estado medido a la fecha de redacción.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Estado de los criterios de éxito de ingeniería}
+\label{tab:criterios-ingenieria}
+\begin{tabularx}{\textwidth}{>{\ancho{1.18}}L>{\ancho{1.0}}L>{\ancho{0.57}}C>{\ancho{1.25}}L}
+\toprule
+\textbf{Criterio} & \textbf{Medición} & \textbf{Estado} & \textbf{Observación} \\
+\midrule
+La suite de regresión de la librería base se mantiene en verde tras la refactorización &
+Las 134 pruebas migradas pasan sin haber sido editadas &
+Cumplido &
+Es la evidencia central de que la refactorización no alteró el caso de uso original: las
+pruebas afirman valores numéricos concretos de las métricas. \\
+\addlinespace
+Los módulos nuevos alcanzan al menos un 70\,\% de cobertura &
+Cobertura global de 99\,\% sobre 993 instrucciones; los módulos de tarea, cargador tabular
+y transformaciones tabulares al 100\,\% &
+Cumplido &
+La suite pasó de 134 a 287 pruebas y la cobertura global de 97\,\% a 99\,\%. \\
+\addlinespace
+Los resultados son reproducibles: la misma semilla produce el mismo pipeline ganador &
+Verificado por las pruebas de reproducibilidad de la librería base y por la fijación
+explícita de los parámetros del muestreador &
+Parcial &
+Verificado a nivel de componente. La verificación de punta a punta sobre el experimento
+completo queda pendiente de su ejecución. \\
+\addlinespace
+El flujo completo se mantiene expresable en no más de 20 líneas de código &
+El flujo tabular completo usa 13 instrucciones &
+Cumplido &
+La verificación está automatizada: una prueba cuenta las instrucciones del ejemplo y lo
+ejecuta, de modo que el criterio se comprueba en cada corrida de la suite en lugar de
+afirmarse. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Sobre el último criterio conviene precisar el método de conteo, porque admite más de una
+lectura. Se cuentan \emph{instrucciones} y no líneas físicas: el límite de longitud de línea
+que impone el estilo del proyecto obliga a repartir una sola instrucción en varias líneas,
+de modo que contar líneas mediría el estilo de formato en lugar de la complejidad del flujo.
+
+\guia{Analice los resultados obtenidos.}
+
+\guia{Incluya:}
+\begin{itemize}
+  \item \guia{Evaluaciones}
+  \item \guia{Métricas}
+  \item \guia{Comparaciones}
+  \item \guia{Validación de objetivos}
+\end{itemize}
+
+\guia{Apóyese con tablas y gráficos.}
+
+\clearpage
+%------------------------------------------------------------------------------
+\section{Conclusiones y recomendaciones}
+\label{sec:conclusiones}
+
+\subsection{Conclusiones}
+
+\guia{En esta sección se indica si se cumplieron los objetivos. Es importante
+destacar los principales logros del proyecto.}
+
+\subsection{Recomendaciones}
+
+\guia{Aquí se sugieren mejoras o trabajos futuros. Se debe incluir aspectos no
+desarrollados pero relevantes.}
+
+\clearpage
+%------------------------------------------------------------------------------
+\section{Apéndices y anexos}
+\label{sec:apendices}
+
+\subsection*{Apéndice 1: Implicaciones ambientales y de desarrollo sostenible}
+\addcontentsline{toc}{subsection}{Apéndice 1: Implicaciones ambientales y de desarrollo sostenible}
+
+\guia{Este apéndice se debe de realizar de manera obligatoria y debe de incluir
+una reflexión objetiva y con amplia proyección respecto del entorno sobre las
+implicaciones e impactos actuales y potenciales relacionados con aspectos
+sociales, económicos, ambientales, legales, de seguridad y salud que conlleva
+su proyecto de ingeniería para la sociedad en general, sobre todo para la
+práctica de la ingeniería y el ejercicio profesional del ingeniero en
+computadores. Recordar que se debe de entregar una copia digital de este
+apéndice en un documento por separado, el cual debe de tener la portada
+original del informe y se entrega en formato PDF.}
+
+\guia{Para el resto de los apéndices, se debe incluir el material
+complementario utilizado, como por ejemplo documentos, instructivos,
+instrumentos de encuestas, programas, algoritmos, entre otros.}
+
+\clearpage
+%------------------------------------------------- REFERENCIAS BIBLIOGRÁFICAS -
+\section{Referencias bibliográficas}
+\label{sec:referencias}
+
+\guia{Esta sección incluye la lista de materiales (libros, revistas, sitios
+web, etc.) y otros medios de recolección de información (congresos,
+entrevistas, tesis, etc.) que fueron consultados. A lo largo de todo el
+documento, las citaciones de referencias en el texto deberán usar el estándar
+IEEE de manera rigurosa.}
+
+\guia{La lista se genera automáticamente a partir de \texttt{referencias.bib}:
+agregue ahí cada fuente y cítela en el texto con \cmd{cite\{clave\}}. Solo
+aparecen aquí las entradas efectivamente citadas.}
+
+\printbibliography[heading=none]
+
+%==============================================================================
+\end{document}
+%==============================================================================

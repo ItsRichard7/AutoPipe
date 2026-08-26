@@ -48,17 +48,29 @@ datasets/*
 # --- Claude Code (contexto local, no versionado) ---
 CLAUDE.md
 
-# --- LaTeX build artifacts (docs) ---
-docs/*.aux
-docs/*.log
-docs/*.out
-docs/*.fls
-docs/*.fdb_latexmk
-docs/*.synctex.gz
-docs/*.nav
-docs/*.snm
-docs/*.toc
+# --- LaTeX build artifacts ---
+# Recursivos: los patrones anteriores solo cubrian docs/ y dejaban pasar los
+# artefactos de docs/Informe/.
+**/*.aux
+**/*.log
+**/*.out
+**/*.fls
+**/*.fdb_latexmk
+**/*.synctex.gz
+**/*.nav
+**/*.snm
+**/*.toc
+**/*.lof
+**/*.lot
+**/*.bbl
+**/*.bcf
+**/*.blg
+**/*.run.xml
+
+# PDF de documentos que se recompilan a diario. Los PDF de entregables
+# (anteproyecto, articulo) si se versionan.
 docs/Agenda.pdf
+docs/Informe/Plantilla_Informe_TFG.pdf
 
 # --- OS ---
 .DS_Store
