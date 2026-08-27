@@ -520,6 +520,32 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  efectiva mucho menor que doce. Queda anotado en las decisiones abiertas y documentado en
  \texttt{docs/experimentos/ESPACIO-tabular-v1.md}.}
 
+\entrada{2026-08-27}{5}
+{Escribí la prueba anti-fuga tabular a nivel de protocolo, que era el punto que faltaba
+ del hito: un archivo nuevo, \texttt{tests/test\_tabular\_protocol.py}, con once pruebas
+ que verifican que el pipeline se ajuste solo con el subconjunto de entrenamiento también
+ cuando lleva un paso \textbf{supervisado}, en cualquier posición, con los cuatro pasos
+ del espacio canónico encadenados y al viajar a los procesos de trabajo de \texttt{loky}.
+ Cubrí además la rama del motor de malla que elegía ganador en silencio. Suite en 341
+ pruebas; los módulos nuevos al 100\% de cobertura, \texttt{grid\_search.py} de 98\% a
+ 100\%, 99\% global, con \texttt{ruff} y \texttt{mypy} limpios.}
+{La selección supervisada es el caso de fuga más fuerte que tiene el proyecto: un
+ escalador que viera la validación filtraría una media, pero una selección que la viera
+ elegiría \textbf{otras columnas}, y la matriz con la que se entrena el modelo sería
+ distinta. Para que las pruebas midan eso construí una tabla trampa en la que la columna
+ informativa cambia entre entrenamiento y validación, y verifiqué primero que discrimina:
+ ajustando solo con entrenamiento elige \texttt{a}, ajustando con el dataset completo
+ elige \texttt{b}. Después comprobé que las pruebas fallan de verdad si se revierte la
+ garantía: saboteé \texttt{evaluate\_pipeline} para que ajustara con el dataset completo y
+ cayeron siete de las once; las tres que siguieron pasando no tocan esa función y una
+ cuarta da \texttt{NaN} en ambos casos. Restauré el archivo desde el índice de git y la
+ suite volvió a verde. La rama del ganador silencioso quedó caracterizada, no aprobada: la
+ prueba fija la conducta actual para que cambiarla sea deliberado, y dejó de ser un caso
+ hipotético porque el espacio canónico lo produce con cualquier dataset categórico sin
+ codificación. Lo que sigue sin cubrir son cuatro cuerpos de métodos abstractos, que son
+ inalcanzables por diseño, y cinco líneas del camino de imágenes anteriores a este
+ trabajo.}
+
 \newpage
 \section*{Resumen de horas}
 
