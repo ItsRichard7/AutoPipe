@@ -479,6 +479,25 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
 
+\entrada{2026-08-27}{4}
+{Implementé la selección de características como fracción de columnas
+ (\texttt{SelectFeatures}), con dos criterios: el supervisado \texttt{f\_classif} y la
+ varianza de la columna. Veintinueve pruebas nuevas, entre ellas la anti-fuga de la
+ transformación y la de reproducibilidad. Suite en 316 pruebas, el módulo tabular al
+ 100\% de cobertura y 99\% global, con \texttt{ruff} y \texttt{mypy} limpios.}
+{Las pruebas destaparon un error de diseño mío: había fijado que todo puntaje no finito
+ fuera el peor, pero \texttt{f\_classif} devuelve \texttt{+inf} cuando una columna separa
+ las clases a la perfección, de modo que la regla descartaba justamente la mejor
+ característica del dataset. Ahora solo el puntaje indefinido (\texttt{NaN}), el que
+ significa que el criterio no pudo evaluar la columna, cuenta como el peor. Las columnas
+ no numéricas pasan intactas y nunca se descartan, la misma convención que ya seguía el
+ escalado, así que la transformación puede colocarse antes o después de la codificación.
+ Reescribí una prueba previa que comprobaba «ningún parámetro nombra columnas»
+ verificando que todos los parámetros fueran cadenas: al aparecer un parámetro numérico
+ legítimo, ese proxy quedó obsoleto. Ahora verifica el invariante de frente y además
+ exige que todo parámetro numérico sea una fracción en (0, 1], que es la parametrización
+ relativa del pre-registro hecha ejecutable.}
+
 \newpage
 \section*{Resumen de horas}
 

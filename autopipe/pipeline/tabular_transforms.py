@@ -12,10 +12,12 @@ dataset pueda inyectarse como arranque en caliente en otro.
 
 from __future__ import annotations
 
+import math
 from typing import cast
 
 import numpy as np
 import pandas as pd
+from sklearn.feature_selection import f_classif
 
 from autopipe.pipeline.base import Dataset, StatefulTransform
 
@@ -407,3 +409,194 @@ class EncodeCategorical(TabularTransform):
     def get_params(self) -> dict:
         """Devuelve los parámetros de la transformación."""
         return {"method": self.method}
+
+
+class SelectFeatures(TabularTransform):
+    """Conserva una **fracción** de las columnas numéricas de la tabla.
+
+    La fracción, y no un número absoluto de columnas, es lo que hace la
+    configuración transferible entre datasets: conservar diez columnas significa
+    algo distinto en un dataset de doce características que en uno de cien, y el
+    valor podría ser inválido en el dataset receptor. Es la parametrización
+    relativa que exige la Sección 3.1 del pre-registro.
+
+    Criterios disponibles:
+
+    * ``"f_classif"``: F de un ANOVA de una vía entre cada columna y la etiqueta.
+      Es **supervisado**, de modo que requiere etiquetas en el ajuste.
+    * ``"variance"``: varianza de la columna. Es no supervisado y no necesita
+      etiquetas.
+
+    Las columnas no numéricas **pasan intactas** y nunca se descartan, la misma
+    convención de :class:`ScaleNumeric`: la fracción se aplica sobre las columnas
+    numéricas que entran al paso. Así la transformación puede colocarse antes o
+    después de la codificación sin cambiar de contrato. En el espacio canónico va
+    después, cuando la tabla ya es enteramente numérica.
+
+    El número de columnas conservadas es ``ceil(fraction * n_numéricas)``, con un
+    mínimo de una: el redondeo hacia arriba mantiene la regla monótona (a mayor
+    fracción, nunca menos columnas) y evita que una fracción pequeña sobre una
+    tabla angosta se quede sin ninguna columna.
+
+    Las columnas se ordenan por puntaje descendente y **los empates se rompen por
+    la posición original de la columna**, no por el orden en que las devuelva la
+    biblioteca. Un puntaje **indefinido** (``NaN``) se trata como el peor posible:
+    lo produce una columna constante bajo ``f_classif`` y una columna sin ningún
+    valor finito bajo ``"variance"``. Un puntaje **infinito**, en cambio, es el
+    mejor posible: ``f_classif`` lo devuelve cuando la columna separa las clases a
+    la perfección y la varianza intraclase es cero. Ambas reglas sostienen el
+    criterio de reproducibilidad de la Sección 4.3.5 del anteproyecto: la misma
+    semilla debe producir el mismo pipeline ganador.
+
+    La salida conserva el **orden original** de las columnas, no el de puntaje.
+
+    Attributes:
+        fraction (float): Fracción de columnas numéricas a conservar, en ``(0, 1]``.
+        criterion (str): Criterio de puntuación.
+        scores_ (dict | None): Puntaje aprendido por columna numérica.
+        selected_columns_ (list[str] | None): Columnas de la tabla resultante.
+    """
+
+    CRITERIOS = ("f_classif", "variance")
+
+    def __init__(self, fraction: float = 0.5, criterion: str = "f_classif") -> None:
+        """Inicializa la selección de características.
+
+        Args:
+            fraction: Fracción de columnas numéricas a conservar, en ``(0, 1]``.
+            criterion: Criterio de puntuación, uno de :data:`CRITERIOS`.
+
+        Raises:
+            ValueError: Si la fracción no está en ``(0, 1]`` o el criterio no
+                está soportado.
+        """
+        if isinstance(fraction, bool) or not isinstance(fraction, (int, float)):
+            raise ValueError(
+                f"fraction debe ser un número en (0, 1], se recibió {fraction!r}."
+            )
+        if not 0 < float(fraction) <= 1:
+            raise ValueError(
+                f"fraction debe estar en (0, 1] por ser una fracción de columnas; "
+                f"se recibió {fraction!r}. Un número absoluto de columnas no sería "
+                f"transferible entre datasets."
+            )
+        if criterion not in self.CRITERIOS:
+            raise ValueError(
+                f"criterion debe ser uno de {self.CRITERIOS}, se recibió {criterion!r}."
+            )
+        self.fraction = float(fraction)
+        self.criterion = criterion
+        self.scores_: dict[str, float] | None = None
+        self.selected_columns_: list[str] | None = None
+
+    def _fit(self, X: Dataset, y: np.ndarray | None = None) -> None:
+        """Aprende qué columnas se conservan, solo con el entrenamiento."""
+        frame = self._as_frame(X)
+        self._recordar_columnas(frame)
+        numericas = list(frame.select_dtypes(include="number").columns)
+        self.scores_ = self._puntajes(frame[numericas], y) if numericas else {}
+        conservadas = set(self._elegir(numericas))
+        conservadas.update(nombre for nombre in frame.columns if nombre not in numericas)
+        self.selected_columns_ = [
+            nombre for nombre in frame.columns if nombre in conservadas
+        ]
+
+    def _puntajes(self, numericas: pd.DataFrame, y: np.ndarray | None) -> dict[str, float]:
+        """Puntúa cada columna numérica según el criterio configurado.
+
+        Args:
+            numericas: Subtabla con las columnas numéricas del entrenamiento.
+            y: Etiquetas de entrenamiento; obligatorias si el criterio es
+                supervisado.
+
+        Returns:
+            Diccionario de nombre de columna a puntaje.
+
+        Raises:
+            ValueError: Si el criterio es supervisado y no se dieron etiquetas, o
+                si la tabla conserva valores no finitos que impiden puntuarla.
+        """
+        if self.criterion == "variance":
+            return {
+                nombre: self._varianza(numericas[nombre]) for nombre in numericas.columns
+            }
+        if y is None:
+            raise ValueError(
+                "El criterio 'f_classif' es supervisado y necesita las etiquetas de "
+                "entrenamiento; se invocó fit() sin ellas. Use criterion='variance' "
+                "para seleccionar sin etiquetas."
+            )
+        try:
+            valores, _ = f_classif(numericas.to_numpy(dtype=float), np.asarray(y))
+        except ValueError as exc:
+            raise ValueError(
+                "No se pudo puntuar la tabla con 'f_classif'; suele deberse a valores "
+                "faltantes o no finitos. Añada un paso de imputación antes de la "
+                f"selección. Causa: {exc}"
+            ) from exc
+        return dict(zip(numericas.columns, (float(valor) for valor in valores)))
+
+    @staticmethod
+    def _varianza(columna: pd.Series) -> float:
+        """Varianza de una columna ignorando los valores no finitos.
+
+        Args:
+            columna: Columna numérica del entrenamiento.
+
+        Returns:
+            La varianza de los valores finitos, o ``NaN`` si no hay ninguno.
+        """
+        valores = columna.to_numpy(dtype=float)
+        finitos = valores[np.isfinite(valores)]
+        return float(np.var(finitos)) if finitos.size else float("nan")
+
+    def _elegir(self, numericas: list[str]) -> list[str]:
+        """Elige las columnas numéricas mejor puntuadas.
+
+        Args:
+            numericas: Nombres de las columnas numéricas, en su orden original.
+
+        Returns:
+            Los nombres conservados, sin orden garantizado.
+        """
+        if not numericas:
+            return []
+        puntajes = self.scores_ or {}
+        posicion = {nombre: indice for indice, nombre in enumerate(numericas)}
+        orden = sorted(
+            numericas,
+            key=lambda nombre: (-self._ordenable(puntajes[nombre]), posicion[nombre]),
+        )
+        cuantas = min(len(numericas), max(1, math.ceil(self.fraction * len(numericas))))
+        return orden[:cuantas]
+
+    @staticmethod
+    def _ordenable(puntaje: float) -> float:
+        """Convierte un puntaje indefinido en el peor puntaje posible.
+
+        Un puntaje ``NaN`` significa que el criterio **no pudo evaluar** la
+        columna: es constante bajo ``f_classif``, o no tiene ningún valor finito
+        bajo la varianza. Ordenar con ``NaN`` daría un resultado dependiente del
+        algoritmo de ordenación, así que se sustituye de forma explícita.
+
+        Un puntaje infinito **no** se toca: ``f_classif`` devuelve ``+inf``
+        cuando la columna separa las clases a la perfección (varianza intraclase
+        nula), que es el mejor caso posible y no el peor.
+
+        Args:
+            puntaje: Puntaje calculado para una columna.
+
+        Returns:
+            El puntaje original, o ``-inf`` si era ``NaN``.
+        """
+        return float("-inf") if math.isnan(puntaje) else puntaje
+
+    def _transform(self, X: Dataset) -> pd.DataFrame:
+        """Conserva las columnas aprendidas en el ajuste."""
+        frame = self._as_frame(X)
+        self._verificar_columnas(frame)
+        return frame[self.selected_columns_ or []].copy()
+
+    def get_params(self) -> dict:
+        """Devuelve los parámetros de la transformación."""
+        return {"fraction": self.fraction, "criterion": self.criterion}

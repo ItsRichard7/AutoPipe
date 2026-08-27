@@ -15,11 +15,19 @@ from autopipe.pipeline.tabular_transforms import (
     EncodeCategorical,
     ImputeMissing,
     ScaleNumeric,
+    SelectFeatures,
 )
 from autopipe.search_engine.grid_search import evaluate_pipeline
 from autopipe.tasks import CLASSIFICATION
 
-TRANSFORMACIONES = (ImputeMissing(), ScaleNumeric(), EncodeCategorical())
+# SelectFeatures entra con el criterio no supervisado: las pruebas de contrato
+# común ajustan sin etiquetas, y el criterio supervisado las exige.
+TRANSFORMACIONES = (
+    ImputeMissing(),
+    ScaleNumeric(),
+    EncodeCategorical(),
+    SelectFeatures(criterion="variance"),
+)
 
 
 @pytest.fixture
@@ -57,16 +65,30 @@ def test_reject_input_that_is_not_a_table(transform: StatefulTransform) -> None:
 
 
 @pytest.mark.parametrize("transform", TRANSFORMACIONES, ids=lambda t: type(t).__name__)
-def test_parameters_do_not_mention_columns(transform: StatefulTransform) -> None:
+def test_parameters_do_not_mention_columns(transform: StatefulTransform, mixta) -> None:
     """Ningún parámetro puede depender del dataset.
 
     Si una transformación recibiera nombres o posiciones de columnas, el espacio
     de búsqueda dejaría de ser transferible entre datasets y el arranque en
     caliente no podría inyectar configuraciones aprendidas en otro dataset.
-    """
-    valores = transform.get_params().values()
 
-    assert all(isinstance(valor, str) for valor in valores)
+    Un parámetro numérico solo es admisible si es **relativo**: una fracción en
+    ``(0, 1]``. Un número absoluto de columnas no sería transferible, porque
+    conservar diez columnas significa algo distinto en un dataset de doce que en
+    uno de cien (pre-registro, Sección 3.1).
+    """
+    for nombre, valor in transform.get_params().items():
+        assert not isinstance(valor, (list, tuple, dict, set)), (
+            f"El parámetro {nombre!r} es una colección; podría enumerar columnas."
+        )
+        assert valor not in mixta.columns, (
+            f"El parámetro {nombre!r} nombra una columna del dataset."
+        )
+        if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+            assert 0 < float(valor) <= 1, (
+                f"El parámetro numérico {nombre!r} vale {valor!r}, fuera de (0, 1]: "
+                f"sería un valor absoluto y no una fracción."
+            )
 
 
 @pytest.mark.parametrize("transform", TRANSFORMACIONES, ids=lambda t: type(t).__name__)
@@ -258,6 +280,174 @@ def test_column_order_is_deterministic() -> None:
 def test_invalid_encoding_method_raises() -> None:
     with pytest.raises(ValueError, match="method"):
         EncodeCategorical("target")
+
+
+# --------------------------------------------------------------------------- #
+# SelectFeatures
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("fraccion", [0.0, -0.5, 1.5, 2])
+def test_invalid_fraction_raises(fraccion: float) -> None:
+    """Solo se admiten fracciones en (0, 1]: un absoluto no sería transferible."""
+    with pytest.raises(ValueError, match="fraction"):
+        SelectFeatures(fraccion)
+
+
+def test_boolean_fraction_raises() -> None:
+    """``True`` es un ``int`` en Python y colaría como fracción válida."""
+    with pytest.raises(ValueError, match="fraction"):
+        SelectFeatures(True)
+
+
+def test_invalid_criterion_raises() -> None:
+    with pytest.raises(ValueError, match="criterion"):
+        SelectFeatures(0.5, "chi2")
+
+
+@pytest.mark.parametrize(
+    ("fraccion", "esperadas"), [(0.25, 1), (0.5, 2), (0.75, 3), (1.0, 4)]
+)
+def test_fraction_determines_how_many_columns_survive(
+    fraccion: float, esperadas: int
+) -> None:
+    """El número conservado es ceil(fracción x columnas), con un mínimo de una."""
+    train = pd.DataFrame({nombre: [1.0, 2.0, 3.0] for nombre in "abcd"})
+
+    resultado = SelectFeatures(fraccion, "variance").fit_transform(train)
+
+    assert resultado.shape[1] == esperadas
+
+
+def test_a_tiny_fraction_still_keeps_one_column() -> None:
+    train = pd.DataFrame({"x": [1.0, 2.0], "y": [3.0, 4.0]})
+
+    resultado = SelectFeatures(0.01, "variance").fit_transform(train)
+
+    assert resultado.shape[1] == 1
+
+
+def test_variance_criterion_keeps_the_most_variable_columns() -> None:
+    train = pd.DataFrame(
+        {"casi_constante": [1.0, 1.0, 1.1], "dispersa": [0.0, 50.0, 100.0]}
+    )
+
+    resultado = SelectFeatures(0.5, "variance").fit_transform(train)
+
+    assert list(resultado.columns) == ["dispersa"]
+
+
+def test_f_classif_keeps_the_column_that_separates_the_classes() -> None:
+    """El criterio supervisado debe preferir la columna informativa."""
+    train = pd.DataFrame(
+        {"ruido": [1.0, 2.0, 1.0, 2.0, 1.0, 2.0], "señal": [0.0, 0.0, 0.0, 9.0, 9.0, 9.0]}
+    )
+    labels = np.array([0, 0, 0, 1, 1, 1])
+
+    resultado = SelectFeatures(0.5, "f_classif").fit_transform(train, labels)
+
+    assert list(resultado.columns) == ["señal"]
+
+
+def test_f_classif_without_labels_raises() -> None:
+    """El criterio supervisado no puede ajustarse a ciegas."""
+    train = pd.DataFrame({"x": [1.0, 2.0, 3.0]})
+
+    with pytest.raises(ValueError, match="supervisado"):
+        SelectFeatures(0.5, "f_classif").fit(train)
+
+
+def test_f_classif_with_missing_values_points_at_imputation() -> None:
+    """El mensaje debe decir qué paso falta, no filtrar el error de sklearn."""
+    train = pd.DataFrame({"x": [1.0, np.nan, 3.0, 4.0], "y": [1.0, 2.0, 3.0, 4.0]})
+    labels = np.array([0, 0, 1, 1])
+
+    with pytest.raises(ValueError, match="imputación"):
+        SelectFeatures(0.5, "f_classif").fit(train, labels)
+
+
+def test_non_numeric_columns_pass_through_untouched(mixta) -> None:
+    """La fracción se aplica solo a las numéricas; las demás nunca se descartan."""
+    resultado = SelectFeatures(0.5, "variance").fit_transform(mixta)
+
+    assert "cat" in resultado.columns
+    assert list(resultado.columns) == ["num_b", "cat"]
+
+
+def test_output_keeps_the_original_column_order() -> None:
+    """Se conserva el orden de la tabla, no el del puntaje."""
+    train = pd.DataFrame(
+        {"primera": [0.0, 100.0], "segunda": [0.0, 1.0], "tercera": [0.0, 50.0]}
+    )
+
+    resultado = SelectFeatures(0.6, "variance").fit_transform(train)
+
+    assert list(resultado.columns) == ["primera", "tercera"]
+
+
+def test_ties_are_broken_by_column_position() -> None:
+    """Con puntajes idénticos gana la columna más a la izquierda, siempre."""
+    train = pd.DataFrame({"a": [0.0, 1.0], "b": [0.0, 1.0], "c": [0.0, 1.0]})
+
+    resultado = SelectFeatures(0.33, "variance").fit_transform(train)
+
+    assert list(resultado.columns) == ["a"]
+
+
+def test_a_column_without_finite_values_is_the_worst_ranked() -> None:
+    """Una columna sin varianza definida no puede ganarle a una informativa."""
+    train = pd.DataFrame({"vacia": [np.nan, np.nan], "util": [0.0, 10.0]})
+
+    resultado = SelectFeatures(0.5, "variance").fit_transform(train)
+
+    assert list(resultado.columns) == ["util"]
+
+
+def test_constant_column_is_the_worst_ranked_under_f_classif() -> None:
+    """Con f_classif una columna constante puntúa NaN; debe quedar de última."""
+    train = pd.DataFrame(
+        {"constante": [7.0, 7.0, 7.0, 7.0], "señal": [0.0, 0.0, 9.0, 9.0]}
+    )
+    labels = np.array([0, 0, 1, 1])
+
+    resultado = SelectFeatures(0.5, "f_classif").fit_transform(train, labels)
+
+    assert list(resultado.columns) == ["señal"]
+
+
+def test_selection_is_reproducible() -> None:
+    """Criterio de reproducibilidad: dos ajustes iguales eligen lo mismo."""
+    rng = np.random.default_rng(7)
+    train = pd.DataFrame(rng.normal(size=(30, 8)), columns=[f"c{i}" for i in range(8)])
+    labels = np.tile([0, 1], 15)
+
+    primero = SelectFeatures(0.5, "f_classif").fit(train, labels)
+    segundo = SelectFeatures(0.5, "f_classif").fit(train, labels)
+
+    assert primero.selected_columns_ == segundo.selected_columns_
+
+
+def test_table_with_no_numeric_columns_keeps_everything() -> None:
+    train = pd.DataFrame({"c1": ["a", "b"], "c2": ["x", "y"]})
+
+    resultado = SelectFeatures(0.5, "variance").fit_transform(train)
+
+    assert list(resultado.columns) == ["c1", "c2"]
+
+
+def test_selection_comes_from_training_not_from_validation() -> None:
+    """Es la garantía anti-fuga de esta transformación.
+
+    En el entrenamiento la columna informativa es ``a``; en la validación es
+    ``b``. Si la selección se ajustara con el conjunto completo, o con la
+    validación, conservaría ``b``.
+    """
+    train = pd.DataFrame({"a": [0.0, 0.0, 9.0, 9.0], "b": [1.0, 1.0, 1.0, 1.1]})
+    validacion = pd.DataFrame({"a": [1.0, 1.0, 1.0, 1.1], "b": [0.0, 0.0, 9.0, 9.0]})
+    etiquetas = np.array([0, 0, 1, 1])
+
+    selector = SelectFeatures(0.5, "f_classif").fit(train, etiquetas)
+
+    assert selector.selected_columns_ == ["a"]
+    assert list(selector.transform(validacion).columns) == ["a"]
 
 
 # --------------------------------------------------------------------------- #
