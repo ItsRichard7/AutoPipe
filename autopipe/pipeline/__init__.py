@@ -17,6 +17,7 @@ Public API:
     ImputeMissing        fills missing values with a statistic learned on train
     ScaleNumeric         scales numeric columns with statistics learned on train
     EncodeCategorical    encodes categorical columns with categories seen on train
+    SelectFeatures       keeps a fraction of the numeric columns, scored on train
 """
 
 from autopipe.pipeline.base import BaseTransform, NotFittedError, StatefulTransform
@@ -25,6 +26,7 @@ from autopipe.pipeline.tabular_transforms import (
     EncodeCategorical,
     ImputeMissing,
     ScaleNumeric,
+    SelectFeatures,
     TabularTransform,
 )
 from autopipe.pipeline.transforms import (
@@ -53,4 +55,5 @@ __all__ = [
     "ImputeMissing",
     "ScaleNumeric",
     "EncodeCategorical",
+    "SelectFeatures",
 ]

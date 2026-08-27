@@ -35,6 +35,7 @@ from autopipe.pipeline import (
     Pipeline,
     Resize,
     ScaleNumeric,
+    SelectFeatures,
     StatefulTransform,
     TabularTransform,
 )
@@ -74,6 +75,7 @@ __all__ = [
     "ImputeMissing",
     "ScaleNumeric",
     "EncodeCategorical",
+    "SelectFeatures",
     "GridSearchEngine",
     "OptunaSearchEngine",
     "ParallelRunner",
