@@ -21,7 +21,8 @@ The library **does not train or implement the base model** — it consumes any m
 
 - Modular pipeline definition via `BaseTransform` subclasses, with optional `fit`/`transform` semantics for **stateful** transforms
 - Built-in image transforms: `GaussianBlur`, `Normalize`, `Resize`, `CLAHETransform`, `MedianFilter`, `GammaCorrection`, `GrayscaleConversion`
-- Built-in tabular transforms: `ImputeMissing`, `ScaleNumeric`, `EncodeCategorical`
+- Built-in tabular transforms: `ImputeMissing`, `ScaleNumeric`, `EncodeCategorical`, `SelectFeatures`
+- A **canonical, versioned tabular search space**: one space shared by every dataset, so a configuration found on one is executable on another, and a version identifier that makes a stale configuration fail loudly instead of silently designating the wrong transforms
 - Pluggable **learning tasks**: metrics, optimization direction and prediction handling travel together, selected with a single constructor argument
 - Automatic pipeline search with **Grid Search** or **Bayesian optimization** (Optuna, TPE + median pruning)
 - Every step is also tried as **skipped** automatically, so the search can drop transforms that hurt performance (skipped steps simply don't appear in the winning pipeline or its saved config)
@@ -57,19 +58,14 @@ The whole high-level flow takes fewer than 20 statements and requires no knowled
 ```python
 from sklearn.neighbors import KNeighborsClassifier
 
-from autopipe import (
-    EncodeCategorical, GridSearchEngine, ImputeMissing, ScaleNumeric, TabularDataLoader,
-)
+from autopipe import GridSearchEngine, TabularDataLoader, build_tabular_search_space
 
 # 1. Load the dataset (a CSV path or an in-memory DataFrame; last column is the target)
 features, labels = TabularDataLoader("path/to/dataset.csv").load()
 
-# 2. Define the preprocessing search space (one option list per step, in pipeline order)
-search_space = {
-    "imputation": [ImputeMissing("mean"), ImputeMissing("median")],
-    "encoding": [EncodeCategorical("onehot"), EncodeCategorical("ordinal")],
-    "scaling": [ScaleNumeric("standard"), ScaleNumeric("minmax")],
-}
+# 2. Ask for the canonical search space: 4 steps, 144 pipelines counting the skip option.
+#    Building one by hand also works — it is just a dict of step name to option list.
+search_space = build_tabular_search_space()
 
 # 3. Run the search. The task drives metrics, so macro-F1 is used by default.
 engine = GridSearchEngine(search_space, random_state=42, task="classification")
@@ -124,10 +120,13 @@ print(f"AUC-ROC: {metrics['auc_roc']:.4f}  ->  {report['html']}")
 
 ### Examples
 
-Three runnable notebooks live in [`examples/`](examples/). Each runs end-to-end in
+Four runnable notebooks live in [`examples/`](examples/). Each runs end-to-end in
 a clean environment — the dataset-based ones fall back to a small synthetic
 dataset if the real data is not present:
 
+- [`tabular_walkthrough.ipynb`](examples/tabular_walkthrough.ipynb) — the tabular
+  path end to end: the canonical versioned space, why some candidates are
+  unevaluable, the no-leakage guarantee demonstrated live, and reproducibility.
 - [`basic_usage.ipynb`](examples/basic_usage.ipynb) — full walkthrough on a
   synthetic dataset (Grid + Optuna, parallel runner, report, re-runnable config).
 - [`mvtec_anomaly_detection.ipynb`](examples/mvtec_anomaly_detection.ipynb) —
@@ -181,12 +180,13 @@ AutoPipe/
 │   ├── pipeline/        # BaseTransform, StatefulTransform, transforms, Pipeline
 │   ├── tasks/           # Task registry: anomaly detection, classification
 │   ├── search_engine/   # GridSearchEngine, OptunaSearchEngine
+│   ├── search_space/    # canonical versioned tabular space
 │   ├── evaluator/       # DataSplitter, metric calculators
 │   ├── parallel_runner/ # ParallelRunner
 │   └── reporter/        # ReportGenerator
 ├── tests/
 ├── examples/
-├── scripts/           # reproducible utilities (corpus candidate listing)
+├── scripts/           # reproducible utilities (corpus listing, regression check)
 ├── spikes/            # feasibility experiments
 ├── docs/
 └── configs/
