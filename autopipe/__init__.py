@@ -6,6 +6,7 @@ Main modules:
     pipeline        -- preprocessing transform definition and composition
     tasks           -- learning task definitions and metric registry
     search_engine   -- automatic pipeline search (grid search / Optuna)
+    search_space    -- canonical, versioned search spaces shared across datasets
     evaluator       -- dataset splitting and metric calculation
     parallel_runner -- parallel pipeline evaluation
     reporter        -- report generation (PDF / HTML)
@@ -41,6 +42,13 @@ from autopipe.pipeline import (
 )
 from autopipe.reporter import ReportGenerator
 from autopipe.search_engine import GridSearchEngine, OptunaSearchEngine
+from autopipe.search_space import (
+    TABULAR_SPACE_STEPS,
+    TABULAR_SPACE_VERSION,
+    build_tabular_search_space,
+    describe_tabular_search_space,
+    validate_space_version,
+)
 from autopipe.tasks import (
     ANOMALY_DETECTION,
     CLASSIFICATION,
@@ -78,6 +86,11 @@ __all__ = [
     "SelectFeatures",
     "GridSearchEngine",
     "OptunaSearchEngine",
+    "TABULAR_SPACE_VERSION",
+    "TABULAR_SPACE_STEPS",
+    "build_tabular_search_space",
+    "validate_space_version",
+    "describe_tabular_search_space",
     "ParallelRunner",
     "ReportGenerator",
 ]
