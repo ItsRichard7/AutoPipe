@@ -479,24 +479,46 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
 
-\entrada{2026-08-27}{4}
-{Implementé la selección de características como fracción de columnas
- (\texttt{SelectFeatures}), con dos criterios: el supervisado \texttt{f\_classif} y la
- varianza de la columna. Veintinueve pruebas nuevas, entre ellas la anti-fuga de la
- transformación y la de reproducibilidad. Suite en 316 pruebas, el módulo tabular al
- 100\% de cobertura y 99\% global, con \texttt{ruff} y \texttt{mypy} limpios.}
-{Las pruebas destaparon un error de diseño mío: había fijado que todo puntaje no finito
- fuera el peor, pero \texttt{f\_classif} devuelve \texttt{+inf} cuando una columna separa
- las clases a la perfección, de modo que la regla descartaba justamente la mejor
- característica del dataset. Ahora solo el puntaje indefinido (\texttt{NaN}), el que
- significa que el criterio no pudo evaluar la columna, cuenta como el peor. Las columnas
- no numéricas pasan intactas y nunca se descartan, la misma convención que ya seguía el
- escalado, así que la transformación puede colocarse antes o después de la codificación.
- Reescribí una prueba previa que comprobaba «ningún parámetro nombra columnas»
- verificando que todos los parámetros fueran cadenas: al aparecer un parámetro numérico
- legítimo, ese proxy quedó obsoleto. Ahora verifica el invariante de frente y además
- exige que todo parámetro numérico sea una fracción en (0, 1], que es la parametrización
- relativa del pre-registro hecha ejecutable.}
+\entrada{2026-08-26}{10}
+{Cerré los dos primeros puntos de la semana. Primero implementé la selección de
+ características como fracción de columnas (\texttt{SelectFeatures}), con dos criterios:
+ el supervisado \texttt{f\_classif} y la varianza de la columna; veintinueve pruebas
+ nuevas, entre ellas la anti-fuga de la transformación y la de reproducibilidad. Después
+ congelé con ella el espacio de búsqueda tabular canónico \texttt{tabular-v1}, en el
+ módulo nuevo \texttt{autopipe/search\_space/}: cuatro pasos en orden fijo (imputación,
+ escalado, codificación y selección), 144 pipelines contando la opción de omitir cada
+ paso, con su constante de versión, el validador que rechaza configuraciones de otra
+ versión y la enumeración paso por índice desde la que se genera la documentación;
+ catorce pruebas más. El ejemplo de usuario pasa a pedir el espacio canónico en vez de
+ armarlo a mano y baja a 13 instrucciones, de las 20 que admite el criterio de éxito.
+ Suite en 330 pruebas, los dos módulos nuevos al 100\% de cobertura y 99\% global, con
+ \texttt{ruff} y \texttt{mypy} limpios.}
+{Las pruebas de la selección destaparon un error de diseño mío: había fijado que todo
+ puntaje no finito fuera el peor, pero \texttt{f\_classif} devuelve \texttt{+inf} cuando
+ una columna separa las clases a la perfección, de modo que la regla descartaba justamente
+ la mejor característica del dataset. Ahora solo el puntaje indefinido (\texttt{NaN}), el
+ que significa que el criterio no pudo evaluar la columna, cuenta como el peor. Reescribí
+ además una prueba previa que comprobaba «ningún parámetro nombra columnas» verificando
+ que todos los parámetros fueran cadenas: al aparecer un parámetro numérico legítimo, ese
+ proxy quedó obsoleto, y ahora verifica el invariante de frente y exige que todo parámetro
+ numérico sea una fracción en (0, 1]. Del espacio canónico, la prueba que más pesa es la
+ que congela el índice de cada opción: los motores registran por ensayo índices enteros
+ sobre las listas, así que reordenar una lista cambiaría el significado de todas las
+ configuraciones ya guardadas sin que nada fallara, y una recomendación designaría
+ transformaciones distintas de las previstas mientras la búsqueda corre igual y devuelve
+ un número que no mide lo que se cree. El escalado quedó antes de la codificación para que
+ no toque las indicadoras \textit{one-hot}: estandarizarlas llevaría una categoría rara a
+ valores cercanos a $\pm$10 y, con vecinos más cercanos y distancia euclídea, esa sola
+ columna dominaría la métrica. Hallazgo que hay que decidir antes de la semana 5: medí qué
+ fracción de los 144 pipelines resulta inevaluable, y en un dataset con columnas
+ categóricas y valores faltantes llega al 56\% (omitir la codificación deja una tabla que
+ el modelo no puede consumir; omitir la imputación deja valores nulos). Eso toca dos piezas
+ del protocolo: la variable «ensayos hasta el objetivo», porque el arranque en caliente
+ inyecta configuraciones que por construcción no son inevaluables mientras el frío gasta
+ parte de sus ensayos aleatorios en esa región; y el cribado de sensibilidad de la semana
+ 5, que extrae doce pipelines al azar del espacio y calcularía el IQR sobre una muestra
+ efectiva mucho menor que doce. Queda anotado en las decisiones abiertas y documentado en
+ \texttt{docs/experimentos/ESPACIO-tabular-v1.md}.}
 
 \newpage
 \section*{Resumen de horas}
@@ -550,6 +572,16 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
   \item Corregir \texttt{\_normalize\_predictions} en la tarea de anomalías: las
         predicciones todas \texttt{+1} se interpretan como «todo anómalo». Cambia métricas
         ya reportadas, así que requiere decisión explícita.
+  \item Qué hacer con la región inevaluable del espacio canónico: hasta el 56\% de los
+        144 pipelines en un dataset con categóricas y faltantes. Afecta la variable
+        «ensayos hasta el objetivo» del LODO. Opciones: dejarlo y reportar la fracción
+        como covariable, o introducir la noción de paso obligatorio en los motores, que
+        es un cambio de comportamiento público. \textbf{Decidir antes de la semana 9}
+        (pre-registro v1.0).
+  \item Cómo tratar los pipelines inevaluables en el cribado de sensibilidad de la
+        semana 5: el pre-registro extrae doce al azar y mide el IQR de macro-F1, pero
+        varios de esos doce pueden ser \texttt{NaN}. \textbf{Decidir antes de correr el
+        cribado}, y registrarlo en el pre-registro v0.2.
 \end{itemize}
 
 \textbf{Del informe}
