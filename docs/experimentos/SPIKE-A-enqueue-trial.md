@@ -1,6 +1,6 @@
 # Spike A — Viabilidad de `optuna.enqueue_trial` para el arranque en caliente
 
-- **Fecha:** 2026-08-06
+- **Fecha:** 2026-07-23
 - **Etapa:** E1 (análisis y diseño), habilita RE5
 - **Entorno:** Optuna 4.9.0, NumPy 2.5.1, scikit-learn 1.9.0, Python 3.12.7
 - **Script:** `spikes/spike_a_enqueue_trial.py` (determinista, sin datos externos)
@@ -106,7 +106,7 @@ suave devuelve el caliente a la paridad con el frío (16,0 contra 16,0).
    fuertemente con el arranque en caliente.** Hoy `OptunaSearchEngine` lo deja en el
    valor por defecto de TPE (10), de forma implícita.
 
-   **Decisión tomada (2026-08-06):** se fija en **10**, explícitamente, como
+   **Decisión tomada (2026-07-23):** se fija en **10**, explícitamente, como
    configuración primaria, y se declara un **análisis de sensibilidad a 5**. El mismo
    valor rige en ambas condiciones y en la construcción de la base de
    meta-conocimiento. Razones:

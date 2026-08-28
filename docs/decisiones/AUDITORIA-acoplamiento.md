@@ -1,6 +1,6 @@
 # Auditoría de acoplamiento a imágenes y detección de anomalías
 
-- **Fecha:** 2026-08-06
+- **Fecha:** 2026-07-23
 - **Etapa:** E1 (análisis y diseño), insumo de RE1
 - **Alcance:** los seis módulos migrados de `autopipe/`, en el commit `f34e176`
 - **Propósito:** localizar exactamente qué depende de imágenes y de detección de

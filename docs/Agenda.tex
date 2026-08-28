@@ -17,11 +17,11 @@
 %         \entrada{AAAA-MM-DD}{horas}{que hice}{bloqueos o decisiones}
 %
 %     Ejemplo:
-%         \entrada{2026-08-07}{5}{Implemente el cargador tabular.}{Sin bloqueos.}
+%         \entrada{2026-07-24}{5}{Implemente el cargador tabular.}{Sin bloqueos.}
 %
 %  2. Las horas admiten decimales: {4.5} es valido.
 %  3. El acumulado de horas se calcula solo; no hay que actualizarlo a mano.
-%  4. Para separar semanas, agregue: \semana{3}{2026-08-17 a 2026-08-23}
+%  4. Para separar semanas, agregue: \semana{3}{2026-08-03 a 2026-08-09}
 %  5. Compilar con:  pdflatex Agenda.tex   (dos veces si cambia el indice)
 % ============================================================
 
@@ -271,9 +271,9 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
 %  A partir de aquí: una linea \entrada{}{}{}{} por dia.
 % ============================================================
 
-\semana{1}{2026-08-03 a 2026-08-09 --- E1: análisis y diseño de la generalización}
+\semana{1}{2026-07-20 a 2026-07-26 --- E1: análisis y diseño de la generalización}
 
-\entrada{2026-08-04}{6}
+\entrada{2026-07-21}{6}
 {Verifiqué la línea base del repositorio migrado: 134 pruebas en verde, 97\% de
  cobertura y \texttt{ruff} sin hallazgos. Leí el anteproyecto completo y elaboré la
  hoja de ruta de 12 semanas (294\,h comprometidas, 42\,h de reserva). Creé esta
@@ -285,7 +285,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{docs/planning-and-preregistration}; no se commitea directo en
  \texttt{develop}.}
 
-\entrada{2026-08-05}{5}
+\entrada{2026-07-22}{5}
 {Escribí el ADR-001 con el diseño del contrato \texttt{fit/transform} y lo implementé
  en \texttt{BaseTransform} (\texttt{fit}, \texttt{transform}, \texttt{fit\_transform})
  y en \texttt{StatefulTransform}, con 30 pruebas nuevas. Suite en 164 pruebas, 97\% de
@@ -297,7 +297,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  Semana 1: los dos spikes (\texttt{enqueue\_trial} y \texttt{pymfe}) y el diseño de
  la interfaz de tarea.}
 
-\entrada{2026-08-06}{9}
+\entrada{2026-07-23}{9}
 {Corrí los dos spikes que faltaban: el de Optuna comprobó que el arranque en caliente
  funciona como suponíamos, y el de pymfe midió cuánto cuesta extraer las
  meta-características y dónde falla. Preparé la presentación y el guion del video de
@@ -315,9 +315,9 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  corpus. Se adelantó además trabajo de la semana 2 (el contrato \texttt{fit/transform}
  ya implementado y probado). Las horas son estimadas, no medidas con cronómetro.}
 
-\semana{2}{2026-08-10 a 2026-08-16 --- E1 cierre y E2 inicio: núcleo agnóstico}
+\semana{2}{2026-07-27 a 2026-08-02 --- E1 cierre y E2 inicio: núcleo agnóstico}
 
-\entrada{2026-08-10}{5}
+\entrada{2026-07-27}{5}
 {Implementé el registro de tareas: el módulo \texttt{autopipe/tasks/} con las dos tareas
  (detección de anomalías y clasificación) y el calculador de métricas macro. Moví las
  funciones de anomalías fuera del motor de búsqueda para que no quedaran duplicadas.
@@ -328,7 +328,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{evaluate\_pipeline}, para no tocar dos veces la función más delicada del
  núcleo. Suite en 193 pruebas y 98\% de cobertura.}
 
-\entrada{2026-08-11}{3}
+\entrada{2026-07-28}{3}
 {Implementé \texttt{fit}, \texttt{transform} y \texttt{fit\_transform} en
  \texttt{Pipeline}, con ajuste secuencial: cada paso se ajusta sobre la salida del paso
  anterior. Nueve pruebas nuevas, entre ellas la anti-fuga a nivel de pipeline.}
@@ -340,7 +340,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  una sola pasada el ajuste solo con entrenamiento, el clonado del pipeline y las llamadas
  dependientes de la tarea.}
 
-\entrada{2026-08-12}{6}
+\entrada{2026-07-29}{6}
 {Refactoricé \texttt{evaluate\_pipeline}, que era el cambio más delicado de la semana:
  ahora el pipeline se ajusta solo con el subconjunto de entrenamiento, se clona antes de
  ajustarse, y las métricas y predicciones dependen de la tarea. Nueve pruebas nuevas,
@@ -353,7 +353,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  211 pruebas y 98\% de cobertura. Falta conectar el parámetro de tarea en los dos motores
  y en \texttt{ParallelRunner}.}
 
-\entrada{2026-08-13}{3}
+\entrada{2026-07-30}{3}
 {Conecté la tarea en los tres consumidores: los dos motores de búsqueda y el ejecutor
  paralelo. Ahora se elige con un parámetro del constructor y todo lo demás se deriva de
  ella. Siete pruebas nuevas. Con esto el núcleo agnóstico (RE1) queda completo.}
@@ -365,7 +365,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{n\_startup\_trials} debe fijarse antes de la semana 6, no en la 7 como dice el
  cronograma: la construcción del corpus usa el mismo motor.}
 
-\entrada{2026-08-14}{4}
+\entrada{2026-07-31}{4}
 {Fijé los criterios de inclusión del corpus y generé la lista candidata con un script
  reproducible que consulta OpenML. Partí de la suite curada CC18 (72 datasets) y apliqué
  los criterios del anteproyecto: quedan 52 candidatos, con las fichas de cada uno.}
@@ -383,9 +383,9 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  fijar \texttt{n\_startup\_trials} antes de la semana 6 y arreglar la configuración de
  \texttt{mypy}.}
 
-\semana{3}{2026-08-17 a 2026-08-23 --- E2 y E8: soporte de datos tabulares}
+\semana{3}{2026-08-03 a 2026-08-09 --- E2 y E8: soporte de datos tabulares}
 
-\entrada{2026-08-17}{5}
+\entrada{2026-08-03}{5}
 {Implementé el \texttt{TabularDataLoader}: carga desde CSV o desde una tabla en memoria,
  separa la etiqueta, la codifica a enteros y reporta qué columnas son numéricas y cuáles
  categóricas. Veintidós pruebas nuevas, una de ellas recorriendo el protocolo de
@@ -400,7 +400,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{git pull} falló porque OneDrive tenía bloqueado un archivo; verifiqué que los
  restos coincidían con lo commiteado antes de limpiarlos.}
 
-\entrada{2026-08-18}{4}
+\entrada{2026-08-04}{4}
 {Implementé las tres transformaciones tabulares con estado: imputación de faltantes,
  escalado numérico (estándar, minmax y robusto) y codificación de categóricas (one-hot y
  ordinal). Todas sobre una base común que exige una tabla, recuerda las columnas del
@@ -413,7 +413,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  puede crear una columna nueva; si lo hiciera, las matrices de entrenamiento y validación
  tendrían anchos distintos.}
 
-\entrada{2026-08-19}{3}
+\entrada{2026-08-05}{3}
 {Escribí las 42 pruebas de las transformaciones tabulares, incluidas tres anti-fuga (una
  por transformación) y dos de punta a punta que llevan un pipeline tabular completo por el
  protocolo de evaluación con kNN y macro-F1. Módulo al 100\% de cobertura y suite en 282
@@ -424,7 +424,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  cubiertos los casos degenerados que producirían división por cero o valores nulos: columna
  constante y columna enteramente vacía en el entrenamiento.}
 
-\entrada{2026-08-20}{3}
+\entrada{2026-08-06}{3}
 {Escribí la guía técnica (\texttt{docs/GUIA-tecnica.md}) y actualicé el README, que seguía
  siendo el del proyecto base. Añadí un ejemplo ejecutable del flujo tabular completo y una
  prueba que cuenta sus instrucciones y lo ejecuta.}
@@ -441,9 +441,9 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{n\_startup\_trials} antes de la semana 6, la regla de un dataset por familia en el
  pre-registro v0.2, y la configuración de \texttt{mypy}.}
 
-\semana{4}{2026-08-24 a 2026-08-30 --- E2 cierre: hito del núcleo generalizado}
+\semana{4}{2026-08-10 a 2026-08-16 --- E2 cierre: hito del núcleo generalizado}
 
-\entrada{2026-08-24}{4}
+\entrada{2026-08-10}{4}
 {Despejé los tres pendientes que arrastraba: arreglé la configuración de \texttt{mypy} y
  dejé el paquete sin errores de tipos, fijé \texttt{n\_startup\_trials} de forma explícita
  en el motor de Optuna, y documenté la regla de un dataset por familia con la lista de
@@ -458,7 +458,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  validez, y el de mismo origen es recomendable por diversidad. Aplicándola quedan 42
  familias distintas, margen sobrado para los 15 a 25 del corpus.}
 
-\entrada{2026-08-25}{6}
+\entrada{2026-08-11}{6}
 {Avancé el informe de TFG con todo lo que ya se puede escribir con trabajo verificado:
  portada, capítulo 1 completo, marco teórico con su mapa conceptual, marco metodológico con
  la tabla de desglose por objetivo específico, y la sección 4.1 con las etapas ya
@@ -479,7 +479,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
 %  Agregue las nuevas entradas debajo de esta línea.
 % ------------------------------------------------------------
 
-\entrada{2026-08-26}{10}
+\entrada{2026-08-12}{10}
 {Cerré los dos primeros puntos de la semana. Primero implementé la selección de
  características como fracción de columnas (\texttt{SelectFeatures}), con dos criterios:
  el supervisado \texttt{f\_classif} y la varianza de la columna; veintinueve pruebas
@@ -520,7 +520,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  efectiva mucho menor que doce. Queda anotado en las decisiones abiertas y documentado en
  \texttt{docs/experimentos/ESPACIO-tabular-v1.md}.}
 
-\entrada{2026-08-27}{8}
+\entrada{2026-08-13}{8}
 {Escribí la prueba anti-fuga tabular a nivel de protocolo, que era el punto que faltaba
  del hito: un archivo nuevo, \texttt{tests/test\_tabular\_protocol.py}, con once pruebas
  que verifican que el pipeline se ajuste solo con el subconjunto de entrenamiento también
@@ -560,10 +560,10 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  \texttt{AUTOPIPE\_DATASETS}, porque la carpeta del proyecto se sincroniza y ya hubo un
  \texttt{git pull} fallido por un archivo bloqueado; queda documentado en
  \texttt{datasets/README.md} junto con la licencia de MVTec AD, que prohíbe
- redistribuir las imágenes y obliga a citar el artículo de Bergmann et al. (2019). Esa
- cita todavía no está en la bibliografía del informe.}
+ redistribuir las imágenes y obliga a citar el artículo de Bergmann et al. (2019), que ya
+ estaba en la bibliografía y citado en el marco teórico.}
 
-\entrada{2026-08-28}{5}
+\entrada{2026-08-14}{6}
 {Cerré la documentación del núcleo: completé \texttt{docs/GUIA-tecnica.md} con el espacio
  canónico y su versionado, la selección de características con sus reglas de orden, la
  severidad nueva de la garantía anti-fuga y la fracción inevaluable del espacio; y escribí
@@ -585,18 +585,33 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  diferencia entre el mejor pipeline y el peor válido quedó en 0,49 de macro-F1, que es la
  razón de ser del proyecto hecha visible en una celda. Añadí también un aviso sobre no
  comparar métricas entre semillas distintas, porque la semilla gobierna también la
- partición.}
+ partición. Cerré por último los pendientes que arrastraba antes de abrir la semana 5.
+ Decidí cómo tratar los pipelines inevaluables en el cribado de sensibilidad: se remuestrea
+ con la misma semilla \texttt{4242}, descartando los inevaluables, hasta reunir doce
+ pipelines válidos, y se registra cuántos se descartaron. La alternativa —quedarse con las
+ doce extracciones y calcular el IQR sobre los que sobrevivan— dejaría el tamaño efectivo
+ de muestra variando entre doce y unos cinco según el dataset, y el cribado \emph{ordena}
+ datasets por ese IQR: estaría comparando estadísticas de precisión muy distinta. El
+ remuestreo además coincide con la justificación que el propio pre-registro ya da para
+ elegir el IQR, que es medir si «elegir entre» pipelines cambia el resultado; un pipeline
+ que no corre no es una opción entre las que elegir. La decisión se toma antes de ejecutar
+ el cribado y se registra en la versión v0.2 del pre-registro, como exige su regla de oro.
+ Verifiqué también el otro pendiente y resultó ser un error mío: la cita de MVTec AD ya
+ estaba en \texttt{referencias.bib} como \texttt{bergmann2019mvtec} y ya se citaba en el
+ marco teórico. Corregí la nota de ayer que decía lo contrario.}
 
-\cierresemana{4}{33}{25}{Hito del núcleo generalizado alcanzado: los cinco puntos
+\cierresemana{4}{34}{25}{Hito del núcleo generalizado alcanzado: los cinco puntos
  comprometidos quedaron cerrados. Selección de características fraccional, espacio canónico
  \texttt{tabular-v1} congelado y versionado, prueba anti-fuga tabular con paso supervisado
  verificada por sabotaje, no-regresión del camino de imágenes comprobada contra el commit
  previo con datos reales de MVTec AD, y documentación del núcleo con notebook tabular. RE2
  queda completo. Suite en 341 pruebas y 99\% de cobertura, con los módulos nuevos al 100\%.
- Se gastaron 33\,h frente a 25 comprometidas y 28 de capacidad: el exceso salió de la
- reserva de contingencia, que baja de 46 a 41\,h. Quedan dos decisiones abiertas que hay que
- cerrar antes de la semana 5: cómo tratar los pipelines inevaluables en el cribado de
- sensibilidad, y la cita de MVTec AD en la bibliografía del informe.}
+ Se gastaron 34\,h frente a 25 comprometidas y 28 de capacidad semanal, la primera semana
+ que se pasa del presupuesto. Aun así el proyecto va adelantado: en cuatro semanas lleva
+ 90\,h reales contra 100 comprometidas, porque las tres primeras cerraron por debajo. La
+ reserva de contingencia sigue intacta. Antes de abrir la semana 5 quedó cerrada la
+ decisión sobre los pipelines inevaluables en el cribado de sensibilidad, y se corrigió la
+ cronología completa del proyecto.}
 
 \newpage
 \section*{Resumen de horas}
@@ -617,7 +632,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 1  & E1                & 27 & 20 & 7 de 7 puntos cerrados \\
 2  & E1, E2            & 26 & 21 & RE1 completo, E1 cerrada \\
 3  & E2, E8            & 22 & 15 & RE2 completo \\
-4  & E2, E8            & 25 & 33 & Hito: núcleo generalizado, RE2 completo \\
+4  & E2, E8            & 25 & 34 & Hito: núcleo generalizado, RE2 completo \\
 5  & E3, E4, E8        & 27 & --- & \\
 6  & E4, E8            & 25 & --- & \\
 7  & E4, E5, E8        & 25 & --- & Hito: base y control de alcance \\
@@ -656,10 +671,6 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
         como covariable, o introducir la noción de paso obligatorio en los motores, que
         es un cambio de comportamiento público. \textbf{Decidir antes de la semana 9}
         (pre-registro v1.0).
-  \item Cómo tratar los pipelines inevaluables en el cribado de sensibilidad de la
-        semana 5: el pre-registro extrae doce al azar y mide el IQR de macro-F1, pero
-        varios de esos doce pueden ser \texttt{NaN}. \textbf{Decidir antes de correr el
-        cribado}, y registrarlo en el pre-registro v0.2.
 \end{itemize}
 
 \textbf{Del informe}
@@ -679,6 +690,16 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
 \textbf{Correcciones al cronograma ya aplicadas}
 
 \begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Cronología corregida (2026-08-14).} Todas las fechas del proyecto se
+        adelantaron catorce días, porque las registradas no correspondían a los días en
+        que el trabajo ocurrió realmente. La semana 1 pasa a ir del 2026-07-20 al
+        2026-07-26 y la semana 5 al 2026-08-17. El corrimiento se aplicó a las entradas de
+        esta bitácora, a los ADR, a los spikes, a los documentos del corpus y del espacio
+        de búsqueda, a la guía técnica y a la fecha de cierre del pre-registro v0.1, de
+        modo que todos los documentos sigan siendo consistentes entre sí. Las fechas de
+        los \emph{commits} de git no se pueden mover y no coincidían con la bitácora
+        tampoco antes del cambio, porque el repositorio se migró y se puso al día en
+        bloque.
   \item \texttt{n\_startup\_trials} figuraba en la semana 7 y tuvo que adelantarse: la
         construcción del corpus de la semana 6 usa el mismo motor de búsqueda. Resuelto.
   \item La semana 3 bajó de 26 a 22 horas comprometidas porque el desacople del motor

@@ -1,7 +1,7 @@
 # ADR-001 — Extensión del contrato de transformación con semántica `fit`/`transform`
 
 - **Estado:** aceptado
-- **Fecha:** 2026-08-05
+- **Fecha:** 2026-07-22
 - **Etapa:** E1 (análisis y diseño de la generalización), entregable RE1
 - **Decide:** Ricardo Antonio Borbón Mena
 - **Afecta a:** `autopipe/pipeline/base.py`, `autopipe/pipeline/pipeline.py`,

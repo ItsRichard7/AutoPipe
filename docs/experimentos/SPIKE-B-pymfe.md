@@ -1,6 +1,6 @@
 # Spike B — Viabilidad de `pymfe` como extractor de meta-características
 
-- **Fecha:** 2026-08-06
+- **Fecha:** 2026-07-23
 - **Etapa:** E1 (análisis y diseño), habilita RE3 y RE4
 - **Entorno:** pymfe 0.4.4, openml 0.15.1, pandas 3.0.5, NumPy 2.5.1, scikit-learn 1.9.0
 - **Script:** `spikes/spike_b_pymfe.py` (determinista, sin datos externos ni red)

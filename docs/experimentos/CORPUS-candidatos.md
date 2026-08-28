@@ -3,7 +3,7 @@
 > **Archivo generado.** No editar a mano: se regenera con
 > `.\.venv\Scripts\python.exe scripts\list_corpus_candidates.py`.
 
-- **Generado:** 2026-08-24
+- **Generado:** 2026-08-10
 - **Universo:** suite curada OpenML-CC18 (72 datasets)
 - **Criterios aplicados:** Sección 4.3.1 del anteproyecto
 - **Decisiones de procedimiento:** `docs/experimentos/CORPUS-criterios-inclusion.md`

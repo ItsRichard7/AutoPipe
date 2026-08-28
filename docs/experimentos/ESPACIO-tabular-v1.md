@@ -1,6 +1,6 @@
 # Espacio de búsqueda tabular canónico — `tabular-v1`
 
-- **Estado:** congelado el 2026-08-27 (semana 4)
+- **Estado:** congelado el 2026-08-13 (semana 4)
 - **Entregable:** RE1, RE5
 - **Implementación:** `autopipe/search_space/tabular.py`
 - **Prueba que lo vigila:** `tests/test_search_space.py::test_the_index_of_every_option_is_frozen`
@@ -107,7 +107,7 @@ inevaluables: omitir la codificación en un dataset con columnas categóricas de
 tabla que el modelo no puede consumir. `evaluate_pipeline_safe` los registra con métricas
 `NaN` y la búsqueda continúa, de modo que nunca ganan.
 
-Medición sobre datasets sintéticos de 90 filas y 3 columnas (2026-08-27):
+Medición sobre datasets sintéticos de 90 filas y 3 columnas (2026-08-13):
 
 | Dataset | Candidatos `NaN` | Fracción |
 |---|---|---|
@@ -116,7 +116,7 @@ Medición sobre datasets sintéticos de 90 filas y 3 columnas (2026-08-27):
 | Con categóricas, sin faltantes | 48 / 144 | 33 % |
 | Con categóricas y faltantes | 80 / 144 | 56 % |
 
-Reproducir con `scripts/` o con el fragmento registrado en la bitácora del 2026-08-27.
+Reproducir con `scripts/` o con el fragmento registrado en la bitácora del 2026-08-13.
 
 **Esto tiene consecuencias sobre el protocolo experimental y no debe darse por resuelto:**
 
@@ -133,7 +133,34 @@ Reproducir con `scripts/` o con el fragmento registrado en la bitácora del 2026
    doce podrían ser `NaN`, y el IQR se calcularía sobre una muestra efectiva mucho menor
    que doce.
 
-Ambos puntos están abiertos y anotados en las decisiones abiertas de `docs/Agenda.tex`.
+El punto 1 sigue abierto y anotado en las decisiones abiertas de `docs/Agenda.tex`, con
+fecha límite en la semana 9 (pre-registro v1.0).
+
+### Resolución del punto 2 (2026-08-14, antes de ejecutar el cribado)
+
+**Se remuestrea hasta reunir doce pipelines evaluables.** Se sigue extrayendo al azar del
+espacio canónico con la semilla fija `4242`, descartando los inevaluables, hasta juntar
+doce válidos. El número de descartes se registra junto al IQR.
+
+**Razón.** El cribado no solo mide: **ordena** los datasets candidatos por IQR y selecciona
+los primeros. Con doce extracciones fijas, el tamaño efectivo de muestra variaría entre
+doce (dataset numérico sin faltantes) y unos cinco (categóricas más faltantes), de modo que
+el orden compararía estadísticas de precisión muy distinta, y un IQR sobre cinco valores es
+ruidoso. Remuestrear mantiene `n = 12` en todos los datasets y hace comparables los IQR.
+
+Es además coherente con la justificación que el propio pre-registro ya da para elegir el
+IQR sobre el rango total: mide si **elegir entre** pipelines cambia el resultado. Un
+pipeline que no se puede ejecutar no es una de las opciones entre las que se elige.
+
+**Alternativas descartadas.** Contar los `NaN` como macro-F1 igual a cero inflaría el IQR
+justo en los datasets con categóricas y faltantes, confundiendo «sensible al
+preprocesamiento» con «tiene columnas categóricas» y sesgando la selección del corpus.
+Restringir el muestreo a pipelines ejecutables por construcción —excluyendo la omisión de
+imputación y codificación— haría que el cribado midiera un espacio distinto del que después
+usa la búsqueda.
+
+Esta decisión se toma **antes** de ejecutar el cribado y se registra en la versión v0.2 del
+pre-registro, como exige su regla de oro.
 
 ## API
 

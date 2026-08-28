@@ -1,6 +1,6 @@
 # Criterios de inclusión del corpus de meta-conocimiento
 
-- **Fecha:** 2026-08-13
+- **Fecha:** 2026-07-30
 - **Etapa:** E1 cierre, entregable RE4
 - **Genera:** `docs/experimentos/CORPUS-candidatos.md` mediante `scripts/list_corpus_candidates.py`
 
@@ -112,7 +112,7 @@ predicción de defectos de software del mismo repositorio (NASA MDP), con esquem
 características muy similares aunque de proyectos distintos. La dependencia es menor pero
 del mismo tipo.
 
-### Regla de familia (aprobada el 2026-08-24)
+### Regla de familia (aprobada el 2026-08-10)
 
 Se añade a la selección de la semana 5 una regla de **como máximo un dataset por familia
 de origen**, aplicada después del orden por sensibilidad y antes de las restricciones de

@@ -2,7 +2,7 @@
 
 - **Estado:** completa para el núcleo generalizado (hito de la semana 4)
 - **Entregable:** RE7
-- **Actualizada:** 2026-08-27
+- **Actualizada:** 2026-08-13
 
 Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
 explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
