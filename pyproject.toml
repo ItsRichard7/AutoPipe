@@ -24,6 +24,9 @@ dependencies = [
     "scikit-learn>=1.4",
     # Hyperparameter search
     "optuna>=3.6",
+    # Meta-learning: dataset meta-features and the public dataset corpus
+    "pymfe>=0.4",        # meta-feature extraction (autopipe.meta_features)
+    "openml>=0.15",      # corpus download (scripts/, not imported by the library)
     # Parallelism
     "joblib>=1.3",
     # Reporting

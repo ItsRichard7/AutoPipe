@@ -613,6 +613,46 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  decisión sobre los pipelines inevaluables en el cribado de sensibilidad, y se corrigió la
  cronología completa del proyecto.}
 
+\semana{5}{2026-08-17 a 2026-08-23 --- E3 y E4 inicio: meta-características}
+
+\entrada{2026-08-17}{9}
+{Implementé el extractor de meta-características, \texttt{autopipe/meta\_features/}, sobre
+ \texttt{pymfe}. Los grupos se tratan distinto según su costo: \texttt{general},
+ \texttt{statistical} e \texttt{info-theory} se extraen del dataset completo y
+ \texttt{complexity} de una submuestra estratificada de 500 instancias con semilla
+ declarada. El extractor imputa por mediana antes de invocar a pymfe, redondea a precisión
+ fija, cachea en disco con una firma de la configuración, y envuelve los fallos de la
+ librería. Declaré por fin \texttt{pymfe} y \texttt{openml} en \texttt{pyproject.toml}.}
+{Las cuatro decisiones vienen medidas del spike B, no supuestas. La que más pesa es la
+ submuestra: las medidas de complejidad son propiedades geométricas de la muestra concreta
+ y cambian con su tamaño, así que dos datasets solo son comparables si se extrajeron con el
+ mismo tamaño; y como los criterios de inclusión admiten datasets desde 500 instancias, 500
+ es el único tamaño que todos pueden alcanzar. El efecto se ve en la medición: extraer de
+ un dataset de 5\,000 instancias cuesta 1,3\,s frente a 0,7\,s de uno de 600, cuando el
+ spike extrapolaba 21,6 minutos por dataset de 50\,000 si \texttt{complexity} corriera
+ completo. La imputación previa no es una comodidad: sin ella \texttt{complexity} falla con
+ un \texttt{Exception} de mensaje vacío. Reutilicé \texttt{ImputeMissing} de la propia
+ librería en vez de escribir otra imputación. La caché lleva en el nombre del archivo un
+ resumen de la semilla, el tamaño de muestra y la precisión, de modo que cambiar cualquiera
+ de los tres no reutilice en silencio un vector viejo.}
+
+\entrada{2026-08-18}{7}
+{Escribí las 28 pruebas del extractor y verifiqué sus propiedades con mediciones: 107
+ meta-características con el mismo conjunto de nombres en datasets de 250 a 5\,000 filas,
+ de 4 a 30 columnas y de 2 a 5 clases; dos extracciones idénticas bit a bit; y la caché
+ bajando de 0,51 a 0,008 segundos sin perder los valores no finitos. Suite en 369 pruebas,
+ el módulo nuevo al 100\% de cobertura y 99\% global.}
+{La prueba de alineación es la que sostiene todo lo demás: si el conjunto de nombres
+ variara entre datasets, el recomendador compararía vectores desalineados sin que nada
+ fallara. Una prueba encontró un error mío con algo de ironía: el envoltorio de los fallos
+ de pymfe existe para que un \texttt{Exception} de mensaje vacío no sea indepurable, y
+ producía un mensaje vacío. Había escrito «\texttt{exc or "sin mensaje"}», pero un objeto
+ excepción siempre es verdadero, así que nunca caía al texto de reserva. Medí además, como
+ dato preliminar para la regla de meta-características no finitas, la unión de columnas no
+ finitas sobre seis datasets sintéticos variados: 15 de 107, de modo que sobrevivirían 92,
+ cerca de las 93 que estimaba el spike. El número que vale es el de los datasets reales y
+ se mide con la descarga del corpus, antes de fijar la regla en el pre-registro v0.2.}
+
 \newpage
 \section*{Resumen de horas}
 
