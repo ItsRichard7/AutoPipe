@@ -1,8 +1,8 @@
 # ADR-002 — Interfaz de tarea y registro de métricas
 
 - **Estado:** aceptado
-- **Fecha:** 2026-08-06
-- **Aprobado por:** Ricardo Antonio Borbón Mena, 2026-08-06
+- **Fecha:** 2026-07-23
+- **Aprobado por:** Ricardo Antonio Borbón Mena, 2026-07-23
 - **Etapa:** E1 (análisis y diseño de la generalización), entregable RE1
 - **Afecta a:** `autopipe/evaluator/`, `autopipe/search_engine/`,
   `autopipe/parallel_runner/`

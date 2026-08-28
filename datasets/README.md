@@ -11,7 +11,7 @@ guarde aquí se sincroniza**. Para los datasets eso es un problema, por tres raz
 concretas:
 
 1. **Bloqueos de archivo.** Ya ocurrió una vez: un `git pull` falló porque OneDrive
-   tenía tomado un archivo (bitácora del 2026-08-17). Con miles de imágenes, la
+   tenía tomado un archivo (bitácora del 2026-08-03). Con miles de imágenes, la
    probabilidad de que vuelva a pasar en mitad de un experimento sube mucho.
 2. **Archivos a petición.** OneDrive puede dejar los archivos como marcadores de
    posición y bajarlos al abrirlos. Si uno está deshidratado y la sincronización
