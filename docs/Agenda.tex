@@ -563,6 +563,41 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  redistribuir las imágenes y obliga a citar el artículo de Bergmann et al. (2019). Esa
  cita todavía no está en la bibliografía del informe.}
 
+\entrada{2026-08-28}{5}
+{Cerré la documentación del núcleo: completé \texttt{docs/GUIA-tecnica.md} con el espacio
+ canónico y su versionado, la selección de características con sus reglas de orden, la
+ severidad nueva de la garantía anti-fuga y la fracción inevaluable del espacio; y escribí
+ \texttt{examples/tabular\_walkthrough.ipynb}, el notebook tabular que faltaba frente a los
+ tres de imágenes. Actualicé el README, que seguía describiendo tres transformaciones
+ tabulares y un espacio armado a mano. Verifiqué el notebook ejecutando sus ocho celdas de
+ código en orden.}
+{La guía tenía dos afirmaciones que el trabajo de esta semana volvió falsas, y las dos eran
+ del tipo que se propaga: decía que \texttt{get\_params()} de las transformaciones tabulares
+ solo puede devolver cadenas, que dejó de ser cierto al aparecer un parámetro fraccional; y
+ justificaba el orden \emph{codificar antes de escalar} con el argumento de que lo contrario
+ dejaría las indicadoras sin escalar. Ese argumento es exactamente el que el espacio
+ canónico rechaza: dejarlas sin escalar es lo correcto, porque estandarizar la indicadora de
+ una categoría rara la lleva a valores cercanos a $\pm$10 y con vecinos más cercanos esa
+ sola columna domina la distancia. Documentación que contradice una decisión congelada es
+ peor que no tenerla. Del notebook salió un ajuste que no esperaba: con el dataset sintético
+ que traía, todos los pipelines daban macro-F1 igual a 1, de modo que el ejemplo demostraba
+ lo contrario de lo que quería demostrar. Aumenté el solape entre clases hasta que la
+ diferencia entre el mejor pipeline y el peor válido quedó en 0,49 de macro-F1, que es la
+ razón de ser del proyecto hecha visible en una celda. Añadí también un aviso sobre no
+ comparar métricas entre semillas distintas, porque la semilla gobierna también la
+ partición.}
+
+\cierresemana{4}{33}{25}{Hito del núcleo generalizado alcanzado: los cinco puntos
+ comprometidos quedaron cerrados. Selección de características fraccional, espacio canónico
+ \texttt{tabular-v1} congelado y versionado, prueba anti-fuga tabular con paso supervisado
+ verificada por sabotaje, no-regresión del camino de imágenes comprobada contra el commit
+ previo con datos reales de MVTec AD, y documentación del núcleo con notebook tabular. RE2
+ queda completo. Suite en 341 pruebas y 99\% de cobertura, con los módulos nuevos al 100\%.
+ Se gastaron 33\,h frente a 25 comprometidas y 28 de capacidad: el exceso salió de la
+ reserva de contingencia, que baja de 46 a 41\,h. Quedan dos decisiones abiertas que hay que
+ cerrar antes de la semana 5: cómo tratar los pipelines inevaluables en el cribado de
+ sensibilidad, y la cita de MVTec AD en la bibliografía del informe.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -582,7 +617,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 1  & E1                & 27 & 20 & 7 de 7 puntos cerrados \\
 2  & E1, E2            & 26 & 21 & RE1 completo, E1 cerrada \\
 3  & E2, E8            & 22 & 15 & RE2 completo \\
-4  & E2, E8            & 25 & --- & Hito: núcleo generalizado \\
+4  & E2, E8            & 25 & 33 & Hito: núcleo generalizado, RE2 completo \\
 5  & E3, E4, E8        & 27 & --- & \\
 6  & E4, E8            & 25 & --- & \\
 7  & E4, E5, E8        & 25 & --- & Hito: base y control de alcance \\
