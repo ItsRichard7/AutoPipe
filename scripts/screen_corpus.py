@@ -39,7 +39,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from autopipe.evaluator.splitter import DataSplitter
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.search_engine.grid_search import evaluate_pipeline_safe
-from autopipe.search_space import TABULAR_SPACE_STEPS, build_tabular_search_space
+from autopipe.search_space import (
+    TABULAR_SPACE_STEPS,
+    build_tabular_search_space,
+    pipeline_from_configuration,
+)
 from autopipe.tasks import CLASSIFICATION
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -117,18 +121,15 @@ def _construir(configuracion: tuple[int, ...], espacio: dict) -> Pipeline:
     """Construye el pipeline que corresponde a una configuración.
 
     Args:
-        configuracion: Índices por paso.
+        configuracion: Índices por paso, en el orden canónico.
         espacio: Espacio de búsqueda canónico.
 
     Returns:
         El pipeline, sin los pasos omitidos.
     """
-    pasos = [
-        espacio[paso][indice]
-        for paso, indice in zip(TABULAR_SPACE_STEPS, configuracion)
-        if indice < len(espacio[paso])
-    ]
-    return Pipeline(pasos)
+    return pipeline_from_configuration(
+        dict(zip(TABULAR_SPACE_STEPS, configuracion)), espacio
+    )
 
 
 def _evaluar(pipeline: Pipeline, features, labels, train_idx, val_idx) -> float:

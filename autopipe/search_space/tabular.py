@@ -23,6 +23,7 @@ la tabla de índices, y la Sección 3 del pre-registro para la justificación.
 from __future__ import annotations
 
 from autopipe.pipeline.base import BaseTransform
+from autopipe.pipeline.pipeline import Pipeline
 from autopipe.pipeline.tabular_transforms import (
     EncodeCategorical,
     ImputeMissing,
@@ -104,6 +105,54 @@ def validate_space_version(version: str) -> None:
             f"transformaciones distintas de las previstas, así que se rechaza en "
             f"lugar de ejecutarse."
         )
+
+
+def pipeline_from_configuration(
+    configuration: dict[str, int],
+    space: dict[str, list[BaseTransform]] | None = None,
+) -> Pipeline:
+    """Construye el pipeline que designa una configuración de índices.
+
+    Es la operación inversa de lo que registran los motores de búsqueda: ellos
+    guardan un índice por paso, y esto los resuelve a transformaciones. La
+    necesitan tanto la validación de la base de meta-conocimiento como el
+    recomendador, que recibe configuraciones ajenas y tiene que ejecutarlas.
+
+    Args:
+        configuration: Índice elegido por cada paso. El índice ``len(opciones)``
+            significa omitir el paso.
+        space: Espacio sobre el que resolver los índices. Si es ``None`` se
+            construye el canónico.
+
+    Returns:
+        El pipeline correspondiente, sin los pasos omitidos.
+
+    Raises:
+        ValueError: Si falta algún paso del espacio o si un índice queda fuera de
+            rango. Se rechaza en lugar de recortarlo: un índice fuera de rango
+            indica que la configuración proviene de otro espacio, y ejecutarla
+            aplicaría transformaciones que no son las que se creyó recomendar.
+    """
+    espacio = build_tabular_search_space() if space is None else space
+    faltantes = [paso for paso in TABULAR_SPACE_STEPS if paso not in configuration]
+    if faltantes:
+        raise ValueError(
+            f"A la configuración le faltan los pasos {faltantes}. Debe indicar un "
+            f"índice por cada paso de {list(TABULAR_SPACE_STEPS)}."
+        )
+    pasos: list[BaseTransform] = []
+    for paso in TABULAR_SPACE_STEPS:
+        indice = configuration[paso]
+        opciones = espacio[paso]
+        if not 0 <= indice <= len(opciones):
+            raise ValueError(
+                f"El índice {indice} del paso {paso!r} está fuera de rango: el paso "
+                f"admite de 0 a {len(opciones)}, donde {len(opciones)} significa "
+                f"omitirlo. La configuración no proviene de este espacio."
+            )
+        if indice < len(opciones):
+            pasos.append(opciones[indice])
+    return Pipeline(pasos)
 
 
 def describe_tabular_search_space() -> list[dict]:
