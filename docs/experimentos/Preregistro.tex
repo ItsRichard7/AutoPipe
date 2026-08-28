@@ -14,7 +14,7 @@
 %  Ninguna version de este documento se escribe DESPUES de la
 %  ejecucion que gobierna:
 %    v0.1  semana 1  - decisiones de protocolo (este documento)
-%    v0.2  semana 5  - antes de correr el cribado de sensibilidad
+%    v0.2  semana 5  - antes de correr el cribado de sensibilidad (cerrada)
 %    v1.0  semana 9  - antes de ejecutar el leave-one-dataset-out
 %
 %  Cada version se cierra con un commit propio y una etiqueta
@@ -63,9 +63,12 @@
 \fancyfoot[C]{\thepage}
 
 % --- Identidad de la version --------------------------------
-\newcommand{\preregversion}{v0.1}
-\newcommand{\preregfecha}{21 de julio de 2026}
-\newcommand{\preregtag}{prereg-v0.1}
+\newcommand{\preregversion}{v0.2}
+\newcommand{\preregfecha}{20 de agosto de 2026}
+\newcommand{\preregtag}{prereg-v0.2}
+
+% Fecha de cierre de la version anterior, para el historial.
+\newcommand{\preregfechauno}{21 de julio de 2026}
 
 \begin{document}
 
@@ -81,9 +84,11 @@
 \midrule
 Versión & \preregversion \\
 Fecha de cierre & \preregfecha \\
-Estado & Decisiones de protocolo fijadas. Pendientes de versiones posteriores: la
-versión congelada del espacio de búsqueda (v0.2) y la ejecución del
-\textit{leave-one-dataset-out} (v1.0). \\
+Estado & Decisiones de protocolo fijadas, más el espacio de búsqueda congelado, las
+reglas de extracción de meta-características y el tratamiento de los pipelines
+inevaluables en el cribado. Se cierra \textbf{antes} de ejecutar el cribado de
+sensibilidad. Pendiente de la v1.0: el número de semillas y la ejecución del
+\textit{leave-one-dataset-out}. \\
 Etiqueta de git & \texttt{\preregtag}, etiqueta anotada creada al cerrar esta
 versión. Su fecha de creación, registrada por git, es el fechado verificable de
 este documento. \\
@@ -133,8 +138,13 @@ Se elige $k$ vecinos más cercanos y se congela su configuración completa
 \midrule
 Espacio de búsqueda &
 Nada: \S4.3 no lo especifica. &
-Parametrización relativa (fraccional) y espacio canónico versionado
-(Sección~\ref{sec:espacio}). \\
+Parametrización relativa (fraccional) y espacio canónico versionado, con su
+composición congelada (Sección~\ref{sec:espacio}). \\
+\midrule
+Meta-características &
+Nada: \S4.3 no lo especifica. &
+Biblioteca y grupos, submuestreo del grupo de complejidad, imputación previa y
+regla de descarte de valores no finitos (Sección~\ref{sec:metacar}). \\
 \midrule
 Corpus &
 Criterios de inclusión: licencia abierta, 500--50\,000 instancias, $\leq 100$
@@ -198,7 +208,8 @@ ganador).
 entrenar es trivial y predecir crece cuadráticamente con el número de instancias,
 de modo que el costo total queda dominado por los datasets cercanos al techo de
 50\,000 instancias. La medición de ese costo se realiza en la semana 6 y se
-registra en la versión v0.2 de este documento.
+registra en la versión v1.0 de este documento, que es la primera posterior a esa
+medición.
 
 Ningún hiperparámetro del modelo base entra en el espacio de búsqueda: el
 anteproyecto exige un modelo base fijo para que las diferencias observadas sean
@@ -238,10 +249,145 @@ producir ningún error visible. El versionado hace detectable esa condición:
 una recomendación proveniente de una versión del espacio distinta de la vigente
 se rechaza en lugar de ejecutarse.
 
-La composición concreta del espacio y su identificador de versión se congelan en
-la semana 4 y se registran en la versión v0.2 de este documento.
+\subsection{Composición congelada}
 
-% =========== 4. CORPUS ======================================
+El espacio vigente se identifica como \texttt{tabular-v1}. Sus cuatro pasos, en
+este orden de aplicación, son:
+
+\begin{center}
+\texttt{imputation} $\rightarrow$ \texttt{scaling} $\rightarrow$
+\texttt{encoding} $\rightarrow$ \texttt{selection}
+\end{center}
+
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{L{2.6cm} Y r}
+\toprule
+\rowcolor{tablehead} \textbf{Paso} & \textbf{Opciones, en orden de índice} & \textbf{Con omisión} \\
+\midrule
+\texttt{imputation} & media, mediana & 3 \\
+\texttt{scaling} & estándar, mín-máx, robusto & 4 \\
+\texttt{encoding} & \textit{one-hot}, ordinal & 3 \\
+\texttt{selection} & fracción 0,25 / 0,50 / 0,75, criterio \texttt{f\_classif} & 4 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Cada paso recibe además, de forma automática, la opción de \textbf{omitirse}, de
+modo que el espacio contiene $3 \times 4 \times 3 \times 4 = 144$ pipelines. La
+tabla de índices exacta, generada desde el propio código, está en
+\texttt{docs/experimentos/ESPACIO-tabular-v1.md}.
+
+\textbf{El escalado precede a la codificación} para que actúe solo sobre las
+columnas numéricas originales y deje las indicadoras \textit{one-hot} en 0/1.
+Estandarizarlas llevaría la indicadora de una categoría rara a valores cercanos a
+$\pm 10$ y, con el modelo base de la Sección~\ref{sec:modelo}, esa sola columna
+dominaría la distancia euclídea: el resultado mediría la rareza de una categoría y
+no la calidad del preprocesamiento.
+
+\textbf{Cambiar cualquier elemento de esa composición obliga a incrementar el
+identificador de versión}, porque las configuraciones ya guardadas dejarían de ser
+interpretables.
+
+\subsection{Región inevaluable del espacio}
+
+Los motores generan candidatos con pasos omitidos, y algunos son inevaluables:
+omitir la codificación en un dataset con columnas categóricas deja una tabla que
+el modelo no puede consumir, y omitir la imputación deja valores nulos. Esos
+candidatos se registran con métrica \texttt{NaN} y nunca resultan ganadores.
+
+La fracción medida sobre datos sintéticos va de 0 (dataset numérico sin
+faltantes) a 56\% (con categóricas y con faltantes). Tiene dos consecuencias sobre
+el protocolo:
+
+\begin{enumerate}
+  \item Sobre el cribado de sensibilidad, resuelta en la
+        Sección~\ref{sec:corpus}.
+  \item Sobre la variable «ensayos hasta el objetivo»: el arranque en caliente
+        inyecta configuraciones ganadoras, que por construcción no caen en la
+        región inevaluable, mientras que el frío gasta ahí parte de sus ensayos
+        aleatorios. \textbf{Queda abierta} y se resuelve en la v1.0, antes de
+        ejecutar el \textit{leave-one-dataset-out}. La ablación con recomendador
+        aleatorio prevista en el plan de trabajo la controla en parte, porque ese
+        recomendador sí puede caer en la región.
+\end{enumerate}
+
+% =========== 4. META-CARACTERISTICAS ========================
+\section{Extracción de meta-características}
+\label{sec:metacar}
+
+El vector de meta-características es la entrada del recomendador: de él depende
+qué datasets se consideran parecidos entre sí. Las reglas siguientes se fijan
+aquí, antes de construir la base de meta-conocimiento, y salen de las mediciones
+del spike B (\texttt{docs/experimentos/SPIKE-B-pymfe.md}).
+
+\subsection{Biblioteca y grupos}
+
+Se emplea \texttt{pymfe} 0.4.4 con cuatro grupos: \texttt{general},
+\texttt{statistical}, \texttt{info-theory} y \texttt{complexity}. Producen 107
+meta-características, y el conjunto de nombres es el mismo para cualquier
+dataset, que es la condición para que el recomendador compare vectores alineados.
+
+\subsection{Submuestreo del grupo de complejidad}
+
+Los tres primeros grupos se extraen del \textbf{dataset completo}. El grupo
+\texttt{complexity} se extrae de una \textbf{submuestra aleatoria de 500
+instancias, estratificada por clase, con semilla 42}.
+
+\textbf{Razón del submuestreo.} El costo de \texttt{complexity} crece de forma
+cuadrática: el exponente medido es 1,91, y en el techo de 50\,000 instancias que
+admite el anteproyecto la extracción costaría unos 21,6 minutos por dataset,
+frente a menos de tres segundos para los otros tres grupos juntos.
+
+\textbf{Razón del tamaño fijo, y no de una fracción fija.} Las medidas de
+complejidad son propiedades geométricas de la muestra concreta, no estimadores de
+una cantidad poblacional, de modo que cambian con el tamaño de la muestra. Dos
+datasets solo son comparables si se les extrajo con el mismo tamaño. Como los
+criterios de inclusión admiten datasets desde 500 instancias, \textbf{500 es el
+único tamaño que todo dataset elegible puede alcanzar}. Un tamaño variable
+cambiaría ruido por sesgo, y un sesgo correlacionado con el número de filas haría
+que el recomendador juzgue similares a datasets que solo comparten su tamaño.
+
+Si la estratificación no fuera posible por tener alguna clase menos miembros que
+los que exige el reparto, se cae a un muestreo aleatorio simple con la misma
+semilla y se deja constancia. Un dataset con menos de 500 instancias se usa
+entero.
+
+\subsection{Imputación previa}
+
+Antes de invocar a \texttt{pymfe} se imputan los valores faltantes: mediana en las
+columnas numéricas y moda en las categóricas. No es una comodidad: con valores
+faltantes, el grupo \texttt{complexity} falla con una excepción de mensaje vacío
+al precomputar el grafo de adyacencia.
+
+\subsection{Determinismo}
+
+Los valores se redondean a nueve decimales. Dos extracciones sobre el mismo
+dataset difieren en \texttt{hubs.mean} y \texttt{hubs.sd} en torno a
+$3 \times 10^{-15}$ por el orden de sumación en coma flotante; el redondeo
+absorbe esa diferencia y vuelve el vector estable bit a bit, como exige el
+criterio de reproducibilidad de la Sección~4.3.5 del anteproyecto.
+
+\subsection{Meta-características no finitas}
+
+Alrededor del 13\% del vector no es finito en un dataset dado, y \textbf{qué
+posiciones lo son depende del dataset}: hay meta-características que existen para
+unos y no para otros.
+
+\textbf{Regla:} se descarta toda meta-característica que resulte no finita en
+\textbf{algún} dataset del corpus. El vector final es, por tanto, la intersección
+de las finitas. No se imputa ningún valor al nivel meta.
+
+\textbf{Razón.} Imputar al nivel meta exigiría ajustar esa imputación por pliegue,
+como la normalización, y añadiría una fuente de error difícil de auditar sobre una
+métrica de similitud. Descartar es la operación conservadora.
+
+El descarte se calcula \textbf{una sola vez}, sobre el corpus definitivo, y la
+lista resultante se registra junto a la base de meta-conocimiento. Medido sobre
+los 52 candidatos, 27 de las 107 meta-características son no finitas en al menos
+uno, de modo que sobrevivirían 80; como el corpus definitivo es un subconjunto de
+los candidatos, esa cifra es una \textbf{cota inferior} del número final.
+
+% =========== 5. CORPUS ======================================
 \section{Corpus y cribado de sensibilidad}
 \label{sec:corpus}
 
@@ -261,6 +407,23 @@ resultan elegibles, que el anteproyecto no especifica.
         Sección~\ref{sec:espacio}, incluida la opción de omitir cada paso, con
         semilla fija \texttt{4242}.
 
+        \textit{Pipelines inevaluables.} Parte del espacio no es evaluable sobre
+        un dataset dado (Sección~\ref{sec:espacio}). Se \textbf{sigue extrayendo
+        al azar, descartando los inevaluables, hasta reunir doce pipelines
+        válidos}, y se registra cuántos se descartaron.
+
+        \textit{Razón:} el cribado no solo mide, \emph{ordena} los candidatos por
+        IQR y selecciona los primeros. Con doce extracciones fijas, el tamaño
+        efectivo de muestra variaría entre doce y unos cinco según el dataset, de
+        modo que el orden compararía estadísticas de precisión muy distinta.
+        Remuestrear mantiene $n = 12$ en todos y hace comparables los IQR. Es
+        además coherente con la razón por la que se eligió el IQR: mide si
+        \emph{elegir entre} pipelines cambia el resultado, y un pipeline que no
+        se puede ejecutar no es una de las opciones entre las que se elige.
+        Contar los inevaluables como macro-F1 nula inflaría el IQR justo en los
+        datasets con categóricas y faltantes, confundiendo «sensible al
+        preprocesamiento» con «tiene columnas categóricas».
+
   \item \textbf{Evaluación.} El modelo base congelado de la
         Sección~\ref{sec:modelo}, la métrica primaria de clasificación del
         anteproyecto (macro-F1), y la misma partición única de entrenamiento y
@@ -278,6 +441,28 @@ resultan elegibles, que el anteproyecto no especifica.
         pipeline vacío mide si el preprocesamiento \emph{ayuda}, que es una
         pregunta distinta y se reporta aparte.
 
+  \item \textbf{Regla de familia.} Como máximo \textbf{un dataset por familia de
+        origen}, aplicada \emph{después} del orden por IQR y \emph{antes} de las
+        restricciones de diversidad. Distingue dos niveles:
+
+        \textit{Nivel 1, mismas instancias (obligatorio).} Los cuatro
+        \texttt{mfeat-*} son cuatro representaciones de las \textbf{mismas} 2\,000
+        instancias. Si el corpus incluyera varias y la validación dejara una
+        fuera, el recomendador seguiría teniendo el mismo dataset en su base bajo
+        otra representación, y la independencia entre pliegues que supone el
+        \textit{leave-one-dataset-out} dejaría de cumplirse. Es un problema de
+        validez, no de diversidad.
+
+        \textit{Nivel 2, misma fuente o esquema (recomendable).} Los seis del
+        repositorio NASA MDP (\texttt{kc1}, \texttt{kc2}, \texttt{pc1},
+        \texttt{pc3}, \texttt{pc4}, \texttt{jm1}) y los de reconocimiento de
+        dígitos manuscritos. Las instancias son distintas y la similitud de
+        dominio es una propiedad legítima que el recomendador debería poder
+        aprovechar; limitarla protege la diversidad del corpus, no su validez.
+
+        Aplicada sobre los 52 candidatos quedan 42 familias distintas, margen
+        sobrado para los 15--25 del corpus.
+
   \item \textbf{Regla de desempate.} Los candidatos se ordenan por IQR
         descendente y se seleccionan los primeros hasta completar el corpus,
         sujeto a dos restricciones de diversidad que se aplican \emph{después}
@@ -292,6 +477,10 @@ resultan elegibles, que el anteproyecto no especifica.
         Cuando una restricción obliga a omitir un candidato mejor ubicado en el
         orden, se registra cuál y por qué.
 
+  \item \textbf{Verificación de licencias.} La elegibilidad por licencia se
+        comprobó a nivel de suite al fijar los criterios. La licencia individual
+        de cada dataset seleccionado se registra junto a su ficha.
+
   \item \textbf{Umbral del subconjunto sensible.} Un dataset se considera
         sensible al preprocesamiento si su IQR es mayor o igual a $0{,}02$ de
         macro-F1 (dos puntos porcentuales). Este umbral queda fijado aquí,
@@ -302,6 +491,19 @@ resultan elegibles, que el anteproyecto no especifica.
         el repositorio, incluidos los de los candidatos descartados, para que la
         selección sea verificable y no una afirmación.
 \end{enumerate}
+
+\subsection{Dónde queda registrado el corpus resultante}
+
+La identidad de los datasets seleccionados es un \textbf{resultado} de aplicar
+este procedimiento, no una regla, de modo que no se registra en este documento
+(véase la Sección~\ref{sec:fuera}). Se escribe en
+\texttt{docs/experimentos/CORPUS-seleccionado.md}, generado por el mismo script
+que ejecuta el cribado, con el IQR de cada candidato, cuántos pipelines se
+descartaron por inevaluables, la licencia y el motivo de cada exclusión.
+
+Los datos de partida ya están verificados. Los 52 candidatos se descargaron y sus
+metadatos se comprobaron contra los datos reales, sin discrepancias sin explicar;
+el detalle está en \texttt{CORPUS-descargado.md}, en la misma carpeta.
 
 \subsection{Resultados posibles declarados de antemano}
 
@@ -336,7 +538,7 @@ es defendible. Esto no altera el presupuesto de 30 ensayos, ni el emparejamiento
 por dataset, ni el número de pares de la prueba estadística.
 
 Si la medición de costo de la semana 6 muestra que el cómputo lo permite, el
-número de semillas asciende a cinco. La decisión se registra en la versión v0.2
+número de semillas asciende a cinco. La decisión se registra en la versión v1.0
 de este documento, antes de ejecutar el experimento, y en ningún caso se toma
 después de observar los resultados.
 
@@ -488,18 +690,24 @@ constituyen resultados defendibles por sí mismos.
 
 % =========== 7. FUERA DE ALCANCE ============================
 \section{Qué queda fuera de este documento}
+\label{sec:fuera}
 
 \begin{itemize}
-  \item La composición concreta del espacio de búsqueda canónico y su
-        identificador de versión: se congelan en la semana 4 y se registran en
-        v0.2.
-  \item El tope de submuestreo para las meta-características del grupo de
-        complejidad: se fija en v0.2, a partir de la medición de tiempos de la
-        semana 1 y del tamaño real de los datasets del corpus.
   \item La medición del costo de cómputo y la decisión entre tres y cinco
-        semillas: semana 6, registrada en v0.2.
-  \item La identidad de los datasets del corpus: resultado de aplicar la
-        Sección~\ref{sec:corpus}, registrada en v0.2.
+        semillas: se mide en la semana 6 y se registra en la \textbf{v1.0}. La
+        v0.1 anunciaba que iría en la v0.2, lo que era imposible: esta versión se
+        cierra en la semana 5, antes de que exista la medición.
+  \item El tratamiento de la región inevaluable del espacio en la variable
+        «ensayos hasta el objetivo»: se resuelve en la v1.0, antes de ejecutar el
+        \textit{leave-one-dataset-out} (Sección~\ref{sec:espacio}).
+  \item La identidad de los datasets del corpus y sus valores de IQR: son
+        resultado de aplicar la Sección~\ref{sec:corpus}, no reglas, y se
+        registran en \texttt{docs/experimentos/CORPUS-seleccionado.md}. La v0.1
+        anunciaba que irían en la v0.2, lo que contradice el último punto de esta
+        lista y la regla de que este documento se cierra antes de ejecutar.
+  \item La lista concreta de meta-características descartadas por no finitas: es
+        el resultado de aplicar la regla de la Sección~\ref{sec:metacar} al corpus
+        definitivo, y se registra junto a la base de meta-conocimiento.
   \item La incorporación o el descarte del agrupamiento como extensión deseable:
         se decide en el punto de control de alcance de la semana 7, con los
         criterios del plan de trabajo, y no afecta el protocolo aquí registrado.
@@ -515,22 +723,29 @@ constituyen resultados defendibles por sí mismos.
 \toprule
 \rowcolor{tablehead} \textbf{Versión} & \textbf{Fecha} & \textbf{Contenido y motivo} \\
 \midrule
-v0.1 & \preregfecha &
+v0.1 & \preregfechauno &
 Versión inicial. Fija el modelo base, la parametrización relativa y el versionado
 del espacio de búsqueda, el procedimiento de cribado de sensibilidad, las
 semillas, la definición del objetivo, el conteo de los ensayos inyectados, la
 regla de censura con su chequeo de robustez y el plan de análisis. Se cierra en
 la semana 1 para que las decisiones queden fechadas el día en que se tomaron. \\
 \midrule
-v0.2 & Semana 5 &
-Pendiente. Añadirá la versión congelada del espacio de búsqueda, el tope de
-submuestreo de meta-características, el costo de cómputo medido con la decisión
-entre tres y cinco semillas, y la identidad del corpus seleccionado. Se cierra
-antes de ejecutar el cribado de sensibilidad. \\
+v0.2 & \preregfecha &
+Congela la composición del espacio de búsqueda \texttt{tabular-v1} y declara su
+región inevaluable; fija las reglas de extracción de meta-características
+(biblioteca, grupos, submuestreo de 500 con su semilla y estratificación,
+imputación previa, redondeo y descarte de no finitas); añade la regla de familia y
+el remuestreo de los pipelines inevaluables en el cribado; y precisa dónde queda
+registrado el corpus resultante. Se cierra \textbf{antes} de ejecutar el cribado
+de sensibilidad. Corrige además dos anuncios de la v0.1 que eran irrealizables:
+el costo de cómputo y la identidad del corpus no pueden registrarse en esta
+versión (véase la Sección~\ref{sec:fuera}). \\
 \midrule
 v1.0 & Semana 9 &
 Pendiente. Versión congelada previa a la ejecución del
-\textit{leave-one-dataset-out}. Se cierra antes de generar cualquier resultado
+\textit{leave-one-dataset-out}. Añadirá el número de semillas a partir del costo
+medido en la semana 6 y el tratamiento de la región inevaluable en la variable
+«ensayos hasta el objetivo». Se cierra antes de generar cualquier resultado
 experimental. \\
 \bottomrule
 \end{tabularx}

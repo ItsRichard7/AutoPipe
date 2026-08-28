@@ -684,6 +684,28 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  bastante menos que las 92 que sugerían los datos sintéticos, y por eso había que medirlo
  con datos de verdad.}
 
+\entrada{2026-08-20}{1}
+{Cerré la versión v0.2 del pre-registro, antes de ejecutar el cribado como exige su regla
+ de oro. Congela la composición del espacio \texttt{tabular-v1} y declara su región
+ inevaluable; añade una sección nueva con las reglas de extracción de meta-características
+ (biblioteca y grupos, submuestreo de 500 con su semilla y estratificación, imputación
+ previa, redondeo y descarte de no finitas); incorpora la regla de familia y el remuestreo
+ de los pipelines inevaluables en el cribado; y precisa dónde queda registrado el corpus
+ resultante. Once páginas, sin avisos de composición.}
+{Al escribirlo aparecieron dos anuncios de la v0.1 que eran irrealizables, y los corregí en
+ vez de arrastrarlos. El primero: la v0.1 decía que la v0.2 registraría el costo de cómputo
+ y la decisión entre tres y cinco semillas, pero ese costo se mide en la semana 6 y esta
+ versión se cierra en la 5; pasa a la v1.0. El segundo, más de fondo: la v0.1 anunciaba que
+ la v0.2 incluiría la identidad del corpus seleccionado, que es un resultado del cribado, y
+ el propio documento declara en su última sección que registra reglas y no hallazgos. Si la
+ v0.2 contuviera el corpus, o bien se escribiría después del cribado —violando la regla de
+ oro— o bien contendría un resultado. Lo resolví apuntando a un documento generado aparte,
+ \texttt{CORPUS-seleccionado.md}, que el mismo script del cribado producirá con el IQR de
+ cada candidato, los descartes por inevaluables, la licencia y el motivo de cada exclusión.
+ El pre-registro queda así conteniendo solo reglas, y la selección queda auditable y
+ regenerable. Falta crear la etiqueta anotada \texttt{prereg-v0.2}, que es el fechado
+ verificable del documento.}
+
 \newpage
 \section*{Resumen de horas}
 
