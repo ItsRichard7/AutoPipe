@@ -706,6 +706,45 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  regenerable. Falta crear la etiqueta anotada \texttt{prereg-v0.2}, que es el fechado
  verificable del documento.}
 
+\entrada{2026-08-21}{4}
+{Ejecuté el cribado de sensibilidad sobre los 52 candidatos y seleccioné el corpus. Doce
+ pipelines por candidato extraídos al azar del espacio canónico con la semilla 4242,
+ remuestreando los inevaluables, evaluados con el modelo base congelado y macro-F1: los 52
+ en 0,7 minutos. Después apliqué la regla de familia y las restricciones de diversidad, y
+ quedaron los \textbf{25} datasets del corpus, con IQR entre 0,0448 y 0,3239. El
+ procedimiento quedó en \texttt{scripts/screen\_corpus.py} y los resultados en
+ \texttt{CORPUS-cribado-valores.json} y \texttt{CORPUS-seleccionado.md}. Doce pruebas
+ nuevas sobre la regla de familia y las restricciones de diversidad; suite en 384.}
+{El riesgo de cómputo que había declarado al planear la semana no se materializó, y por
+ mucho: temía que los siete candidatos de decenas de miles de instancias con vecinos más
+ cercanos por fuerza bruta desbordaran las cuatro horas, y medí 2,5 segundos por pipeline en
+ \texttt{adult}, el mayor de todos. El cribado completo tardó 42 segundos. Eso tiene una
+ consecuencia que va más allá de esta semana: a unos 0,06 segundos por evaluación de media,
+ la base de meta-conocimiento de la semana 6 y el \textit{leave-one-dataset-out} de la
+ semana 10 son cuestión de minutos, así que la decisión entre tres y cinco semillas
+ difícilmente estará limitada por el cómputo. Elegí 25 datasets, el máximo que admite el
+ anteproyecto, porque el cribado mostró algo que no esperaba: la restricción de al menos
+ cinco datasets con valores faltantes \textbf{no se cumple hasta N=22}. Con 15 o 20 habría
+ que desplazar datasets de IQR alto para meter otros con faltantes, registrando cada
+ desplazamiento; con 25 el orden se toma tal cual y además quedan 25 pares para la prueba de
+ Wilcoxon, que es la máxima potencia disponible. Se materializó también un resultado que el
+ pre-registro había declarado de antemano: los 25 seleccionados superan el umbral de
+ sensibilidad de 0,02, de modo que el subconjunto sensible coincide con el corpus completo y
+ el análisis estratificado por sensibilidad queda vacío. Se reporta como tal, sin redefinir
+ el umbral. Decidí además que el script \textbf{aborte} si alguna restricción de diversidad
+ no se cumple, en vez de intentar el intercambio automático que el pre-registro contempla:
+ con el tamaño elegido no hace falta ninguno, y no quería incorporar una lógica que nunca
+ llega a ejercitarse.}
+
+\cierresemana{5}{27}{27}{Meta-características y corpus cerrados, justo en las horas
+ comprometidas. RE3 completo: el extractor sobre \texttt{pymfe} con sus 28 pruebas. RE4
+ avanza mucho: los 52 candidatos descargados y verificados contra los datos reales, el
+ pre-registro v0.2 cerrado antes de ejecutar, y el corpus de 25 datasets seleccionado con el
+ procedimiento pre-registrado. Suite en 384 pruebas y 99\% de cobertura. Un fallo de la
+ librería salió a la luz al tocar datos reales —\texttt{EncodeCategorical} reventaba con el
+ dtype \texttt{category} de OpenML— y se corrigió con pruebas de regresión antes de que
+ rompiera el cribado. Queda pendiente crear la etiqueta \texttt{prereg-v0.2}.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -726,7 +765,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 2  & E1, E2            & 26 & 21 & RE1 completo, E1 cerrada \\
 3  & E2, E8            & 22 & 15 & RE2 completo \\
 4  & E2, E8            & 25 & 34 & Hito: núcleo generalizado, RE2 completo \\
-5  & E3, E4, E8        & 27 & --- & \\
+5  & E3, E4, E8        & 27 & 27 & RE3 completo, corpus de 25 seleccionado \\
 6  & E4, E8            & 25 & --- & \\
 7  & E4, E5, E8        & 25 & --- & Hito: base y control de alcance \\
 8  & E5, E8            & 24 & --- & \\
