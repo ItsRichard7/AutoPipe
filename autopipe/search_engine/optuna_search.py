@@ -44,6 +44,11 @@ class OptunaSearchEngine:
         task (Task): Tarea de aprendizaje que gobierna métricas y predicciones.
         splitter (DataSplitter): Particionador train/validación.
         metric_calculator: Calculador de métricas de la tarea.
+        best_configuration_ (dict | None): Índices del pipeline ganador, uno por
+            paso, disponibles tras :meth:`run`. Es la forma que consume
+            ``optuna.enqueue_trial`` y la que se guarda en la base de
+            meta-conocimiento; solo significa algo respecto de la versión del
+            espacio de búsqueda con la que se obtuvo.
     """
 
     def __init__(
@@ -81,6 +86,7 @@ class OptunaSearchEngine:
         self.task = get_task(task)
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
         self.metric_calculator = self.task.build_metric_calculator(threshold)
+        self.best_configuration_: dict[str, int] | None = None
 
     def run(
         self,
@@ -158,6 +164,11 @@ class OptunaSearchEngine:
             if index < len(options):
                 best_steps.append(options[index])
         best_pipeline = Pipeline(best_steps)
+        # Los índices del ganador, que es lo que ``optuna.enqueue_trial`` consume
+        # al inyectar una configuración recomendada. El pipeline ya construido no
+        # sirve para eso: hay que devolverle al muestreador los mismos enteros que
+        # él registró.
+        self.best_configuration_ = {key: study.best_trial.params[key] for key in keys}
         best_metrics = study.best_trial.user_attrs["metrics"]
         logger.info("Búsqueda con Optuna completada: %d pruebas.", len(results))
         return best_pipeline, best_metrics, results

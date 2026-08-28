@@ -1,8 +1,8 @@
 # Guía técnica de AutoPipe
 
-- **Estado:** completa para el núcleo generalizado (hito de la semana 4)
+- **Estado:** cubre el núcleo generalizado, las meta-características y la base de meta-conocimiento
 - **Entregable:** RE7
-- **Actualizada:** 2026-08-13
+- **Actualizada:** 2026-08-26
 
 Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
 explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
@@ -276,6 +276,64 @@ abierta en `Agenda.tex`.
 `NaN` y sin avisar de que no hubo comparación posible. Es deuda conocida; hay una prueba que
 fija esa conducta para que cambiarla sea deliberado.
 
+## Meta-características
+
+`MetaFeatureExtractor` describe un dataset como un vector de 107 números
+comparables con los de otro dataset. Es la entrada del recomendador.
+
+```python
+from autopipe.meta_features import MetaFeatureExtractor, columnas_no_finitas
+
+extractor = MetaFeatureExtractor(random_state=42, cache_dir="datasets/.meta_cache")
+vector = extractor.extract(features, labels, dataset_id="1590")
+```
+
+Cuatro decisiones lo gobiernan, todas medidas en el spike B y registradas en el
+pre-registro v0.2:
+
+| Decisión | Por qué |
+|---|---|
+| `general`, `statistical` e `info-theory` sobre el dataset completo; `complexity` sobre 500 instancias estratificadas | El costo de `complexity` crece de forma cuadrática (exponente 1,91): en 50 000 instancias serían 21,6 min por dataset |
+| Submuestra de **tamaño fijo**, no fracción fija | Las medidas de complejidad cambian con el tamaño de la muestra; dos datasets solo son comparables si se extrajeron con el mismo. 500 es el único tamaño que todo dataset elegible alcanza |
+| Imputación antes de extraer | Sin ella `complexity` falla con un `Exception` de mensaje vacío |
+| Redondeo a nueve decimales | Dos extracciones difieren en `hubs.mean` y `hubs.sd` en torno a 3e-15 por orden de sumación |
+
+**Las no finitas se reportan, no se descartan.** Qué posiciones lo son depende del
+dataset, así que decidir cuáles se van es una propiedad del corpus completo.
+
+## La base de meta-conocimiento
+
+`MetaKnowledgeBase` es lo que el recomendador consulta: una entrada por dataset
+del corpus con su vector, su pipeline ganador y la versión del espacio.
+
+```python
+from autopipe.meta_knowledge import MetaKnowledgeBase
+
+base = MetaKnowledgeBase.load("docs/experimentos/BASE-meta-conocimiento.json")
+pliegue = base.without("1590")               # leave-one-dataset-out
+matriz, columnas = pliegue.feature_matrix()  # solo las supervivientes
+```
+
+**Verifica dos invariantes al construirse**, y ninguno es una formalidad:
+
+1. **Todas las entradas comparten el conjunto de nombres.** Sin eso, el
+   recomendador compararía vectores desalineados y nada fallaría.
+2. **Todas provienen de la misma versión del espacio.** Los índices de una
+   configuración solo significan algo respecto de una versión concreta.
+
+`surviving_features()` aplica la regla del pre-registro: se descarta toda
+meta-característica no finita en algún dataset **del conjunto en cuestión**. Se
+recalcula por pliegue, porque el descarte depende de qué datasets hay.
+
+**Se guarda el vector completo, no solo las supervivientes.** La regla depende del
+corpus, de modo que guardar únicamente su resultado la volvería irreversible: no
+se podría recalcular al cambiar el corpus ni auditar por qué se descartó algo.
+
+La configuración ganadora se guarda de dos formas: como **índices por paso**, que
+es lo que `optuna.enqueue_trial` consume, y como los parámetros legibles del
+pipeline. `OptunaSearchEngine` expone los índices en `best_configuration_` tras
+`run`.
+
 ## Reproducibilidad
 
 - `random_state` gobierna la partición y el muestreador de Optuna. La misma semilla produce
@@ -314,6 +372,8 @@ fija esa conducta para que cambiarla sea deliberado.
 | `decisiones/AUDITORIA-acoplamiento.md` | Qué dependía de imágenes y anomalías, con los fallos silenciosos encontrados |
 | `experimentos/Preregistro.tex` | Protocolo experimental, fijado antes de ejecutar |
 | `experimentos/ESPACIO-tabular-v1.md` | Composición congelada del espacio, tabla de índices y fracción inevaluable |
+| `experimentos/CORPUS-seleccionado.md` | Los 25 datasets del corpus, con su IQR y el motivo de cada exclusión |
+| `experimentos/BASE-meta-conocimiento.md` | Resumen de la base: supervivientes, diversidad de ganadores y tiempos |
 | `experimentos/CORPUS-criterios-inclusion.md` | Cómo se selecciona el corpus |
 | `experimentos/SPIKE-A-enqueue-trial.md` | Viabilidad del arranque en caliente |
 | `experimentos/SPIKE-B-pymfe.md` | Costo y robustez de la extracción de meta-características |
