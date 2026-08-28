@@ -523,3 +523,30 @@ def test_optuna_invalid_metric_raises(separable_dataset, search_space) -> None:
     engine = OptunaSearchEngine(search_space, n_trials=3, val_size=0.5, random_state=0)
     with pytest.raises(ValueError):
         engine.run(images, labels, MeanThresholdModel(), metric="accuracy")
+
+
+def test_optuna_exposes_the_winning_configuration(separable_dataset, search_space) -> None:
+    """Los índices del ganador son lo que ``enqueue_trial`` consume después.
+
+    El pipeline ya construido no sirve para inyectar una recomendación: hay que
+    devolverle al muestreador los mismos enteros que él registró.
+    """
+    images, labels = separable_dataset
+    engine = OptunaSearchEngine(search_space, n_trials=6, val_size=0.5, random_state=11)
+
+    best_pipeline, _, _ = engine.run(images, labels, MeanThresholdModel())
+
+    assert engine.best_configuration_ is not None
+    assert set(engine.best_configuration_) == set(search_space)
+    for key, index in engine.best_configuration_.items():
+        assert 0 <= index <= len(search_space[key])
+    conservados = sum(
+        1
+        for key, index in engine.best_configuration_.items()
+        if index < len(search_space[key])
+    )
+    assert conservados == len(best_pipeline.steps)
+
+
+def test_optuna_configuration_is_none_before_running(search_space) -> None:
+    assert OptunaSearchEngine(search_space, n_trials=3).best_configuration_ is None

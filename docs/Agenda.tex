@@ -745,6 +745,50 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  dtype \texttt{category} de OpenML— y se corrigió con pruebas de regresión antes de que
  rompiera el cribado. Queda pendiente crear la etiqueta \texttt{prereg-v0.2}.}
 
+\semana{6}{2026-08-24 a 2026-08-30 --- E4: base de meta-conocimiento}
+
+\entrada{2026-08-24}{5}
+{Diseñé el esquema de la base de meta-conocimiento e implementé
+ \texttt{autopipe/meta\_knowledge/}: una entrada por dataset con su vector completo de
+ meta-características, la configuración ganadora en dos formas, la métrica, la semilla, la
+ versión del espacio y el costo. Veinticinco pruebas. Añadí además a
+ \texttt{OptunaSearchEngine} el atributo \texttt{best\_configuration\_}, que expone los
+ índices del ganador.}
+{La base va en la librería y no en un script porque el recomendador de la semana 7 la
+ consume. Verifica al construirse dos invariantes que no son formalidades: que todas las
+ entradas compartan el conjunto de nombres de meta-características —si no, el recomendador
+ compararía vectores desalineados sin que nada fallara— y que todas provengan de la misma
+ versión del espacio, porque un índice solo significa algo respecto de una versión concreta.
+ Guardo el vector completo y no solo las meta-características supervivientes: la regla de
+ descarte depende del corpus, así que guardar únicamente su resultado la volvería
+ irreversible, ni recalculable al cambiar el corpus ni auditable. Por eso
+ \texttt{surviving\_features} se recalcula por pliegue. El atributo nuevo del motor de
+ Optuna hacía falta porque el pipeline ya construido no sirve para inyectar una
+ recomendación: \texttt{enqueue\_trial} necesita los mismos enteros que el muestreador
+ registró. Es aditivo y no cambia ninguna firma.}
+
+\entrada{2026-08-25}{8}
+{Escribí el arnés de construcción, \texttt{scripts/build\_meta\_knowledge.py}, y lo corrí
+ sobre los 25 datasets del corpus: 50 ensayos de Optuna por dataset con la semilla 42 que
+ fija el pre-registro. \textbf{La base quedó construida en 1,1 minutos.} Once pruebas del
+ arnés, sin tocar la red. Suite en 423 pruebas y 99\% de cobertura.}
+{Decidí hacer el arnés \textbf{secuencial} en vez de paralelo como contemplaba la hoja de
+ ruta, y la medición lo justifica: 50 ensayos cuestan 16,5 segundos en el dataset más grande
+ del corpus y 1 segundo en el más pequeño. Un pool de procesos añadiría serialización y
+ depuración más difícil para ahorrar dos minutos. Sí mantuve el cacheo y la reanudación, que
+ son lo que de verdad sirve cuando algo falla a mitad: la segunda corrida baja de 69 a 3,5
+ segundos. Verifiqué la reproducibilidad borrando la caché de tres datasets y
+ reconstruyéndolos: misma configuración ganadora y mismo macro-F1 hasta el último decimal.
+ Dos resultados del cribado de la base merecen registrarse. El primero: sobreviven
+ \textbf{88 de 107} meta-características, mejor que las 80 estimadas sobre los 52
+ candidatos, como el pre-registro anticipó al declarar esa cifra una cota inferior. El
+ segundo, y es el que más importa para el proyecto: hay \textbf{20 configuraciones ganadoras
+ distintas entre 25 datasets}. Si todos compartieran ganador, el recomendador no tendría
+ nada que aprender y la comparación entre arranque frío y caliente mediría otra cosa. Anoto
+ también un dato que toca la decisión abierta sobre la región inevaluable: solo el 7,7\% de
+ los 1\,250 ensayos resultó inevaluable, muy por debajo del 56\% que llega a ser esa región,
+ porque el muestreador aprende a esquivarla tras los ensayos de arranque.}
+
 \newpage
 \section*{Resumen de horas}
 

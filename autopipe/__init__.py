@@ -7,6 +7,8 @@ Main modules:
     tasks           -- learning task definitions and metric registry
     search_engine   -- automatic pipeline search (grid search / Optuna)
     search_space    -- canonical, versioned search spaces shared across datasets
+    meta_features   -- dataset meta-feature extraction, on top of pymfe
+    meta_knowledge  -- the meta-knowledge base the warm-start recommender queries
     evaluator       -- dataset splitting and metric calculation
     parallel_runner -- parallel pipeline evaluation
     reporter        -- report generation (PDF / HTML)
@@ -21,6 +23,7 @@ from autopipe.evaluator import (
     DataSplitter,
     MetricCalculator,
 )
+from autopipe.meta_knowledge import MetaKnowledgeBase, MetaKnowledgeEntry
 from autopipe.parallel_runner import ParallelRunner
 from autopipe.pipeline import (
     BaseTransform,
@@ -93,4 +96,6 @@ __all__ = [
     "describe_tabular_search_space",
     "ParallelRunner",
     "ReportGenerator",
+    "MetaKnowledgeBase",
+    "MetaKnowledgeEntry",
 ]
