@@ -653,6 +653,37 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  cerca de las 93 que estimaba el spike. El número que vale es el de los datasets reales y
  se mide con la descarga del corpus, antes de fijar la regla en el pre-registro v0.2.}
 
+\entrada{2026-08-19}{6}
+{Descargué los 52 candidatos del corpus y verifiqué sus metadatos contra los datos reales,
+ que era la limitación que el documento de criterios había dejado anotada para esta semana.
+ El script \texttt{scripts/download\_corpus.py} comprueba instancias, predictoras,
+ categóricas, clases y faltantes, registra la licencia, extrae el vector de
+ meta-características de cada uno y escribe la ficha verificada en
+ \texttt{docs/experimentos/CORPUS-descargado.md}. Los 52 datasets quedan con
+ \textbf{cero discrepancias sin explicar}. La corrida completa tarda 4 minutos y cuarto la
+ primera vez y 5 segundos las siguientes, por las cachés de OpenML y del extractor.}
+{Lo más importante del día no fue la descarga sino un fallo de la librería que la descarga
+ destapó: \texttt{EncodeCategorical} en modo ordinal reventaba con columnas de dtype
+ \texttt{category}, que es exactamente el que entrega OpenML. Mapear una columna categórica
+ devuelve otra columna categórica, y rellenar sus faltantes con el código de categoría
+ desconocida fallaba con \texttt{TypeError} por no estar ese código entre sus categorías.
+ Habría hecho estallar el cribado completo. Lo arreglé en la librería, con dos pruebas de
+ regresión, en vez de disimularlo convirtiendo tipos en el script: el dtype
+ \texttt{category} es perfectamente normal en pandas y la transformación tenía que
+ aceptarlo. Aparecieron además dos diferencias entre metadatos y datos que no son errores
+ del repositorio y ahora el informe distingue: OpenML cuenta atributos que después descarta
+ por ser identificadores (le pasa a cuatro datasets, como \texttt{timestamp} y
+ \texttt{cylinder\_number} en \texttt{cylinder-bands}), y una columna enteramente vacía
+ llega como \texttt{object} y se cuenta categórica aunque se declare numérica (\texttt{TBG}
+ en \texttt{sick}, 3\,772 nulos de 3\,772). Decidí \textbf{no} descartar esas columnas
+ vacías: el pipeline ya las trata bien —la imputación las vuelve constantes y la selección
+ supervisada las puntúa como las peores— y eliminarlas metería una transformación
+ silenciosa entre lo que dice el pre-registro y lo que se ejecuta. Por último, el número que
+ esperaba el pre-registro v0.2: sobre los 52 datasets reales hay \textbf{27} de 107
+ meta-características no finitas en algún dataset, así que sobrevivirían \textbf{80}. Es
+ bastante menos que las 92 que sugerían los datos sintéticos, y por eso había que medirlo
+ con datos de verdad.}
+
 \newpage
 \section*{Resumen de horas}
 

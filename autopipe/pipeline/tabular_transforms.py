@@ -392,6 +392,12 @@ class EncodeCategorical(TabularTransform):
     def _ordinal(columna: pd.Series, nombre: str, categorias: list) -> pd.DataFrame:
         """Codifica una columna categórica como enteros.
 
+        La columna se convierte a ``object`` antes de mapear. Sobre una columna
+        de dtype ``category`` —el que entregan los datasets de OpenML— ``map``
+        devolvería otra columna categórica, y rellenar sus faltantes con
+        :data:`CATEGORIA_DESCONOCIDA` fallaría con ``TypeError`` por ser un
+        código que no está entre sus categorías.
+
         Args:
             columna: Valores de la columna.
             nombre: Nombre de la columna original.
@@ -401,8 +407,9 @@ class EncodeCategorical(TabularTransform):
             Tabla con una única columna de códigos enteros.
         """
         codigos = {categoria: indice for indice, categoria in enumerate(categorias)}
+        mapeada = columna.astype(object).map(codigos)
         return pd.DataFrame(
-            {nombre: columna.map(codigos).fillna(CATEGORIA_DESCONOCIDA).astype(int)},
+            {nombre: mapeada.fillna(CATEGORIA_DESCONOCIDA).astype(int)},
             index=columna.index,
         )
 

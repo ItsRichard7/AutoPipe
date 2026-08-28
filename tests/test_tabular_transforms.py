@@ -282,6 +282,33 @@ def test_invalid_encoding_method_raises() -> None:
         EncodeCategorical("target")
 
 
+@pytest.mark.parametrize("metodo", ["onehot", "ordinal"])
+def test_columns_of_dtype_category_are_encoded(metodo: str) -> None:
+    """Es el dtype con el que OpenML entrega las columnas categóricas.
+
+    En modo ordinal, mapear una columna categórica devuelve otra columna
+    categórica, y rellenarla con el código de categoría desconocida fallaba con
+    ``TypeError`` por no estar ese código entre sus categorías.
+    """
+    train = pd.DataFrame({"c": pd.Series(["a", "b", "a", "b"], dtype="category")})
+    validacion = pd.DataFrame({"c": pd.Series(["a", "z", None, "b"], dtype="category")})
+
+    codificador = EncodeCategorical(metodo).fit(train)
+    resultado = codificador.transform(validacion)
+
+    assert all(pd.api.types.is_numeric_dtype(resultado[col]) for col in resultado.columns)
+    assert not resultado.isna().to_numpy().any()
+
+
+def test_an_unseen_category_of_dtype_category_gets_the_unknown_code() -> None:
+    train = pd.DataFrame({"c": pd.Series(["a", "b"], dtype="category")})
+    validacion = pd.DataFrame({"c": pd.Series(["z"], dtype="category")})
+
+    resultado = EncodeCategorical("ordinal").fit(train).transform(validacion)
+
+    assert resultado["c"].iloc[0] == CATEGORIA_DESCONOCIDA
+
+
 # --------------------------------------------------------------------------- #
 # SelectFeatures
 # --------------------------------------------------------------------------- #
