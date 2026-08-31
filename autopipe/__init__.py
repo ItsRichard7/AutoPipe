@@ -50,6 +50,7 @@ from autopipe.search_space import (
     TABULAR_SPACE_VERSION,
     build_tabular_search_space,
     describe_tabular_search_space,
+    pipeline_from_configuration,
     validate_space_version,
 )
 from autopipe.tasks import (
@@ -94,6 +95,7 @@ __all__ = [
     "build_tabular_search_space",
     "validate_space_version",
     "describe_tabular_search_space",
+    "pipeline_from_configuration",
     "ParallelRunner",
     "ReportGenerator",
     "MetaKnowledgeBase",

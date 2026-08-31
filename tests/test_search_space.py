@@ -23,6 +23,7 @@ from autopipe.search_space import (
     TABULAR_SPACE_VERSION,
     build_tabular_search_space,
     describe_tabular_search_space,
+    pipeline_from_configuration,
     validate_space_version,
 )
 
@@ -170,6 +171,62 @@ def test_a_configuration_from_another_version_is_rejected() -> None:
 def test_the_version_identifier_is_not_empty() -> None:
     assert isinstance(TABULAR_SPACE_VERSION, str)
     assert TABULAR_SPACE_VERSION
+
+
+# --------------------------------------------------------------------------- #
+# De índices a pipeline
+# --------------------------------------------------------------------------- #
+def test_a_configuration_resolves_to_its_pipeline() -> None:
+    """Es la operación inversa de lo que registran los motores."""
+    pipeline = pipeline_from_configuration(
+        {"imputation": 0, "scaling": 1, "encoding": 0, "selection": 3}
+    )
+
+    assert [type(paso).__name__ for paso in pipeline.steps] == [
+        "ImputeMissing",
+        "ScaleNumeric",
+        "EncodeCategorical",
+    ]
+
+
+def test_the_last_index_of_a_step_means_skipping_it() -> None:
+    espacio = build_tabular_search_space()
+    todos_omitidos = {paso: len(opciones) for paso, opciones in espacio.items()}
+
+    assert pipeline_from_configuration(todos_omitidos).steps == []
+
+
+def test_a_configuration_missing_a_step_is_rejected() -> None:
+    with pytest.raises(ValueError, match="faltan los pasos"):
+        pipeline_from_configuration({"imputation": 0})
+
+
+def test_an_index_outside_its_step_range_is_rejected() -> None:
+    """Un índice fuera de rango delata que la configuración es de otro espacio."""
+    with pytest.raises(ValueError, match="fuera de rango"):
+        pipeline_from_configuration(
+            {"imputation": 0, "scaling": 99, "encoding": 0, "selection": 0}
+        )
+
+
+def test_a_negative_index_is_rejected() -> None:
+    with pytest.raises(ValueError, match="fuera de rango"):
+        pipeline_from_configuration(
+            {"imputation": -1, "scaling": 0, "encoding": 0, "selection": 0}
+        )
+
+
+def test_the_resolved_steps_follow_the_canonical_order() -> None:
+    pipeline = pipeline_from_configuration(
+        {"imputation": 0, "scaling": 0, "encoding": 0, "selection": 0}
+    )
+
+    assert list(pipeline.get_params()) == [
+        "0_ImputeMissing",
+        "1_ScaleNumeric",
+        "2_EncodeCategorical",
+        "3_SelectFeatures",
+    ]
 
 
 # --------------------------------------------------------------------------- #

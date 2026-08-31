@@ -7,6 +7,7 @@ Public API:
     build_tabular_search_space   fresh instances of the canonical tabular space
     validate_space_version       rejects configurations from another version
     describe_tabular_search_space  step/index enumeration, for docs and reports
+    pipeline_from_configuration  resolves per-step indices back into a Pipeline
 """
 
 from autopipe.search_space.tabular import (
@@ -14,6 +15,7 @@ from autopipe.search_space.tabular import (
     TABULAR_SPACE_VERSION,
     build_tabular_search_space,
     describe_tabular_search_space,
+    pipeline_from_configuration,
     validate_space_version,
 )
 
@@ -23,4 +25,5 @@ __all__ = [
     "build_tabular_search_space",
     "validate_space_version",
     "describe_tabular_search_space",
+    "pipeline_from_configuration",
 ]

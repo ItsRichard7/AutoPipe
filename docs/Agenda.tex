@@ -789,6 +789,38 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  los 1\,250 ensayos resultó inevaluable, muy por debajo del 56\% que llega a ser esa región,
  porque el muestreador aprende a esquivarla tras los ensayos de arranque.}
 
+\cierresemana{6}{13}{25}{Base de meta-conocimiento construida y documentada: los cinco
+ puntos comprometidos cerrados. El esquema en \texttt{autopipe/meta\_knowledge/} con sus
+ invariantes, el arnés cacheado y reanudable, la ejecución sobre los 25 datasets en 1,1
+ minutos, 36 pruebas y la guía técnica ampliada. Suite en 423 pruebas y 99\% de cobertura.
+ Se gastaron 13\,h de las 25 presupuestadas, y la razón es la medición: el punto más caro
+ del cronograma —el arnés paralelo— dejó de necesitar paralelismo cuando resultó que el
+ corpus entero se construye en poco más de un minuto. Las 12\,h que sobran vuelven a la
+ reserva, que compensa el exceso de la semana 4.}
+
+\semana{7}{2026-08-31 a 2026-09-06 --- E4 cierre y E5 inicio: recomendador}
+
+\entrada{2026-08-26}{4}
+{Validé la base ya construida con \texttt{scripts/validate\_meta\_knowledge.py}, que
+ comprueba cuatro cosas sobre el artefacto guardado y no sobre el código que lo produjo:
+ cobertura exacta del corpus, campos en rangos verosímiles con la semilla y el presupuesto
+ del pre-registro, interpretabilidad de cada configuración contra el espacio vigente, y
+ reproducibilidad reconstruyendo desde cero una muestra de datasets. \textbf{La base es
+ válida}: 25 entradas, sin problemas, y los tres datasets reconstruidos dieron la misma
+ configuración y la misma métrica. Diecinueve pruebas de la validación y seis del espacio.
+ Suite en 448 pruebas.}
+{Una validación que nunca ha detectado nada no prueba nada, así que las pruebas rompen una
+ entrada a propósito por cada comprobación: un dataset ausente, otro que sobra, una métrica
+ fuera de rango, una semilla distinta, todos los ensayos fallidos, una versión de espacio
+ ajena, un índice fuera de rango. La comprobación que más me importa es la que resuelve cada
+ configuración contra el espacio vigente y compara el pipeline reconstruido con los
+ parámetros guardados: si la base y el espacio se separaran, los índices seguirían siendo
+ enteros válidos y nada fallaría al leerlos; lo único que cambiaría es a qué
+ transformaciones apuntan. De paso moví a la librería la construcción de un pipeline desde
+ índices (\texttt{pipeline\_from\_configuration}), que estaba duplicada en el cribado y que
+ el recomendador va a necesitar para ejecutar configuraciones ajenas. Verifiqué el refactor
+ volviendo a correr el cribado completo: el corpus salió byte a byte idéntico.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -810,7 +842,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 3  & E2, E8            & 22 & 15 & RE2 completo \\
 4  & E2, E8            & 25 & 34 & Hito: núcleo generalizado, RE2 completo \\
 5  & E3, E4, E8        & 27 & 27 & RE3 completo, corpus de 25 seleccionado \\
-6  & E4, E8            & 25 & --- & \\
+6  & E4, E8            & 25 & 13 & Base construida; el arnés no necesitó paralelismo \\
 7  & E4, E5, E8        & 25 & --- & Hito: base y control de alcance \\
 8  & E5, E8            & 24 & --- & \\
 9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
