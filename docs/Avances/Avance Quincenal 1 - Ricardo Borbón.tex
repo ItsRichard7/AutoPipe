@@ -1,0 +1,341 @@
+% ============================================================
+%  Informe Quincenal de Avance n.o 1 - TFG AutoPipe
+%  Autor: Ricardo Antonio Borbon Mena
+%
+%  Contenido segun el Apendice 1 de los Lineamientos para los
+%  Trabajos Finales de Graduacion V4.1 (CE-5601).
+%
+%  Compilar con:  pdflatex Avance_Quincenal_1_Borbon.tex
+% ============================================================
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[letterpaper,top=2.4cm,bottom=2.4cm,left=2.6cm,right=2.4cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+
+\definecolor{tecnavy}{HTML}{003366}
+\definecolor{hecho}{HTML}{003366}
+\definecolor{quincena}{HTML}{C87F0A}
+\definecolor{pendiente}{HTML}{D9D9D9}
+\definecolor{bordepend}{HTML}{9A9A9A}
+\definecolor{gris}{HTML}{666666}
+\definecolor{tablehead}{HTML}{E6EEF5}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.25}
+\setlist[itemize]{leftmargin=1.3em,topsep=3pt,itemsep=3pt}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{tecnavy}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\sffamily}{}{0em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small AutoPipe --- TFG}
+\fancyhead[R]{\small Informe de avance n.\textsuperscript{o}~1}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+% =========== ENCABEZADO ====================================
+\vspace*{0.12\textheight}
+\begin{center}
+{\LARGE\bfseries\color{tecnavy} Informe Quincenal de Avance}\\[4pt]
+{\large Trabajo Final de Graduación}\\[10pt]
+\end{center}
+
+\vspace{10pt}
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{L{3.6cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Identificación}} \\
+\midrule
+Estudiante & Ricardo Antonio Borbón Mena \\
+Organización & Instituto Tecnológico de Costa Rica, Escuela de Ingeniería
+en Computadores \\
+Proyecto & Generalización de framework de selección automática de pipelines de
+preprocesamiento a múltiples tareas de aprendizaje automático mediante
+meta-aprendizaje \\
+Período del informe & 20 de julio al 31 de agosto de 2026 \\
+Informe n.\textsuperscript{o} & 1 \\
+Profesor asesor & Dr.Eng. Jeferson González Gómez \\
+Profesor tutor & Luis Alberto Chavarría Zamora \\
+Fecha de entrega & 31 de agosto de 2026 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{20pt}
+\begin{center}
+\begin{minipage}{0.86\textwidth}
+\centering
+{\small\color{gris} Importante: Este primer informe abarca seis semanas ---el
+equivalente a tres quincenas--- en lugar de una. El trabajo comenzó el 20 de julio,
+antes de iniciar el semestre tras la aprobación del anteproyecto. A partir del
+próximo informe, se retomará la periodicidad quincenal.}
+\end{minipage}
+\end{center}
+
+% =========== 1. TAREAS REALIZADAS ===========================
+\newpage
+\section{Tareas realizadas en el período}
+
+Las tareas se agrupan por el objetivo específico del anteproyecto.
+
+\subsection{Objetivo específico 1 --- Núcleo agnóstico a la tarea y soporte tabular}
+
+\begin{itemize}
+  \item Se auditó el acoplamiento de la librería base a imágenes y a detección de
+        anomalías, y se documentaron dos funciones que fallaban en silencio ante
+        problemas de más de dos clases.
+  \item Se extendió el contrato de las transformaciones de preprocesamiento con
+        semántica de ajuste y transformación, y se refactorizó el protocolo de
+        evaluación para que el pipeline se ajuste únicamente con el subconjunto de
+        entrenamiento y se clone antes de ajustarse.
+  \item Se implementó un registro de tareas de aprendizaje que agrupa métricas,
+        dirección de optimización, normalización de predicciones y obtención de
+        puntajes, seleccionable desde los tres consumidores del núcleo.
+  \item Se implementó el soporte tabular: cargador de conjuntos de datos y cuatro
+        transformaciones con estado (imputación, escalado, codificación de
+        variables categóricas y selección de características).
+  \item Se congeló un espacio de búsqueda tabular único y versionado, idéntico
+        para todos los conjuntos de datos del corpus, de 144 pipelines.
+  \item Se verificó la ausencia de regresión con datos reales: se ejecutó la misma
+        búsqueda sobre la categoría bottle del conjunto MVTec AD (83 imágenes) con
+        el código anterior a la generalización y con el actual. El resultado es
+        idéntico: mismo pipeline ganador, las cinco métricas iguales hasta el
+        décimo decimal y ninguno de los 36 candidatos con valor distinto.
+\end{itemize}
+
+Estado: alcanzado. El objetivo declara dos criterios de verificación y ambos se
+cumplen. La suite de regresión de la librería base está en verde y no se editó
+ninguna de sus pruebas; existen pruebas específicas de ausencia de fuga de
+información, y se comprobó que detectan el defecto introduciéndolo a propósito.
+
+\subsection{Objetivo específico 2 --- Base de meta-conocimiento}
+
+\begin{itemize}
+  \item Se implementó el extractor de meta-características sobre la biblioteca
+        pymfe: 107 descriptores por conjunto de datos, con el mismo conjunto de
+        nombres para cualquiera de ellos, que es la condición para que sean
+        comparables entre sí.
+  \item Se fijaron los criterios de selección del corpus partiendo de la suite
+        curada OpenML-CC18 y se obtuvieron 52 candidatos elegibles.
+  \item Se descargaron los 52 candidatos y se verificaron sus metadatos contra los
+        datos reales, sin discrepancias sin explicar.
+  \item Se ejecutó el cribado de sensibilidad al preprocesamiento sobre los 52
+        candidatos y se seleccionó el corpus definitivo de 25 conjuntos de datos.
+  \item Se construyó la base de meta-conocimiento: 25 entradas, cada una con las
+        meta-características del conjunto y el pipeline de mejor desempeño hallado
+        en 50 ensayos de búsqueda bayesiana con semilla controlada.
+  \item Se validó la base construida: cobertura exacta del corpus, campos en
+        rangos verosímiles, configuraciones interpretables y reproducibilidad
+        comprobada reconstruyendo desde cero una muestra de conjuntos de datos.
+\end{itemize}
+
+Estado: alcanzado. La base está completa (25 de 25) y es reproducible: reconstruir
+una entrada desde cero produce la misma configuración ganadora y la misma métrica
+hasta el último decimal.
+
+\subsection{Objetivos específicos 3 y 4}
+
+Aún no iniciados. El recomendador meta-aprendido (objetivo 3) está planteado para la
+quincena que abre este informe; la validación experimental (objetivo 4) está
+planificada para mediados de setiembre. Ambos dependen de la base de
+meta-conocimiento, que se terminó esta semana.
+
+\subsection{Productos intermedios entregados en el período}
+
+\begin{itemize}
+  \item Repositorio de software con la librería: 448 pruebas
+        automatizadas, 99\,\% de cobertura, y verificación de estilo y de tipos sin
+        incidencias.
+  \item Informe de TFG ya iniciado: Introducción finalizada y marco teórico cerca de terminar.
+
+\end{itemize}
+
+% =========== 2. TAREAS PLANEADAS ============================
+\newpage
+\section{Tareas planeadas para el siguiente período}
+
+Corresponden al período del 31 de agosto al 13 de septiembre. El propósito de la
+quincena es dejar alcanzado el objetivo específico 3 en su totalidad, de modo que
+al cierre del período solo quede la validación experimental.
+
+\begin{itemize}
+  \item Analizar la diversidad de los pipelines de mejor desempeño de la base, para
+        documentar que el problema de recomendación no es trivial.
+  \item Implementar el recomendador meta-aprendido por vecinos más cercanos sobre
+        el espacio de meta-características, con la normalización ajustada por
+        pliegue y no sobre el corpus completo, para no contaminar la validación
+        posterior.
+  \item Integrar el arranque en caliente en el motor de búsqueda bayesiana,
+        inyectando las configuraciones recomendadas como ensayos iniciales.
+  \item Implementar la validación de las configuraciones recomendadas contra la
+        versión del espacio de búsqueda, de modo que una configuración obsoleta se
+        rechace en lugar de ejecutarse.
+  \item Probar las estrategias de recomendación y verificar que toda configuración
+        producida sea ejecutable sobre un conjunto de datos no visto.
+  \item Evaluar preliminarmente el recomendador sobre conjuntos de datos retenidos.
+  \item Cerrar la interfaz pública del recomendador y su documentación, con lo que
+        el objetivo específico 3 quedaría alcanzado.
+\end{itemize}
+
+% =========== 3. ANALISIS ====================================
+\newpage
+\section{Análisis de la situación actual y proyecciones}
+\label{sec:analisis}
+
+\subsection{Estado respecto del cronograma}
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[x=1.18cm, y=1cm, font=\small]
+
+  % --- Encabezado: numero de semana y fecha de inicio ------
+  \foreach \s/\f in {1/20 jul, 2/27 jul, 3/3 ago, 4/10 ago, 5/17 ago, 6/24 ago,
+                     7/31 ago, 8/7 set, 9/14 set, 10/21 set, 11/28 set, 12/5 oct} {
+    \node[anchor=south, font=\footnotesize] at (\s-0.53, 1.52) {\s};
+    \node[anchor=south, font=\tiny, text=gris] at (\s-0.53, 1.26) {\f};
+  }
+  \node[anchor=east, font=\footnotesize, text=gris] at (-0.15, 1.58) {Semana};
+
+  % --- Banda de estado por semana --------------------------
+  \foreach \s in {1,...,6} {
+    \fill[hecho] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+  }
+  \foreach \s in {7,...,9} {
+    \fill[quincena] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+  }
+  \foreach \s in {10,...,12} {
+    \fill[pendiente] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+    \draw[bordepend, line width=0.3pt] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+  }
+  \node[anchor=east, font=\footnotesize] at (-0.15, 0.70) {Estado};
+
+  % --- Una fila por objetivo especifico --------------------
+  % {etiqueta}/{borde superior}/{semana inicial}/{semana final}/{color}
+  \foreach \lab/\yt/\a/\b/\c in {%
+      {OE 1}/0.30/1/4/hecho,
+      {OE 2}/-0.20/5/7/hecho,
+      {OE 3}/-0.70/7/9/quincena,
+      {OE 4}/-1.20/9/11/pendiente,
+      {Cierre}/-1.70/12/12/pendiente} {
+    \foreach \s in {\a,...,\b} {
+      \fill[\c] (\s-1, \yt-0.40) rectangle (\s-0.06, \yt);
+      \ifnum\pdfstrcmp{\c}{pendiente}=0
+        \draw[bordepend, line width=0.3pt] (\s-1, \yt-0.40) rectangle (\s-0.06, \yt);
+      \fi
+    }
+    \node[anchor=east, font=\footnotesize] at (-0.15, \yt-0.20) {\lab};
+  }
+
+  % --- Hitos del plan de trabajo ---------------------------
+  \foreach \s in {4,7,9,12} {
+    \node[diamond, fill=tecnavy, inner sep=1.7pt] at (\s-0.53, -2.35) {};
+  }
+  \node[anchor=east, font=\footnotesize] at (-0.15, -2.35) {Hitos};
+
+  % --- Linea de hoy ----------------------------------------
+  \draw[tecnavy, dashed, line width=0.7pt] (6, 1.06) -- (6, -2.10);
+  \node[anchor=south, font=\tiny, text=tecnavy] at (6, 1.04) {hoy};
+
+  % --- Leyenda ---------------------------------------------
+  \fill[hecho] (0, -3.10) rectangle (0.34, -2.86);
+  \node[anchor=west, font=\footnotesize] at (0.44, -2.98) {Completado};
+  \fill[quincena] (3.0, -3.10) rectangle (3.34, -2.86);
+  \node[anchor=west, font=\footnotesize] at (3.44, -2.98) {Próxima quincena};
+  \fill[pendiente] (7.2, -3.10) rectangle (7.54, -2.86);
+  \draw[bordepend, line width=0.3pt] (7.2, -3.10) rectangle (7.54, -2.86);
+  \node[anchor=west, font=\footnotesize] at (7.64, -2.98) {Pendiente};
+
+\end{tikzpicture}
+\caption{Estado del plan de trabajo sobre sus doce semanas. Los rombos marcan los
+hitos previstos: núcleo generalizado (S4), base de meta-conocimiento (S7),
+recomendador funcional (S9) y cierre del proyecto (S12).}
+\label{fig:cronograma}
+\end{figure}
+
+Trabajo realizado (azul): Se ha completado aproximadamente el 50\% del trabajo planteado, y el proyecto está al día con el cronograma y ha consumido menos horas de las previstas hasta el momento(134 de 152).
+
+Trabajo próximo (naranja): La quincena que abre este informe corresponde a las semanas 7 y 8 del plan. Sin embargo, tenía pensado dedicar aún más tiempo al proyecto para incluir la semana 9 a este período, de modo que el objetivo 3 quede alcanzado al cierre de la quincena. 
+
+\newpage
+\section{Ajustes propuestos}
+
+Existe una situación que necesita su aprobación profesor: al redactar el informe, reformulé los cuatro objetivos específicos del anteproyecto. Antes estaban redactados como actividades, pero ahora los redacté mejor como logros verificables de modo que cada uno lleve dentro el criterio que permite declararlo alcanzado.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Cambio de redacción de los objetivos específicos: anteproyecto e informe final.}
+\label{tab:objetivos}
+\begin{tabularx}{\textwidth}{@{}L{0.7cm} Y Y@{}}
+\toprule
+\rowcolor{tablehead} \textbf{N.\textsuperscript{o}} & \textbf{Redacción del
+anteproyecto} & \textbf{Redacción para el Informe Final} \\
+\midrule
+1 &
+Refactorizar la arquitectura de AutoPipeAD hacia un núcleo agnóstico a la tarea con
+soporte para detección de anomalías y clasificación ---y para agrupamiento como
+extensión deseable---, e implementar el soporte para datos tabulares, reutilizando y
+extendiendo los módulos de búsqueda, paralelización y composición de pipelines
+existentes. &
+Disponer de un núcleo agnóstico a la tarea que resuelva detección de anomalías y
+clasificación tabular sobre una misma arquitectura, verificado por la suite de
+pruebas de regresión de la librería base en verde y por pruebas que demuestren la
+ausencia de fuga de información entre los subconjuntos de entrenamiento y
+validación. \\
+\midrule
+2 &
+Implementar un extractor de meta-características de datasets y construir una base
+de meta-conocimiento, ejecutando la selección automática de pipelines sobre un
+corpus de datasets públicos para las tareas soportadas. &
+Contar con una base de meta-conocimiento que asocie, para un corpus de conjuntos de
+datos públicos, sus meta-características con los pipelines de mejor desempeño
+hallados por la búsqueda, completa y reproducible bajo semillas controladas. \\
+\midrule
+3 &
+Desarrollar un recomendador meta-aprendido que, a partir de las
+meta-características de un dataset nuevo, genere configuraciones iniciales
+(warm-start) que orienten el motor de búsqueda Optuna. &
+Obtener un recomendador meta-aprendido capaz de producir configuraciones iniciales
+válidas y ejecutables para un conjunto de datos no visto, integradas en el motor de
+búsqueda como ensayos iniciales. \\
+\midrule
+4 &
+Validar experimentalmente la generalización del framework a múltiples tareas y la
+mejora aportada por el arranque en caliente meta-aprendido frente al arranque en
+frío, mediante validación cruzada por exclusión de dataset y la generación de
+reportes reproducibles. &
+Determinar, con evidencia estadística, si el arranque en caliente meta-aprendido
+reduce el costo de la búsqueda frente al arranque en frío, mediante validación
+cruzada por exclusión de conjunto de datos y reportes reproducibles. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La reformulación no altera el alcance, ni los entregables, ni los criterios de
+éxito comprometidos.
+
+\end{document}
