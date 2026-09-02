@@ -72,6 +72,13 @@ CLAUDE.md
 docs/Agenda.pdf
 docs/Informe/Plantilla_Informe_TFG.pdf
 docs/experimentos/Preregistro.pdf
+# Los informes de avance se entregan en PDF, pero el PDF se regenera desde su
+# .tex: lo que se versiona es la fuente.
+docs/Avances/*.pdf
+
+# Plantilla y lineamientos de los informes de avance: documento de trabajo
+# local, derivado de los Lineamientos para los TFG del curso.
+docs/Avances/AVANCE_QUINCENAL.md
 
 # --- OS ---
 .DS_Store
