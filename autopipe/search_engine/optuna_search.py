@@ -49,6 +49,14 @@ class OptunaSearchEngine:
             ``optuna.enqueue_trial`` y la que se guarda en la base de
             meta-conocimiento; solo significa algo respecto de la versión del
             espacio de búsqueda con la que se obtuvo.
+        tied_configurations_ (list | None): Todas las configuraciones distintas
+            que alcanzaron el mejor valor, disponibles tras :meth:`run`.
+            :attr:`best_configuration_` es una de ellas, la que el muestreador
+            visitó primero, y esa elección es una propiedad de la corrida y no
+            del dataset: si el empate tiene más de un elemento, quien vaya a
+            **transferir** la configuración a otro dataset debe desempatar con un
+            criterio explícito en lugar de heredar el orden de visita (véase
+            :func:`~autopipe.search_space.canonical_configuration`).
     """
 
     def __init__(
@@ -87,6 +95,7 @@ class OptunaSearchEngine:
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
         self.metric_calculator = self.task.build_metric_calculator(threshold)
         self.best_configuration_: dict[str, int] | None = None
+        self.tied_configurations_: list[dict[str, int]] | None = None
 
     def run(
         self,
@@ -169,9 +178,42 @@ class OptunaSearchEngine:
         # sirve para eso: hay que devolverle al muestreador los mismos enteros que
         # él registró.
         self.best_configuration_ = {key: study.best_trial.params[key] for key in keys}
+        self.tied_configurations_ = self._tied(study, keys)
         best_metrics = study.best_trial.user_attrs["metrics"]
         logger.info("Búsqueda con Optuna completada: %d pruebas.", len(results))
         return best_pipeline, best_metrics, results
+
+    @staticmethod
+    def _tied(study: optuna.Study, keys: list[str]) -> list[dict[str, int]]:
+        """Configuraciones distintas que alcanzaron el mejor valor del estudio.
+
+        Se comparan los valores objetivo con una tolerancia absoluta pequeña:
+        dos pipelines que producen la misma matriz de características dan
+        exactamente la misma métrica, pero el orden de sumación en coma flotante
+        puede separarlas en los últimos bits.
+
+        Args:
+            study: Estudio ya optimizado.
+            keys: Pasos del espacio de búsqueda, en orden.
+
+        Returns:
+            Las configuraciones empatadas, en orden de primera aparición. La
+            primera es siempre :attr:`best_configuration_`. Si ningún ensayo
+            resultó evaluable, la lista contiene únicamente esa: un empate entre
+            pipelines que no se pudieron evaluar no es un empate.
+        """
+        mejor = study.best_trial.value
+        ganadora = {key: study.best_trial.params[key] for key in keys}
+        if mejor is None or not math.isfinite(mejor):
+            return [ganadora]
+        empatadas: list[dict[str, int]] = []
+        for trial in study.trials:
+            if trial.value is None or not math.isclose(trial.value, mejor, abs_tol=1e-9):
+                continue
+            configuracion = {key: trial.params[key] for key in keys}
+            if configuracion not in empatadas:
+                empatadas.append(configuracion)
+        return empatadas
 
     @staticmethod
     def _sanitize(value: float, direction: str) -> float:

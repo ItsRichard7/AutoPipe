@@ -41,7 +41,12 @@ from sklearn.neighbors import KNeighborsClassifier
 from autopipe.meta_features import MetaFeatureExtractor
 from autopipe.meta_knowledge import MetaKnowledgeBase, MetaKnowledgeEntry
 from autopipe.search_engine import OptunaSearchEngine
-from autopipe.search_space import TABULAR_SPACE_VERSION, build_tabular_search_space
+from autopipe.search_space import (
+    TABULAR_SPACE_VERSION,
+    build_tabular_search_space,
+    canonical_configuration,
+    pipeline_from_configuration,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -58,6 +63,15 @@ SEMILLA = 42
 ENSAYOS = 50
 VAL_SIZE = 0.2
 METRICA = "macro_f1"
+
+DESEMPATE = "canonica"
+"""Regla con la que se elige el ganador entre configuraciones que empatan.
+
+Viaja en el nombre del archivo de caché junto con la versión del espacio y la
+semilla, por la misma razón que ellas: cambiar la regla cambia qué configuración
+guarda cada entrada, y reutilizar en silencio una caché construida con otra regla
+mezclaría dos criterios dentro de la misma base.
+"""
 
 FILA = re.compile(r"^\|\s*\d+\s*\|\s*(\d+)\s*\|\s*`([^`]+)`\s*\|")
 
@@ -122,19 +136,26 @@ def construir_entrada(did: int, nombre: str, extractor: MetaFeatureExtractor) ->
         random_state=SEMILLA,
         task="classification",
     )
-    ganador, metricas, resultados = motor.run(features, labels, _modelo(), metric=METRICA)
+    _, metricas, resultados = motor.run(features, labels, _modelo(), metric=METRICA)
     duracion = time.perf_counter() - inicio
 
-    if motor.best_configuration_ is None:
+    if not motor.tied_configurations_:
         raise RuntimeError(
             f"La búsqueda sobre {nombre} no dejó configuración ganadora."
         )
+    # Entre las que empatan en el mejor valor, se guarda la canónica y no la que
+    # el muestreador visitó primero. Esa elección es una propiedad de la corrida,
+    # y transferirla como arranque en caliente transferiría la arbitrariedad:
+    # omitir la codificación no cuesta nada en un dataset sin categóricas y
+    # vuelve el pipeline inevaluable en uno que sí las tenga.
+    configuracion = canonical_configuration(motor.tied_configurations_)
+    ganador = pipeline_from_configuration(configuracion)
     fallidos = sum(1 for r in resultados if np.isnan(r["objective"]))
     return MetaKnowledgeEntry(
         dataset_id=str(did),
         dataset_name=nombre,
         meta_features=vector,
-        configuration=motor.best_configuration_,
+        configuration=configuracion,
         pipeline_params=ganador.get_params(),
         metric=METRICA,
         metric_value=round(float(metricas[METRICA]), 6),
@@ -148,7 +169,9 @@ def construir_entrada(did: int, nombre: str, extractor: MetaFeatureExtractor) ->
 
 def _cache(did: int) -> Path:
     """Ruta de caché de la entrada de un dataset."""
-    return CACHE_ENTRADAS / f"{did}__{TABULAR_SPACE_VERSION}__s{SEMILLA}.json"
+    return (
+        CACHE_ENTRADAS / f"{did}__{TABULAR_SPACE_VERSION}__s{SEMILLA}__{DESEMPATE}.json"
+    )
 
 
 def _leer_cache(did: int) -> MetaKnowledgeEntry | None:
@@ -243,6 +266,25 @@ Es la condición para que el meta-aprendizaje tenga sentido. Si todos los datase
 compartieran el mismo ganador, el recomendador no tendría nada que aprender:
 bastaría recomendar siempre esa configuración, y la comparación entre arranque
 frío y caliente mediría otra cosa.
+
+### Desempate entre configuraciones que empatan
+
+El óptimo casi nunca es único. Sobre un dataset numérico y sin faltantes, la
+imputación y la codificación son la identidad, de modo que varias combinaciones
+de esos dos pasos producen **el mismo pipeline** y empatan exactamente; la
+medición está en `DIVERSIDAD-ganadores.md`.
+
+Entre las empatadas, esta base guarda **la que omite menos pasos y, a igualdad,
+la de índices menores**, y no la que el muestreador visitó primero. Sin esa
+regla, la configuración guardada sería una propiedad de la corrida y no del
+dataset, y transferirla como arranque en caliente transferiría esa
+arbitrariedad: un ganador que omite la codificación es **inevaluable** en un
+dataset receptor con columnas categóricas, y ese ensayo inyectado se perdería sin
+producir una métrica.
+
+El desempate se calcula entre los empates observados dentro de los {ENSAYOS}
+ensayos del presupuesto. Mirar el espacio completo equivaldría a construir la
+base por búsqueda exhaustiva, que no es lo pre-registrado.
 
 ## Ensayos inevaluables
 

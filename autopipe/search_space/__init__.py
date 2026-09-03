@@ -8,13 +8,17 @@ Public API:
     validate_space_version       rejects configurations from another version
     describe_tabular_search_space  step/index enumeration, for docs and reports
     pipeline_from_configuration  resolves per-step indices back into a Pipeline
+    omitted_steps                steps a configuration leaves out
+    canonical_configuration      stable representative of a set of tied ones
 """
 
 from autopipe.search_space.tabular import (
     TABULAR_SPACE_STEPS,
     TABULAR_SPACE_VERSION,
     build_tabular_search_space,
+    canonical_configuration,
     describe_tabular_search_space,
+    omitted_steps,
     pipeline_from_configuration,
     validate_space_version,
 )
@@ -26,4 +30,6 @@ __all__ = [
     "validate_space_version",
     "describe_tabular_search_space",
     "pipeline_from_configuration",
+    "omitted_steps",
+    "canonical_configuration",
 ]
