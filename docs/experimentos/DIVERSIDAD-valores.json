@@ -1,0 +1,1364 @@
+{
+  "canonizar": {
+    "datasets": [
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 1,
+          "scaling": 2,
+          "selection": 3
+        },
+        "dataset_id": "40983",
+        "dataset_name": "wilt",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 3,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 1
+        },
+        "dataset_id": "38",
+        "dataset_name": "sick",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 2,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 2
+        },
+        "dataset_id": "18",
+        "dataset_name": "mfeat-morphological",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 4,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "dataset_id": "40975",
+        "dataset_name": "car",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 6,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "dataset_id": "50",
+        "dataset_name": "tic-tac-toe",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 4,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "dataset_id": "40982",
+        "dataset_name": "steel-plates-fault",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 4,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 1,
+          "scaling": 2,
+          "selection": 0
+        },
+        "dataset_id": "188",
+        "dataset_name": "eucalyptus",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 0
+        },
+        "dataset_id": "29",
+        "dataset_name": "credit-approval",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 3
+        },
+        "dataset_id": "11",
+        "dataset_name": "balance-scale",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 8,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 0
+        },
+        "dataset_id": "1068",
+        "dataset_name": "pc1",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 6,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 3,
+          "selection": 2
+        },
+        "dataset_id": "41027",
+        "dataset_name": "jungle_chess_2pcs_raw_endgame_complete",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 4,
+        "omite_la_base": [
+          "scaling"
+        ],
+        "omite_la_canonica": [
+          "scaling"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 1,
+          "scaling": 1,
+          "selection": 3
+        },
+        "dataset_id": "1464",
+        "dataset_name": "blood-transfusion-service-center",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 2,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 1
+        },
+        "dataset_id": "40701",
+        "dataset_name": "churn",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 3,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 3
+        },
+        "dataset_id": "1462",
+        "dataset_name": "banknote-authentication",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 15,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "dataset_id": "54",
+        "dataset_name": "vehicle",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 4,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 0
+        },
+        "dataset_id": "46",
+        "dataset_name": "splice",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 8,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 0
+        },
+        "dataset_id": "40994",
+        "dataset_name": "climate-model-simulation-crashes",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 8,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 1,
+          "scaling": 2,
+          "selection": 2
+        },
+        "dataset_id": "1489",
+        "dataset_name": "phoneme",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 4,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 1,
+          "scaling": 0,
+          "selection": 3
+        },
+        "dataset_id": "6332",
+        "dataset_name": "cylinder-bands",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 0
+        },
+        "dataset_id": "31",
+        "dataset_name": "credit-g",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 2,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 1
+        },
+        "dataset_id": "23381",
+        "dataset_name": "dresses-sales",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 2,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 3,
+          "selection": 3
+        },
+        "dataset_id": "4538",
+        "dataset_name": "GesturePhaseSegmentationProcessed",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 6,
+        "omite_la_base": [
+          "scaling",
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "scaling",
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "dataset_id": "151",
+        "dataset_name": "electricity",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 3,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ]
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 2
+        },
+        "dataset_id": "1494",
+        "dataset_name": "qsar-biodeg",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 8,
+        "omite_la_base": [],
+        "omite_la_canonica": []
+      },
+      {
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 2,
+          "scaling": 0,
+          "selection": 2
+        },
+        "dataset_id": "37",
+        "dataset_name": "diabetes",
+        "difiere_de_la_base": false,
+        "n_empatadas_en_el_presupuesto": 2,
+        "omite_la_base": [
+          "imputation"
+        ],
+        "omite_la_canonica": [
+          "imputation"
+        ]
+      }
+    ],
+    "empate_mediano_en_el_presupuesto": 4,
+    "n_cambian": 0,
+    "n_distintas_actual": 17,
+    "n_distintas_canonica": 17,
+    "omiten_codificacion_actual": 0,
+    "omiten_codificacion_canonica": 0,
+    "omiten_imputacion_actual": 1,
+    "omiten_imputacion_canonica": 1
+  },
+  "estabilidad": {
+    "n_pliegues_que_difieren": 1,
+    "n_supervivientes_corpus": 88,
+    "pliegues": [
+      {
+        "dataset_id": "40983",
+        "dataset_name": "wilt",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "38",
+        "dataset_name": "sick",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "18",
+        "dataset_name": "mfeat-morphological",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "40975",
+        "dataset_name": "car",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "50",
+        "dataset_name": "tic-tac-toe",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "40982",
+        "dataset_name": "steel-plates-fault",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "188",
+        "dataset_name": "eucalyptus",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "29",
+        "dataset_name": "credit-approval",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "11",
+        "dataset_name": "balance-scale",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "1068",
+        "dataset_name": "pc1",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "41027",
+        "dataset_name": "jungle_chess_2pcs_raw_endgame_complete",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "1464",
+        "dataset_name": "blood-transfusion-service-center",
+        "de_mas": [
+          "n2.mean",
+          "n2.sd"
+        ],
+        "n_de_mas": 2,
+        "n_descartadas_al_intersecar": 2,
+        "n_supervivientes": 90
+      },
+      {
+        "dataset_id": "40701",
+        "dataset_name": "churn",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "1462",
+        "dataset_name": "banknote-authentication",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "54",
+        "dataset_name": "vehicle",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "46",
+        "dataset_name": "splice",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "40994",
+        "dataset_name": "climate-model-simulation-crashes",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "1489",
+        "dataset_name": "phoneme",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "6332",
+        "dataset_name": "cylinder-bands",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "31",
+        "dataset_name": "credit-g",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "23381",
+        "dataset_name": "dresses-sales",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "4538",
+        "dataset_name": "GesturePhaseSegmentationProcessed",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "151",
+        "dataset_name": "electricity",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "1494",
+        "dataset_name": "qsar-biodeg",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      },
+      {
+        "dataset_id": "37",
+        "dataset_name": "diabetes",
+        "de_mas": [],
+        "n_de_mas": 0,
+        "n_descartadas_al_intersecar": 0,
+        "n_supervivientes": 88
+      }
+    ]
+  },
+  "estructura": {
+    "hamming_histograma": {
+      "0": 10,
+      "1": 35,
+      "2": 112,
+      "3": 122,
+      "4": 21
+    },
+    "hamming_media": 2.3633,
+    "n_configuraciones_distintas": 17,
+    "n_datasets": 25,
+    "n_pares": 300,
+    "pasos": {
+      "encoding": {
+        "conteo": {
+          "0": 16,
+          "1": 9,
+          "2": 0
+        },
+        "entropia_normalizada": 0.5948,
+        "indice_omision": 2
+      },
+      "imputation": {
+        "conteo": {
+          "0": 19,
+          "1": 5,
+          "2": 1
+        },
+        "entropia_normalizada": 0.6,
+        "indice_omision": 2
+      },
+      "scaling": {
+        "conteo": {
+          "0": 7,
+          "1": 7,
+          "2": 9,
+          "3": 2
+        },
+        "entropia_normalizada": 0.9253,
+        "indice_omision": 3
+      },
+      "selection": {
+        "conteo": {
+          "0": 6,
+          "1": 3,
+          "2": 7,
+          "3": 9
+        },
+        "entropia_normalizada": 0.953,
+        "indice_omision": 3
+      }
+    }
+  },
+  "meseta": {
+    "datasets": [
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "40983",
+        "dataset_name": "wilt",
+        "ensayos_esperados_al_azar": 8.0,
+        "fraccion_en_meseta": 0.125,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 18,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.885881,
+        "optimo_rejilla": 0.885881,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.885881
+      },
+      {
+        "brecha": 0.021217,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 1
+        },
+        "configuracion_de_la_base_es_optima": false,
+        "dataset_id": "38",
+        "dataset_name": "sick",
+        "ensayos_esperados_al_azar": 10.29,
+        "fraccion_en_meseta": 0.0972,
+        "n_empatadas_en_el_optimo": 2,
+        "n_en_meseta": 14,
+        "n_evaluables": 64,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.917132,
+        "optimo_rejilla": 0.938349,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.917132
+      },
+      {
+        "brecha": 0.000594,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": false,
+        "dataset_id": "18",
+        "dataset_name": "mfeat-morphological",
+        "ensayos_esperados_al_azar": 2.67,
+        "fraccion_en_meseta": 0.375,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 54,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.740925,
+        "optimo_rejilla": 0.741519,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.740925
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "40975",
+        "dataset_name": "car",
+        "ensayos_esperados_al_azar": 12.0,
+        "fraccion_en_meseta": 0.0833,
+        "n_empatadas_en_el_optimo": 12,
+        "n_en_meseta": 12,
+        "n_evaluables": 96,
+        "n_pares_escalado_seleccion_empatados": 4,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.910806,
+        "optimo_rejilla": 0.910806,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.910806
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "50",
+        "dataset_name": "tic-tac-toe",
+        "ensayos_esperados_al_azar": 6.0,
+        "fraccion_en_meseta": 0.1667,
+        "n_empatadas_en_el_optimo": 12,
+        "n_en_meseta": 24,
+        "n_evaluables": 96,
+        "n_pares_escalado_seleccion_empatados": 4,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.964844,
+        "optimo_rejilla": 0.964844,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.964844
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "40982",
+        "dataset_name": "steel-plates-fault",
+        "ensayos_esperados_al_azar": 5.33,
+        "fraccion_en_meseta": 0.1875,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 27,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.772454,
+        "optimo_rejilla": 0.772454,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.772454
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 0
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "188",
+        "dataset_name": "eucalyptus",
+        "ensayos_esperados_al_azar": 13.09,
+        "fraccion_en_meseta": 0.0764,
+        "n_empatadas_en_el_optimo": 2,
+        "n_en_meseta": 11,
+        "n_evaluables": 64,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.619459,
+        "optimo_rejilla": 0.619459,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.619459
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 0
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "29",
+        "dataset_name": "credit-approval",
+        "ensayos_esperados_al_azar": 5.54,
+        "fraccion_en_meseta": 0.1806,
+        "n_empatadas_en_el_optimo": 2,
+        "n_en_meseta": 26,
+        "n_evaluables": 64,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.853565,
+        "optimo_rejilla": 0.853565,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.853565
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "11",
+        "dataset_name": "balance-scale",
+        "ensayos_esperados_al_azar": 4.0,
+        "fraccion_en_meseta": 0.25,
+        "n_empatadas_en_el_optimo": 27,
+        "n_en_meseta": 36,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 3,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.590553,
+        "optimo_rejilla": 0.590553,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.590553
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 0
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "1068",
+        "dataset_name": "pc1",
+        "ensayos_esperados_al_azar": 5.33,
+        "fraccion_en_meseta": 0.1875,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 27,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.766874,
+        "optimo_rejilla": 0.766874,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.766874
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 3,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "41027",
+        "dataset_name": "jungle_chess_2pcs_raw_endgame_complete",
+        "ensayos_esperados_al_azar": 2.0,
+        "fraccion_en_meseta": 0.5,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 72,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "scaling"
+        ],
+        "omite_la_canonica": [
+          "scaling"
+        ],
+        "optimo_optuna": 0.699518,
+        "optimo_rejilla": 0.699518,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.699518
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "1464",
+        "dataset_name": "blood-transfusion-service-center",
+        "ensayos_esperados_al_azar": 2.67,
+        "fraccion_en_meseta": 0.375,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 54,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.663699,
+        "optimo_rejilla": 0.663699,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.663699
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 1
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "40701",
+        "dataset_name": "churn",
+        "ensayos_esperados_al_azar": 4.8,
+        "fraccion_en_meseta": 0.2083,
+        "n_empatadas_en_el_optimo": 3,
+        "n_en_meseta": 30,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.802314,
+        "optimo_rejilla": 0.802314,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.802314
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "1462",
+        "dataset_name": "banknote-authentication",
+        "ensayos_esperados_al_azar": 2.0,
+        "fraccion_en_meseta": 0.5,
+        "n_empatadas_en_el_optimo": 72,
+        "n_en_meseta": 72,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 8,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [],
+        "optimo_optuna": 1.0,
+        "optimo_rejilla": 1.0,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 1.0
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "54",
+        "dataset_name": "vehicle",
+        "ensayos_esperados_al_azar": 4.0,
+        "fraccion_en_meseta": 0.25,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 36,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.730514,
+        "optimo_rejilla": 0.730514,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.730514
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 0
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "46",
+        "dataset_name": "splice",
+        "ensayos_esperados_al_azar": 3.0,
+        "fraccion_en_meseta": 0.3333,
+        "n_empatadas_en_el_optimo": 12,
+        "n_en_meseta": 48,
+        "n_evaluables": 96,
+        "n_pares_escalado_seleccion_empatados": 4,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.812617,
+        "optimo_rejilla": 0.812617,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.812617
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 0
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "40994",
+        "dataset_name": "climate-model-simulation-crashes",
+        "ensayos_esperados_al_azar": 3.2,
+        "fraccion_en_meseta": 0.3125,
+        "n_empatadas_en_el_optimo": 18,
+        "n_en_meseta": 45,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 2,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.735294,
+        "optimo_rejilla": 0.735294,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.735294
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "1489",
+        "dataset_name": "phoneme",
+        "ensayos_esperados_al_azar": 1.33,
+        "fraccion_en_meseta": 0.75,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 108,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.830704,
+        "optimo_rejilla": 0.830704,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.830704
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 1,
+          "scaling": 0,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "6332",
+        "dataset_name": "cylinder-bands",
+        "ensayos_esperados_al_azar": 48.0,
+        "fraccion_en_meseta": 0.0208,
+        "n_empatadas_en_el_optimo": 1,
+        "n_en_meseta": 3,
+        "n_evaluables": 64,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.846591,
+        "optimo_rejilla": 0.846591,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.846591
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 0
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "31",
+        "dataset_name": "credit-g",
+        "ensayos_esperados_al_azar": 4.8,
+        "fraccion_en_meseta": 0.2083,
+        "n_empatadas_en_el_optimo": 3,
+        "n_en_meseta": 30,
+        "n_evaluables": 96,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.675442,
+        "optimo_rejilla": 0.675442,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.675442
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 1,
+          "selection": 1
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "23381",
+        "dataset_name": "dresses-sales",
+        "ensayos_esperados_al_azar": 36.0,
+        "fraccion_en_meseta": 0.0278,
+        "n_empatadas_en_el_optimo": 2,
+        "n_en_meseta": 4,
+        "n_evaluables": 96,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.645833,
+        "optimo_rejilla": 0.645833,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.645833
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 3,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "4538",
+        "dataset_name": "GesturePhaseSegmentationProcessed",
+        "ensayos_esperados_al_azar": 2.29,
+        "fraccion_en_meseta": 0.4375,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 63,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "scaling",
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "scaling",
+          "selection"
+        ],
+        "optimo_optuna": 0.579854,
+        "optimo_rejilla": 0.579854,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.579854
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": false,
+        "configuracion_canonica": {
+          "encoding": 1,
+          "imputation": 0,
+          "scaling": 2,
+          "selection": 3
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "151",
+        "dataset_name": "electricity",
+        "ensayos_esperados_al_azar": 2.18,
+        "fraccion_en_meseta": 0.4583,
+        "n_empatadas_en_el_optimo": 6,
+        "n_en_meseta": 66,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "selection"
+        ],
+        "omite_la_canonica": [
+          "selection"
+        ],
+        "optimo_optuna": 0.836371,
+        "optimo_rejilla": 0.836371,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.836371
+      },
+      {
+        "brecha": 0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "1494",
+        "dataset_name": "qsar-biodeg",
+        "ensayos_esperados_al_azar": 2.67,
+        "fraccion_en_meseta": 0.375,
+        "n_empatadas_en_el_optimo": 18,
+        "n_en_meseta": 54,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 2,
+        "omite_la_base": [],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.85816,
+        "optimo_rejilla": 0.85816,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.85816
+      },
+      {
+        "brecha": -0.0,
+        "canonica_difiere_de_la_base": true,
+        "configuracion_canonica": {
+          "encoding": 0,
+          "imputation": 0,
+          "scaling": 0,
+          "selection": 2
+        },
+        "configuracion_de_la_base_es_optima": true,
+        "dataset_id": "37",
+        "dataset_name": "diabetes",
+        "ensayos_esperados_al_azar": 1.33,
+        "fraccion_en_meseta": 0.75,
+        "n_empatadas_en_el_optimo": 9,
+        "n_en_meseta": 108,
+        "n_evaluables": 144,
+        "n_pares_escalado_seleccion_empatados": 1,
+        "omite_la_base": [
+          "imputation"
+        ],
+        "omite_la_canonica": [],
+        "optimo_optuna": 0.692176,
+        "optimo_rejilla": 0.692176,
+        "segundos": 0.0,
+        "valor_de_la_configuracion_de_la_base": 0.692176
+      }
+    ],
+    "empate_maximo": 72,
+    "empate_mediano": 9,
+    "esperado_mediano": 4.0,
+    "fraccion_objetivo": 0.95,
+    "meseta_maxima": 108,
+    "meseta_mediana": 36,
+    "meseta_minima": 3,
+    "n_base_es_optima": 23,
+    "n_canonica_difiere": 14,
+    "n_con_optimo_unico": 1,
+    "n_configuraciones_canonicas_distintas": 13,
+    "n_empate_solo_estructural": 18,
+    "n_esperado_desde_10": 5,
+    "n_esperado_hasta_2": 4,
+    "n_pipelines_del_espacio": 144,
+    "omiten_codificacion_base": 0,
+    "omiten_codificacion_canonica": 0,
+    "omiten_imputacion_base": 1,
+    "omiten_imputacion_canonica": 0
+  }
+}

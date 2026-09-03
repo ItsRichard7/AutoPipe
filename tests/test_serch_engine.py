@@ -550,3 +550,83 @@ def test_optuna_exposes_the_winning_configuration(separable_dataset, search_spac
 
 def test_optuna_configuration_is_none_before_running(search_space) -> None:
     assert OptunaSearchEngine(search_space, n_trials=3).best_configuration_ is None
+
+
+def test_optuna_exposes_every_tied_configuration(separable_dataset, search_space) -> None:
+    """Las configuraciones que empatan en el mejor valor quedan expuestas.
+
+    Cuál de ellas resulta ``best_configuration_`` depende del orden de visita del
+    muestreador, que es una propiedad de la corrida y no del dataset. Quien vaya a
+    **transferir** la configuración a otro dataset necesita ver el empate entero
+    para desempatar con un criterio explícito.
+    """
+    images, labels = separable_dataset
+    engine = OptunaSearchEngine(search_space, n_trials=12, val_size=0.5, random_state=11)
+
+    engine.run(images, labels, MeanThresholdModel())
+
+    assert engine.tied_configurations_
+    assert engine.best_configuration_ in engine.tied_configurations_
+    assert engine.tied_configurations_[0] == engine.best_configuration_
+    # Sin repeticiones y todas con la forma del espacio.
+    empatadas = engine.tied_configurations_
+    unicas = [c for i, c in enumerate(empatadas) if c not in empatadas[:i]]
+    assert len(empatadas) == len(unicas)
+    for configuracion in engine.tied_configurations_:
+        assert set(configuracion) == set(search_space)
+
+
+def test_optuna_tied_configurations_all_reach_the_best_value(
+    separable_dataset, search_space
+) -> None:
+    """Todas las expuestas alcanzan el mismo valor objetivo que el ganador."""
+    images, labels = separable_dataset
+    engine = OptunaSearchEngine(search_space, n_trials=12, val_size=0.5, random_state=11)
+
+    _, _, resultados = engine.run(images, labels, MeanThresholdModel())
+
+    mejor = max(r["objective"] for r in resultados if not math.isnan(r["objective"]))
+    keys = list(search_space)
+    for configuracion in engine.tied_configurations_:
+        pasos = [
+            search_space[key][configuracion[key]]
+            for key in keys
+            if configuracion[key] < len(search_space[key])
+        ]
+        valor, _ = evaluate_pipeline_safe(
+            Pipeline(pasos),
+            images,
+            labels,
+            MeanThresholdModel(),
+            engine.task.default_metric,
+            *engine.splitter.split(np.asarray(labels)),
+            engine.metric_calculator,
+            engine.task,
+        )
+        assert math.isclose(valor, mejor, abs_tol=1e-9)
+
+
+def test_optuna_tied_configurations_is_none_before_running(search_space) -> None:
+    assert OptunaSearchEngine(search_space, n_trials=3).tied_configurations_ is None
+
+
+def test_optuna_tied_configurations_when_nothing_is_evaluable() -> None:
+    """Un empate entre pipelines que no se pudieron evaluar no es un empate.
+
+    Con imágenes heterogéneas y sin un paso que las homogenice, todos los
+    candidatos dan ``NaN`` y el motor los sanea al peor valor posible. Si esos
+    ``-inf`` se trataran como empatados entre sí, el desempate transferiría una
+    configuración que nunca produjo una métrica.
+    """
+    rng = np.random.default_rng(0)
+    images = np.empty(20, dtype=object)
+    for i in range(20):
+        side = 8 if i < 10 else 16
+        images[i] = rng.integers(0, 255, size=(side, side), dtype=np.uint8)
+    labels = np.array([0] * 10 + [1] * 10)
+
+    engine = OptunaSearchEngine({"nada": [Identity()]}, n_trials=6, val_size=0.5, random_state=3)
+    _, _, resultados = engine.run(images, labels, MeanThresholdModel())
+
+    assert all(math.isnan(r["objective"]) for r in resultados)
+    assert engine.tied_configurations_ == [engine.best_configuration_]

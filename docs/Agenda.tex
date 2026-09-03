@@ -821,6 +821,74 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  el recomendador va a necesitar para ejecutar configuraciones ajenas. Verifiqué el refactor
  volviendo a correr el cribado completo: el corpus salió byte a byte idéntico.}
 
+\entrada{2026-08-31}{6}
+{Cerré el análisis exploratorio de la diversidad de los pipelines ganadores, que es el
+ punto de la semana del que dependen las decisiones de diseño del recomendador. En vez
+ de estimar la meseta con los cincuenta ensayos de Optuna, que están sesgados hacia la
+ región buena, evalué de forma \textbf{exhaustiva} los 144 pipelines del espacio sobre
+ cada uno de los 25 datasets, con la misma semilla y la misma partición que
+ construyeron la base: tres minutos la primera vez. El script
+ \texttt{scripts/analyze\_winner\_diversity.py} mide cuatro cosas: la forma de la
+ diversidad (entropía del índice ganador por paso y distancia de Hamming entre
+ ganadores), la anchura de la meseta, el efecto piso sobre «ensayos hasta el objetivo»
+ y la estabilidad de las meta-características supervivientes por pliegue. Del análisis
+ salió una decisión que implementé el mismo día: la regla de desempate entre
+ configuraciones que empatan, en la librería (\texttt{canonical\_configuration} y
+ \texttt{omitted\_steps} en \texttt{search\_space}) más el atributo
+ \texttt{tied\_configurations\_} del motor de Optuna, que es aditivo y no cambia
+ ninguna firma ni ninguna clave existente. Regeneré la base con ella y la volví a
+ validar. Treinta y cinco pruebas nuevas; suite en 483 pruebas y 99\% de cobertura,
+ con lo nuevo al 100\%.}
+{El hallazgo que más condiciona el proyecto es que \textbf{el óptimo casi nunca es
+ único}: la mediana es de nueve configuraciones empatadas exactamente en el mejor
+ valor, y solo \texttt{cylinder-bands} tiene óptimo único. En 18 de los 25 datasets
+ todo el empate cae en un único par (escalado, selección), y la razón es estructural:
+ sobre un dataset numérico y sin faltantes la imputación y la codificación son la
+ identidad, de modo que las $3 \times 3$ combinaciones de esos dos pasos son
+ literalmente el mismo pipeline. Los índices que la base guardaba para esos dos pasos
+ eran por tanto una moneda al aire, y no era inocuo: siete de las 25 entradas guardaban
+ un ganador que \emph{omite} la codificación, que es inevaluable en un dataset receptor
+ con columnas categóricas —once de los 25 las tienen—, así que cada vez que una saliera
+ recomendada gastaría un ensayo del presupuesto sin producir métrica. La regla que
+ adopté guarda, entre las empatadas, la que omite menos pasos y, a igualdad, la de
+ índices menores; se calcula entre los empates observados dentro de los cincuenta
+ ensayos y \textbf{no} sobre la rejilla exhaustiva, porque elegir el ganador mirando
+ los 144 equivaldría a construir la base por búsqueda exhaustiva y el anteproyecto fija
+ cincuenta ensayos por dataset. El efecto medido: 21 de las 25 entradas cambian de
+ configuración y \textbf{ninguna métrica cambia}, que era la condición para que fuera
+ un desempate entre iguales y no un cambio de ganador; las omisiones de codificación
+ pasan de siete a cero y las de imputación de tres a una; y las configuraciones
+ distintas bajan de 20 a 17. Las tres que se pierden eran desempate arbitrario, y se ve
+ en la entropía: la del paso \texttt{encoding} cae de 0,990 a 0,595 y la de
+ \texttt{imputation} de 0,763 a 0,600, mientras el escalado y la selección se mantienen
+ por encima de 0,92. La señal que el recomendador puede transferir está en esos dos
+ pasos, no en los cuatro. El segundo hallazgo va directo a la v1.0: la meseta es ancha.
+ La mediana es de 36 de 144 configuraciones que alcanzan el 95\% del óptimo, con un
+ rango de 3 a 108, y traducido a ensayos aleatorios esperados hasta el objetivo la
+ mediana es 4,0, con cuatro datasets por debajo de dos. Con \texttt{n\_startup\_trials}
+ en diez, el arranque en frío suele cruzar el objetivo dentro de su propia fase
+ aleatoria, y una reducción del 30\% sobre cuatro ensayos exige bajar a 2,8 contando
+ los cinco inyectados. Es además una cota conservadora en la dirección que perjudica al
+ arranque en caliente, porque el objetivo real se define contra el mejor valor del frío
+ y no contra el óptimo del espacio, de modo que el conjunto que califica es todavía
+ mayor. El tercero resuelve una contradicción entre dos documentos: el pre-registro
+ dice que el descarte de meta-características no finitas se calcula una sola vez sobre
+ el corpus, y el código de la base lo recalcula por pliegue. Medida, la diferencia es
+ inocua: solo el pliegue que excluye \texttt{blood-transfusion-service-center} conserva
+ dos columnas de más (\texttt{n2.mean} y \texttt{n2.sd}) y las dos son no finitas en
+ ese mismo dataset, así que la intersección por consulta las descarta igual y las 88
+ supervivientes son las mismas en los 25 pliegues. Adopto la regla estricta —por
+ pliegue, con intersección— porque no cuesta nada en resultados y elimina la fuga.
+ Decidí también, antes de escribir una línea del recomendador, que \emph{k} y la
+ métrica de distancia se fijan \textbf{a priori} y no midiendo sobre el corpus: esos 25
+ datasets son los pliegues del \textit{leave-one-dataset-out}, y elegir el parámetro
+ que mejor funcione sobre ellos sería seleccionar sobre el conjunto de prueba. Las tres
+ decisiones se registran en el pre-registro v1.0, y la del desempate hay que declararla
+ junto a su contrapartida: reduce las recomendaciones que caen en la región inevaluable
+ y por tanto \textbf{refuerza} la asimetría que el propio pre-registro dejó abierta,
+ así que la ablación con recomendador aleatorio pasa a ser el control que la vigila.
+ Sigue pendiente la etiqueta \texttt{prereg-v0.2}.}
+
 \newpage
 \section*{Resumen de horas}
 

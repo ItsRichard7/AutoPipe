@@ -2,7 +2,7 @@
   "entries": [
     {
       "configuration": {
-        "encoding": 2,
+        "encoding": 0,
         "imputation": 1,
         "scaling": 2,
         "selection": 3
@@ -128,16 +128,19 @@
         },
         "1_ScaleNumeric": {
           "method": "robust"
+        },
+        "2_EncodeCategorical": {
+          "method": "onehot"
         }
       },
-      "seconds": 2.64,
+      "seconds": 2.47,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 0,
-        "imputation": 1,
+        "imputation": 0,
         "scaling": 2,
         "selection": 1
       },
@@ -258,7 +261,7 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "robust"
@@ -271,13 +274,13 @@
           "fraction": 0.5
         }
       },
-      "seconds": 2.69,
+      "seconds": 2.77,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 1,
+        "encoding": 0,
         "imputation": 0,
         "scaling": 1,
         "selection": 2
@@ -405,14 +408,14 @@
           "method": "minmax"
         },
         "2_EncodeCategorical": {
-          "method": "ordinal"
+          "method": "onehot"
         },
         "3_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.75
         }
       },
-      "seconds": 0.96,
+      "seconds": 0.99,
       "seed": 42,
       "space_version": "tabular-v1"
     },
@@ -420,7 +423,7 @@
       "configuration": {
         "encoding": 0,
         "imputation": 0,
-        "scaling": 1,
+        "scaling": 0,
         "selection": 2
       },
       "dataset_id": "40975",
@@ -543,7 +546,7 @@
           "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
-          "method": "minmax"
+          "method": "standard"
         },
         "2_EncodeCategorical": {
           "method": "onehot"
@@ -553,7 +556,7 @@
           "fraction": 0.75
         }
       },
-      "seconds": 1.1,
+      "seconds": 1.92,
       "seed": 42,
       "space_version": "tabular-v1"
     },
@@ -561,7 +564,7 @@
       "configuration": {
         "encoding": 0,
         "imputation": 0,
-        "scaling": 2,
+        "scaling": 0,
         "selection": 2
       },
       "dataset_id": "50",
@@ -684,7 +687,7 @@
           "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
-          "method": "robust"
+          "method": "standard"
         },
         "2_EncodeCategorical": {
           "method": "onehot"
@@ -694,14 +697,14 @@
           "fraction": 0.75
         }
       },
-      "seconds": 1.21,
+      "seconds": 1.22,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 1,
-        "imputation": 1,
+        "imputation": 0,
         "scaling": 2,
         "selection": 3
       },
@@ -822,7 +825,7 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "robust"
@@ -831,7 +834,7 @@
           "method": "ordinal"
         }
       },
-      "seconds": 2.15,
+      "seconds": 1.78,
       "seed": 42,
       "space_version": "tabular-v1"
     },
@@ -972,7 +975,7 @@
           "fraction": 0.25
         }
       },
-      "seconds": 2.11,
+      "seconds": 1.57,
       "seed": 42,
       "space_version": "tabular-v1"
     },
@@ -1113,15 +1116,15 @@
           "fraction": 0.25
         }
       },
-      "seconds": 1.42,
+      "seconds": 1.45,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 2,
-        "imputation": 1,
-        "scaling": 3,
+        "encoding": 1,
+        "imputation": 0,
+        "scaling": 1,
         "selection": 3
       },
       "dataset_id": "11",
@@ -1241,17 +1244,23 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
+        },
+        "1_ScaleNumeric": {
+          "method": "minmax"
+        },
+        "2_EncodeCategorical": {
+          "method": "ordinal"
         }
       },
-      "seconds": 0.64,
+      "seconds": 0.65,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 1,
-        "imputation": 2,
+        "imputation": 0,
         "scaling": 2,
         "selection": 0
       },
@@ -1371,25 +1380,28 @@
       "n_failed_trials": 0,
       "n_trials": 50,
       "pipeline_params": {
-        "0_ScaleNumeric": {
+        "0_ImputeMissing": {
+          "numeric_strategy": "mean"
+        },
+        "1_ScaleNumeric": {
           "method": "robust"
         },
-        "1_EncodeCategorical": {
+        "2_EncodeCategorical": {
           "method": "ordinal"
         },
-        "2_SelectFeatures": {
+        "3_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.25
         }
       },
-      "seconds": 1.47,
+      "seconds": 1.4,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 2,
-        "imputation": 1,
+        "encoding": 1,
+        "imputation": 0,
         "scaling": 3,
         "selection": 2
       },
@@ -1510,20 +1522,23 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
-        "1_SelectFeatures": {
+        "1_EncodeCategorical": {
+          "method": "ordinal"
+        },
+        "2_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.75
         }
       },
-      "seconds": 11.28,
+      "seconds": 10.66,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 1,
+        "encoding": 0,
         "imputation": 1,
         "scaling": 1,
         "selection": 3
@@ -1651,17 +1666,17 @@
           "method": "minmax"
         },
         "2_EncodeCategorical": {
-          "method": "ordinal"
+          "method": "onehot"
         }
       },
-      "seconds": 0.73,
+      "seconds": 0.83,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 0,
-        "imputation": 1,
+        "imputation": 0,
         "scaling": 1,
         "selection": 1
       },
@@ -1782,7 +1797,7 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "minmax"
@@ -1795,15 +1810,15 @@
           "fraction": 0.5
         }
       },
-      "seconds": 1.92,
+      "seconds": 1.96,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 2,
-        "imputation": 1,
-        "scaling": 3,
+        "encoding": 1,
+        "imputation": 0,
+        "scaling": 1,
         "selection": 3
       },
       "dataset_id": "1462",
@@ -1923,17 +1938,23 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
+        },
+        "1_ScaleNumeric": {
+          "method": "minmax"
+        },
+        "2_EncodeCategorical": {
+          "method": "ordinal"
         }
       },
-      "seconds": 0.88,
+      "seconds": 0.91,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 1,
-        "imputation": 1,
+        "imputation": 0,
         "scaling": 2,
         "selection": 3
       },
@@ -2054,7 +2075,7 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "robust"
@@ -2070,8 +2091,8 @@
     {
       "configuration": {
         "encoding": 0,
-        "imputation": 2,
-        "scaling": 3,
+        "imputation": 0,
+        "scaling": 0,
         "selection": 0
       },
       "dataset_id": "46",
@@ -2190,22 +2211,28 @@
       "n_failed_trials": 8,
       "n_trials": 50,
       "pipeline_params": {
-        "0_EncodeCategorical": {
+        "0_ImputeMissing": {
+          "numeric_strategy": "mean"
+        },
+        "1_ScaleNumeric": {
+          "method": "standard"
+        },
+        "2_EncodeCategorical": {
           "method": "onehot"
         },
-        "1_SelectFeatures": {
+        "3_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.25
         }
       },
-      "seconds": 5.96,
+      "seconds": 6.53,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 1,
-        "imputation": 1,
+        "encoding": 0,
+        "imputation": 0,
         "scaling": 0,
         "selection": 0
       },
@@ -2326,26 +2353,26 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "standard"
         },
         "2_EncodeCategorical": {
-          "method": "ordinal"
+          "method": "onehot"
         },
         "3_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.25
         }
       },
-      "seconds": 1.19,
+      "seconds": 1.25,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 2,
+        "encoding": 0,
         "imputation": 1,
         "scaling": 2,
         "selection": 2
@@ -2472,12 +2499,15 @@
         "1_ScaleNumeric": {
           "method": "robust"
         },
-        "2_SelectFeatures": {
+        "2_EncodeCategorical": {
+          "method": "onehot"
+        },
+        "3_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.75
         }
       },
-      "seconds": 1.07,
+      "seconds": 1.04,
       "seed": 42,
       "space_version": "tabular-v1"
     },
@@ -2614,7 +2644,7 @@
           "method": "onehot"
         }
       },
-      "seconds": 3.14,
+      "seconds": 2.81,
       "seed": 42,
       "space_version": "tabular-v1"
     },
@@ -2755,14 +2785,14 @@
           "fraction": 0.25
         }
       },
-      "seconds": 1.77,
+      "seconds": 1.85,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 0,
-        "imputation": 1,
+        "imputation": 0,
         "scaling": 1,
         "selection": 1
       },
@@ -2883,7 +2913,7 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "minmax"
@@ -2896,14 +2926,14 @@
           "fraction": 0.5
         }
       },
-      "seconds": 1.98,
+      "seconds": 2.03,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 2,
-        "imputation": 1,
+        "encoding": 0,
+        "imputation": 0,
         "scaling": 3,
         "selection": 3
       },
@@ -3024,17 +3054,20 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
+        },
+        "1_EncodeCategorical": {
+          "method": "onehot"
         }
       },
-      "seconds": 2.49,
+      "seconds": 2.55,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 1,
-        "imputation": 1,
+        "imputation": 0,
         "scaling": 2,
         "selection": 3
       },
@@ -3155,7 +3188,7 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
           "method": "robust"
@@ -3164,15 +3197,15 @@
           "method": "ordinal"
         }
       },
-      "seconds": 11.45,
+      "seconds": 12.39,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
         "encoding": 0,
-        "imputation": 1,
-        "scaling": 0,
+        "imputation": 0,
+        "scaling": 1,
         "selection": 2
       },
       "dataset_id": "1494",
@@ -3292,10 +3325,10 @@
       "n_trials": 50,
       "pipeline_params": {
         "0_ImputeMissing": {
-          "numeric_strategy": "median"
+          "numeric_strategy": "mean"
         },
         "1_ScaleNumeric": {
-          "method": "standard"
+          "method": "minmax"
         },
         "2_EncodeCategorical": {
           "method": "onehot"
@@ -3305,13 +3338,13 @@
           "fraction": 0.75
         }
       },
-      "seconds": 2.07,
+      "seconds": 2.59,
       "seed": 42,
       "space_version": "tabular-v1"
     },
     {
       "configuration": {
-        "encoding": 2,
+        "encoding": 1,
         "imputation": 2,
         "scaling": 0,
         "selection": 2
@@ -3435,12 +3468,15 @@
         "0_ScaleNumeric": {
           "method": "standard"
         },
-        "1_SelectFeatures": {
+        "1_EncodeCategorical": {
+          "method": "ordinal"
+        },
+        "2_SelectFeatures": {
           "criterion": "f_classif",
           "fraction": 0.75
         }
       },
-      "seconds": 0.87,
+      "seconds": 1.12,
       "seed": 42,
       "space_version": "tabular-v1"
     }

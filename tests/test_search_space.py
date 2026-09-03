@@ -22,7 +22,9 @@ from autopipe.search_space import (
     TABULAR_SPACE_STEPS,
     TABULAR_SPACE_VERSION,
     build_tabular_search_space,
+    canonical_configuration,
     describe_tabular_search_space,
+    omitted_steps,
     pipeline_from_configuration,
     validate_space_version,
 )
@@ -290,3 +292,86 @@ def test_the_same_seed_selects_the_same_winner(datos_tabulares) -> None:
     ]
 
     assert ganadores[0] == ganadores[1]
+
+
+# ---------------------------------------------------------------------------
+# Desempate entre configuraciones que empatan
+#
+# Sobre un dataset numérico y sin faltantes, la imputación y la codificación son
+# la identidad: varias combinaciones de esos dos pasos son el mismo pipeline y
+# empatan exactamente. Cuál de ellas guarda una búsqueda depende del orden de
+# visita del muestreador, que es una propiedad de la corrida y no del dataset.
+# ---------------------------------------------------------------------------
+
+
+def test_omitted_steps_detects_the_omission_index() -> None:
+    """Un paso está omitido cuando su índice es el número de opciones."""
+    configuracion = {"imputation": 2, "scaling": 0, "encoding": 2, "selection": 3}
+    assert omitted_steps(configuracion) == ["imputation", "encoding", "selection"]
+
+
+def test_omitted_steps_returns_nothing_when_all_steps_are_present() -> None:
+    """Una configuración sin omisiones no reporta ningún paso."""
+    assert omitted_steps({"imputation": 0, "scaling": 1, "encoding": 1, "selection": 2}) == []
+
+
+def test_the_canonical_configuration_prefers_omitting_fewer_steps() -> None:
+    """Entre empatadas gana la que omite menos pasos, sea cual sea el orden.
+
+    Es la razón de ser de la regla, y no es estética: omitir la codificación no
+    cuesta nada en un dataset sin columnas categóricas, pero vuelve el pipeline
+    **inevaluable** en el dataset receptor que sí las tenga, de modo que el
+    ensayo inyectado se pierde sin producir una métrica.
+    """
+    omite_dos = {"imputation": 2, "scaling": 0, "encoding": 2, "selection": 0}
+    omite_cero = {"imputation": 0, "scaling": 0, "encoding": 0, "selection": 0}
+    assert canonical_configuration([omite_dos, omite_cero]) == omite_cero
+    assert canonical_configuration([omite_cero, omite_dos]) == omite_cero
+
+
+def test_the_canonical_configuration_breaks_remaining_ties_by_index() -> None:
+    """Con las mismas omisiones, gana la de índices menores en el orden canónico."""
+    baja = {"imputation": 0, "scaling": 0, "encoding": 0, "selection": 0}
+    alta = {"imputation": 0, "scaling": 1, "encoding": 0, "selection": 0}
+    assert canonical_configuration([alta, baja]) == baja
+
+
+def test_the_canonical_configuration_is_deterministic() -> None:
+    """El resultado no depende del orden en que se reciban las empatadas."""
+    empatadas = [
+        {"imputation": i, "scaling": 2, "encoding": e, "selection": 1}
+        for i in range(3)
+        for e in range(3)
+    ]
+    esperada = {"imputation": 0, "scaling": 2, "encoding": 0, "selection": 1}
+    assert canonical_configuration(empatadas) == esperada
+    assert canonical_configuration(list(reversed(empatadas))) == esperada
+
+
+def test_a_single_configuration_is_its_own_canonical() -> None:
+    """Sin empate no hay nada que desempatar."""
+    unica = {"imputation": 1, "scaling": 2, "encoding": 0, "selection": 3}
+    assert canonical_configuration([unica]) == unica
+
+
+def test_the_canonical_configuration_rejects_an_empty_set() -> None:
+    """Pedir la canónica de nada es un error, no un valor por omisión."""
+    with pytest.raises(ValueError, match="No hay configuraciones"):
+        canonical_configuration([])
+
+
+def test_the_canonical_configuration_is_executable(datos_tabulares) -> None:
+    """La canónica de un empate se resuelve a un pipeline que corre.
+
+    Cierra el circuito: la regla existe para que la configuración transferida sea
+    ejecutable en el dataset receptor, así que se comprueba que lo sea.
+    """
+    tabla, etiquetas = datos_tabulares
+    empatadas = [
+        {"imputation": 2, "scaling": 0, "encoding": 2, "selection": 3},
+        {"imputation": 0, "scaling": 0, "encoding": 0, "selection": 3},
+    ]
+    pipeline = pipeline_from_configuration(canonical_configuration(empatadas))
+    assert omitted_steps(canonical_configuration(empatadas)) == ["selection"]
+    transformada = pipeline.fit_transform(tabla, etiquetas)
+    assert transformada.to_numpy(dtype=float).shape[0] == len(tabla)

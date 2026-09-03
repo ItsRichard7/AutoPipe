@@ -22,6 +22,8 @@ la tabla de índices, y la Sección 3 del pre-registro para la justificación.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from autopipe.pipeline.base import BaseTransform
 from autopipe.pipeline.pipeline import Pipeline
 from autopipe.pipeline.tabular_transforms import (
@@ -153,6 +155,71 @@ def pipeline_from_configuration(
         if indice < len(opciones):
             pasos.append(opciones[indice])
     return Pipeline(pasos)
+
+
+def omitted_steps(
+    configuration: dict[str, int],
+    space: dict[str, list[BaseTransform]] | None = None,
+) -> list[str]:
+    """Pasos que una configuración omite.
+
+    Args:
+        configuration: Índice elegido por cada paso.
+        space: Espacio sobre el que interpretar los índices. Si es ``None`` se
+            construye el canónico.
+
+    Returns:
+        Nombres de los pasos cuyo índice es el de omisión, en orden canónico.
+    """
+    espacio = build_tabular_search_space() if space is None else space
+    return [
+        paso
+        for paso in TABULAR_SPACE_STEPS
+        if configuration.get(paso) == len(espacio[paso])
+    ]
+
+
+def canonical_configuration(
+    configurations: Sequence[dict[str, int]],
+    space: dict[str, list[BaseTransform]] | None = None,
+) -> dict[str, int]:
+    """Elige un representante estable entre configuraciones que empatan.
+
+    Sobre un dataset numérico y sin faltantes, la imputación y la codificación
+    son la identidad: las combinaciones de esos dos pasos producen **el mismo
+    pipeline** y empatan exactamente. La que una búsqueda guarda como ganadora es
+    entonces la que el muestreador visitó primero, que es una propiedad de la
+    corrida y no del dataset. Transferirla como arranque en caliente transfiere
+    esa arbitrariedad.
+
+    La regla es **la que omite menos pasos y, a igualdad, la de índices menores
+    en el orden canónico**. No se elige por rendimiento —todas empatan— sino por
+    transferibilidad: omitir la imputación o la codificación no cuesta nada donde
+    esos pasos no tienen nada que hacer, pero vuelve el pipeline **inevaluable**
+    en un dataset receptor que sí tenga valores faltantes o columnas
+    categóricas, y ese ensayo se pierde sin producir una métrica.
+
+    Args:
+        configurations: Configuraciones empatadas. Debe tener al menos una.
+        space: Espacio sobre el que interpretar los índices. Si es ``None`` se
+            construye el canónico.
+
+    Returns:
+        La configuración canónica del empate.
+
+    Raises:
+        ValueError: Si no se recibe ninguna configuración.
+    """
+    if not configurations:
+        raise ValueError("No hay configuraciones entre las que elegir una canónica.")
+    espacio = build_tabular_search_space() if space is None else space
+    return min(
+        configurations,
+        key=lambda c: (
+            len(omitted_steps(c, espacio)),
+            tuple(c[paso] for paso in TABULAR_SPACE_STEPS),
+        ),
+    )
 
 
 def describe_tabular_search_space() -> list[dict]:

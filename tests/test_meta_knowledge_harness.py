@@ -188,6 +188,7 @@ def test_a_search_without_a_winner_is_reported(sin_red, monkeypatch) -> None:
 
     class MotorSinGanador:
         best_configuration_ = None
+        tied_configurations_ = None
 
         def __init__(self, *args, **kwargs):
             pass
@@ -202,3 +203,92 @@ def test_a_search_without_a_winner_is_reported(sin_red, monkeypatch) -> None:
 
     with pytest.raises(RuntimeError, match="no dejó configuración ganadora"):
         arnes.construir_entrada(7, "sintetico", extractor)
+
+
+# --------------------------------------------------------------------------- #
+# Desempate entre configuraciones que empatan
+# --------------------------------------------------------------------------- #
+def test_the_entry_stores_the_canonical_configuration(sin_red, monkeypatch) -> None:
+    """Ante un empate, la entrada guarda la canónica y no la primera visitada.
+
+    Es lo que impide que la base registre una propiedad de la corrida en lugar de
+    una del dataset. Se simula un motor cuyo ganador omite dos pasos y que empata
+    con otra configuración que no omite ninguno: la entrada debe quedarse con la
+    segunda, porque es la que se puede ejecutar en un dataset receptor con
+    faltantes o con columnas categóricas.
+    """
+    omite_dos = {"imputation": 2, "scaling": 0, "encoding": 2, "selection": 3}
+    completa = {"imputation": 0, "scaling": 0, "encoding": 0, "selection": 3}
+
+    class MotorConEmpate:
+        best_configuration_ = omite_dos
+        tied_configurations_ = [omite_dos, completa]
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def run(self, *args, **kwargs):
+            from autopipe.pipeline.pipeline import Pipeline
+
+            return Pipeline([]), {"macro_f1": 0.75}, [{"objective": 0.75}]
+
+    monkeypatch.setattr(arnes, "OptunaSearchEngine", MotorConEmpate)
+    extractor = MetaFeatureExtractor(random_state=arnes.SEMILLA)
+
+    entrada = arnes.construir_entrada(7, "sintetico", extractor)
+
+    assert entrada.configuration == completa
+    assert entrada.configuration != MotorConEmpate.best_configuration_
+
+
+def test_the_readable_parameters_follow_the_canonical_configuration(
+    sin_red, monkeypatch
+) -> None:
+    """Los parámetros guardados describen la canónica, no el pipeline devuelto.
+
+    Si se guardara el pipeline que el motor construyó, los índices y los
+    parámetros de la misma entrada describirían pipelines distintos, y nada
+    fallaría al leerlos.
+    """
+    omite_todo = {"imputation": 2, "scaling": 3, "encoding": 2, "selection": 3}
+    completa = {"imputation": 1, "scaling": 2, "encoding": 1, "selection": 0}
+
+    class MotorConEmpate:
+        best_configuration_ = omite_todo
+        tied_configurations_ = [omite_todo, completa]
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def run(self, *args, **kwargs):
+            from autopipe.pipeline.pipeline import Pipeline
+
+            return Pipeline([]), {"macro_f1": 0.5}, [{"objective": 0.5}]
+
+    monkeypatch.setattr(arnes, "OptunaSearchEngine", MotorConEmpate)
+    extractor = MetaFeatureExtractor(random_state=arnes.SEMILLA)
+
+    entrada = arnes.construir_entrada(7, "sintetico", extractor)
+
+    assert entrada.configuration == completa
+    assert len(entrada.pipeline_params) == 4
+    assert [tipo.split("_", 1)[1] for tipo in entrada.pipeline_params] == [
+        "ImputeMissing",
+        "ScaleNumeric",
+        "EncodeCategorical",
+        "SelectFeatures",
+    ]
+
+
+def test_the_cache_key_records_the_tie_breaking_rule() -> None:
+    """La regla de desempate viaja en el nombre del archivo de caché.
+
+    Cambiarla cambia qué configuración guarda cada entrada. Sin la regla en la
+    clave, una caché construida con otro criterio se reutilizaría en silencio y
+    la base mezclaría dos criterios distintos.
+    """
+    ruta = arnes._cache(7)
+
+    assert arnes.DESEMPATE in ruta.name
+    assert arnes.TABULAR_SPACE_VERSION in ruta.name
+    assert f"s{arnes.SEMILLA}" in ruta.name
