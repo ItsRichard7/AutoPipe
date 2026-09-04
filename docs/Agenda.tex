@@ -889,6 +889,58 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  así que la ablación con recomendador aleatorio pasa a ser el control que la vigila.
  Sigue pendiente la etiqueta \texttt{prereg-v0.2}.}
 
+\entrada{2026-09-01}{8}
+{Implementé el recomendador de arranque en caliente, \texttt{autopipe/meta\_recommender/}.
+ Su método \texttt{fit} aprende de una base qué meta-características sobreviven y el centro,
+ la escala y el rango de cada una; su método \texttt{recommend} camina desde el vecino más
+ cercano hacia afuera hasta reunir cinco configuraciones \textbf{distintas}, y valida cada
+ una contra el espacio vigente antes de devolverla. Expone además los vecinos que aportaron
+ cada recomendación con su distancia, de modo que una inyección se pueda auditar: sin eso el
+ experimento registraría qué se inyectó pero no de dónde salió. Treinta y siete pruebas
+ nuevas; suite en 520 y el módulo al 100\% de cobertura, con \texttt{ruff} y \texttt{mypy}
+ limpios. Corrí también el \textit{leave-one-dataset-out} en seco sobre la base real: los 25
+ pliegues producen cinco configuraciones distintas, usan 87 de las 88 meta-características,
+ y en ninguno aparece el dataset excluido entre sus vecinos.}
+{Lo más útil del día fue un error propio que salió a la luz al sabotear el módulo. Escribí
+ primero una anti-fuga que comprobaba que el centro y la escala no cambiaran después de
+ consultar, y al implementar a propósito la fuga realista —recalcular la escala metiendo el
+ vector consultado— esa prueba \textbf{pasó tan campante}: la contaminación vivía en
+ variables locales y dejaba los atributos intactos, así que la garantía no estaba fijada por
+ ninguna parte. La sustituí por una que reproduce a mano cada distancia a partir de los
+ parámetros del ajuste, que con el sabotaje puesto cae y restaurado pasa. Es el mismo
+ procedimiento con el que verifiqué las anti-fuga tabulares en la semana 4, y esta vez
+ sirvió para descubrir que la prueba no valía en lugar de para confirmar que sí. Verifiqué
+ también, contra el artículo y no de memoria, la referencia en la que quería apoyar la
+ métrica de distancia: auto-sklearn ordena los datasets por su distancia L1 en el espacio de
+ meta-características (Feurer et al., 2015, sección 3.1), así que la L1 tiene precedente
+ publicado para exactamente esta tarea; pero ese artículo \textbf{no describe ningún
+ escalado}, de modo que el escalado robusto queda como decisión mía, con su justificación
+ propia, y no colgado de una cita que no lo dice. El número de vecinos, por su parte, no es
+ un parámetro libre: lo que el anteproyecto fija son las cinco configuraciones inyectadas, y
+ el recomendador salta las repetidas porque inyectar dos veces la misma gastaría dos ensayos
+ del presupuesto para obtener el mismo valor. La ejecución en seco destapó un problema que
+ no habría visto con datos sintéticos: en dos de los 25 pliegues, una \textbf{sola}
+ meta-característica aportaba más de la mitad de la distancia —hasta el 71\% en
+ \texttt{steel-plates-fault}, por \texttt{cov.sd}—, de modo que el vecino más parecido no lo
+ elegía un espacio de 87 meta-características sino una estadística de covarianza. El
+ diagnóstico no era el que supuse: el rango intercuartílico de esa columna es 679, nada
+ degenerado; lo enorme es el valor del dataset consultado. Es inherente al protocolo, porque
+ el escalado robusto controla los valores extremos \emph{dentro} del conjunto de ajuste y el
+ dataset excluido puede caer muy fuera. Lo resolví recortando la consulta al rango observado
+ en el pliegue, que no necesita ninguna constante arbitraria y descansa en un argumento
+ simple: el recomendador no puede medir cuánto fuera del corpus cae un dataset, solo que cae
+ fuera. Con el recorte, la mediana del aporte de la característica dominante baja de 12,7\% a
+ 10,3\%, los pliegues con una sola por encima del 50\% pasan de dos a uno, y la distancia
+ máxima cae de 346 millones a 311 918. Queda un residuo que documento en vez de tapar:
+ \texttt{pc1} sigue en 53\%, y su causa es distinta, porque el valor extremo está en una
+ entrada de la base y no en la consulta —en su pliegue está \texttt{steel-plates-fault}—, de
+ modo que el rango contra el que se recorta ya es extremo. No lo arreglo: pediría winsorizar
+ también la base a un rango de cuantiles, que reintroduce la constante arbitraria que se
+ evitó, y descartar \texttt{cov.sd} sería cambiar una regla ya pre-registrada después de ver
+ los datos. Confirmé por último que el desempate de la entrada anterior paga: solo 3 de las
+ 125 recomendaciones posibles resultan inevaluables por omisión. Las cuatro decisiones del
+ recomendador se registran en el pre-registro v1.0.}
+
 \newpage
 \section*{Resumen de horas}
 
