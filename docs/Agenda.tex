@@ -1020,17 +1020,57 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  experimento y la v1.0 del pre-registro no está cerrada. Con esto RE5 queda funcionalmente
  completo y la semana cierra con sus seis puntos.}
 
-\cierresemana{7}{28}{25}{Hito de la semana alcanzado: base de meta-conocimiento validada,
+\entrada{2026-09-04}{2}
+{Creé por fin la etiqueta anotada \texttt{prereg-v0.2}, que arrastraba pendiente desde la
+ semana 5, apuntándola al commit que cierra esa versión del pre-registro, y la publiqué en
+ el remoto junto a la \texttt{prereg-v0.1}. Después enmendé la portada del pre-registro, que
+ afirmaba algo que la etiqueta tardía volvió falso, y le añadí una sección de fe de erratas
+ donde queda registrada la corrección. El documento compila en trece páginas sin un solo
+ aviso de composición.}
+{La etiqueta llega siete días tarde, y eso tiene una consecuencia que había que decir en vez
+ de disimular: la portada afirmaba que «su fecha de creación, registrada por git, es el
+ fechado verificable de este documento», y para la v0.2 eso dejó de ser cierto, porque su
+ fecha de creación es \emph{posterior} a las ejecuciones que la versión gobierna. Lo que sí
+ sostiene el fechado es el orden de los commits, que es independiente de la etiqueta y no se
+ puede alterar sin que el historial lo delate: el commit que cierra el pre-registro es de
+ las 11:10 y el que ejecuta el cribado de las 11:35 del mismo día, veinticinco minutos
+ después, con la construcción de la base cinco horas más tarde. De modo que la regla de oro
+ se cumple y es comprobable por cualquiera con acceso al repositorio; lo que fallaba era la
+ afirmación sobre \emph{qué} lo comprueba. La portada pasa a señalar la fecha del commit
+ etiquetado, y la nota al pie explica que el documento no puede llevar dentro ni su propio
+ hash ni esa fecha, por la misma razón de siempre: escribirlos dentro alteraría el contenido
+ sobre el que se calculan. \textbf{No retrodaté la etiqueta}, aunque git permite fijar su
+ fecha con variables de entorno: habría producido un fechado aparentemente correcto y falso,
+ que es exactamente lo que un pre-registro existe para impedir, y lo dejé escrito tanto en
+ el mensaje de la etiqueta como en la errata. La sección de erratas queda además con una
+ regla propia: una errata nunca puede modificar una regla del protocolo, y si alguna tuviera
+ que cambiar, eso exige una versión nueva. Revisando el PDF apareció un defecto preexistente
+ que afecta también a la v0.1 y que no tiene nada que ver con lo anterior: la configuración
+ congelada del modelo base se imprimía con una diéresis en lugar de la comilla de apertura
+ del valor del parámetro \texttt{weights}, porque con \texttt{babel} en español la comilla
+ recta es un carácter activo y forma la diéresis al preceder a una vocal. Solo afectaba a
+ ese parámetro; los otros dos salían bien porque sus iniciales no forman atajo. Importa
+ porque es justo el literal que hay que copiar para reproducir el experimento, y quien lo
+ tomara del PDF obtendría un valor que scikit-learn rechaza. Lo verifiqué con un documento
+ mínimo antes de afirmarlo, lo corregí desactivando el atajo alrededor de ese bloque y lo
+ registré como segunda errata, dejando claro que el código fuente siempre dijo lo correcto y
+ que lo que estaba mal era la composición tipográfica, no el valor registrado. Queda anotada
+ la consecuencia para la v1.0: como esa versión precede a la ejecución del experimento, su
+ etiqueta hay que crearla \textbf{el mismo día} que el commit que la cierra, como se hizo con
+ la v0.1, porque es la versión donde menos margen hay para una errata de fechado.}
+
+\cierresemana{7}{30}{25}{Hito de la semana alcanzado: base de meta-conocimiento validada,
  diversidad de los ganadores analizada, recomendador por vecinos más cercanos implementado
  con normalización por pliegue, arranque en caliente integrado en el motor de Optuna, y
  control de alcance cerrado con el ADR-003. RE4 completo y RE5 funcionalmente completo.
  Suite de 448 a 540 pruebas, 99\% de cobertura y los módulos nuevos al 100\%. Se gastaron
- 28\,h frente a 25 comprometidas, dentro de la capacidad semanal. Tres hallazgos del
- análisis exploratorio pasan al pre-registro v1.0: el desempate canónico y su contrapartida
- sobre la región inevaluable, la meseta ancha con su efecto piso sobre «ensayos hasta el
- objetivo», y la regla de supervivientes por pliegue, que corrige una contradicción entre el
- pre-registro y el código sin cambiar ningún número. Sigue pendiente la etiqueta
- \texttt{prereg-v0.2}.}
+ 30\,h frente a 25 comprometidas y 28 de capacidad semanal, un exceso pequeño que absorbe la
+ reserva. Tres hallazgos del análisis exploratorio pasan al pre-registro v1.0: el desempate
+ canónico y su contrapartida sobre la región inevaluable, la meseta ancha con su efecto piso
+ sobre «ensayos hasta el objetivo», y la regla de supervivientes por pliegue, que corrige una
+ contradicción entre el pre-registro y el código sin cambiar ningún número. Quedó creada y
+ publicada la etiqueta \texttt{prereg-v0.2}, que se arrastraba desde la semana 5, con la
+ errata que su retraso obligó a registrar.}
 
 \newpage
 \section*{Resumen de horas}
@@ -1054,7 +1094,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 4  & E2, E8            & 25 & 34 & Hito: núcleo generalizado, RE2 completo \\
 5  & E3, E4, E8        & 27 & 27 & RE3 completo, corpus de 25 seleccionado \\
 6  & E4, E8            & 25 & 13 & Base construida; el arnés no necesitó paralelismo \\
-7  & E4, E5, E8        & 25 & 28 & Hito: base y control de alcance; RE5 funcional \\
+7  & E4, E5, E8        & 25 & 30 & Hito: base y control de alcance; RE5 funcional \\
 8  & E5, E8            & 24 & --- & \\
 9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
 10 & E6, E7, E8        & 22 & --- & \\
