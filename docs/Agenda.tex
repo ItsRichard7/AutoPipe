@@ -979,6 +979,59 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  contaminaría todo lo que viene, porque la v1.0 del pre-registro todavía no está cerrada. La
  costura queda verificada con datos sintéticos, que es lo que corresponde a esta semana.}
 
+\entrada{2026-09-03}{4}
+{Cerré los dos puntos que faltaban de la semana, ninguno de código. Primero el control de
+ alcance: escribí el \texttt{ADR-003}, que descarta el agrupamiento con las horas y las
+ razones que lo respaldan, y retiré el ítem correspondiente de las decisiones abiertas de
+ esta bitácora. Después la documentación: amplié \texttt{docs/GUIA-tecnica.md} con el
+ desempate canónico de los ganadores, el recomendador y el arranque en caliente, incluidas
+ sus tablas de decisiones y los mensajes de error nuevos; y puse al día
+ \texttt{CLAUDE.md}, que seguía describiendo el proyecto tal como estaba en la semana 3.}
+{El agrupamiento cabía por horas —quedan 202 de 336 para seis semanas que comprometen
+ 138— y por arquitectura, porque el ADR-002 dejó el registro de tareas preparado para una
+ tercera. Lo descarto igualmente, y la razón de fondo es que \textbf{no es una tarea más:
+ toca el núcleo en vez de extenderlo}. De las cuatro responsabilidades que agrupa
+ \texttt{Task}, el agrupamiento no encaja en tres: la silueta no recibe etiquetas
+ verdaderas y cambia la firma de la llamada, no hay predicciones que normalizar y no hay
+ puntajes que consultar. Y el protocolo de evaluación entero está construido sobre que hay
+ etiquetas: el particionador es estratificado por clase y \texttt{evaluate\_pipeline}
+ entrena contra ellas y compara contra ellas. Incorporarlo obligaría a modificar justo la
+ función con más pruebas escritas para fallar ante regresiones, que es la que el riesgo
+ técnico crítico ya obligó a rehacer una vez. A eso se suma que no aporta nada a la
+ hipótesis, que se decide sobre 25 pares en clasificación tabular, y que el corpus tendría
+ que construirse desde cero porque el criterio de cribado por IQR de macro-F1 no se
+ traslada: sería repetir el trabajo de las semanas 5 y 6. Las horas de holgura quedan
+ reservadas, por ese orden, para subir a cinco semillas, para la ablación con recomendador
+ aleatorio de la semana 11 —que el spike A elevó de trámite a comprobación central— y para
+ el caso completo de anomalías en imágenes, que es lo que sostiene la afirmación de que el
+ framework es agnóstico a la tarea. Conviene decir con precisión qué cambia y qué no: el
+ anteproyecto \textbf{no se modifica}, porque el agrupamiento ya figuraba como extensión
+ deseable y condicional, de modo que lo que hace el ADR es cerrar una condición y no
+ recortar un compromiso; el pre-registro tampoco se toca, porque su propia sección de qué
+ queda fuera ya anticipaba que esta decisión no afecta al protocolo. Lo único que cambia de
+ hecho es que las métricas primarias se quedan en dos, macro-F1 y AUC-ROC, porque la silueta
+ figuraba en el anteproyecto como «clustering si entra». De la documentación, lo que más
+ falta hacía era \texttt{CLAUDE.md}: decía 287 pruebas cuando hay 540, daba RE3 por no
+ iniciado cuando está completo desde la semana 5, y describía siete módulos cuando hay once.
+ Un documento que se lee al empezar cada sesión y que describe un proyecto que ya no existe
+ es peor que no tenerlo, que es exactamente lo que ya me pasó en la semana 4 con dos
+ afirmaciones de la guía técnica. Le añadí además un aviso explícito de no ejecutar todavía
+ ningún \textit{leave-one-dataset-out} de frío contra caliente sobre el corpus, porque es el
+ experimento y la v1.0 del pre-registro no está cerrada. Con esto RE5 queda funcionalmente
+ completo y la semana cierra con sus seis puntos.}
+
+\cierresemana{7}{28}{25}{Hito de la semana alcanzado: base de meta-conocimiento validada,
+ diversidad de los ganadores analizada, recomendador por vecinos más cercanos implementado
+ con normalización por pliegue, arranque en caliente integrado en el motor de Optuna, y
+ control de alcance cerrado con el ADR-003. RE4 completo y RE5 funcionalmente completo.
+ Suite de 448 a 540 pruebas, 99\% de cobertura y los módulos nuevos al 100\%. Se gastaron
+ 28\,h frente a 25 comprometidas, dentro de la capacidad semanal. Tres hallazgos del
+ análisis exploratorio pasan al pre-registro v1.0: el desempate canónico y su contrapartida
+ sobre la región inevaluable, la meseta ancha con su efecto piso sobre «ensayos hasta el
+ objetivo», y la regla de supervivientes por pliegue, que corrige una contradicción entre el
+ pre-registro y el código sin cambiar ningún número. Sigue pendiente la etiqueta
+ \texttt{prereg-v0.2}.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1001,7 +1054,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 4  & E2, E8            & 25 & 34 & Hito: núcleo generalizado, RE2 completo \\
 5  & E3, E4, E8        & 27 & 27 & RE3 completo, corpus de 25 seleccionado \\
 6  & E4, E8            & 25 & 13 & Base construida; el arnés no necesitó paralelismo \\
-7  & E4, E5, E8        & 25 & --- & Hito: base y control de alcance \\
+7  & E4, E5, E8        & 25 & 28 & Hito: base y control de alcance; RE5 funcional \\
 8  & E5, E8            & 24 & --- & \\
 9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
 10 & E6, E7, E8        & 22 & --- & \\
@@ -1026,8 +1079,6 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
 \begin{itemize}[leftmargin=1.4em]
   \item Subir de 3 a 5 semillas por condición: depende del costo de cómputo real
         medido en la semana 6.
-  \item Entrada o descarte del agrupamiento (\textit{clustering}) en el control de
-        alcance de la semana 7.
   \item Corregir \texttt{\_normalize\_predictions} en la tarea de anomalías: las
         predicciones todas \texttt{+1} se interpretan como «todo anómalo». Cambia métricas
         ya reportadas, así que requiere decisión explícita.

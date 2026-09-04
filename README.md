@@ -25,6 +25,8 @@ The library **does not train or implement the base model** — it consumes any m
 - A **canonical, versioned tabular search space**: one space shared by every dataset, so a configuration found on one is executable on another, and a version identifier that makes a stale configuration fail loudly instead of silently designating the wrong transforms
 - Pluggable **learning tasks**: metrics, optimization direction and prediction handling travel together, selected with a single constructor argument
 - Automatic pipeline search with **Grid Search** or **Bayesian optimization** (Optuna, TPE + median pruning)
+- **Meta-learned warm start**: describe a dataset with 107 meta-features, find the most similar datasets in a meta-knowledge base, and inject their winning configurations as the first trials of the search. Injected trials are validated against the current space version before they reach Optuna, because an out-of-range index aborts a study and an unknown key is accepted silently
+- **No leakage at the meta level either**: the recommender's scaling is fitted only on the datasets of the current fold, never on the held-out one
 - Every step is also tried as **skipped** automatically, so the search can drop transforms that hurt performance (skipped steps simply don't appear in the winning pipeline or its saved config)
 - Parallel evaluation with `joblib` (loky backend, Windows-safe), with measured speedup
 - **No data leakage**: pipelines are fitted on the training subset only, and cloned per candidate so stateful transforms cannot contaminate each other
@@ -179,8 +181,11 @@ AutoPipe/
 │   ├── data_loader/     # ImageDataLoader, TabularDataLoader
 │   ├── pipeline/        # BaseTransform, StatefulTransform, transforms, Pipeline
 │   ├── tasks/           # Task registry: anomaly detection, classification
-│   ├── search_engine/   # GridSearchEngine, OptunaSearchEngine
+│   ├── search_engine/   # GridSearchEngine, OptunaSearchEngine (with warm start)
 │   ├── search_space/    # canonical versioned tabular space
+│   ├── meta_features/   # MetaFeatureExtractor, on top of pymfe
+│   ├── meta_knowledge/  # MetaKnowledgeBase: what won on each corpus dataset
+│   ├── meta_recommender/# MetaRecommender: nearest neighbours over meta-features
 │   ├── evaluator/       # DataSplitter, metric calculators
 │   ├── parallel_runner/ # ParallelRunner
 │   └── reporter/        # ReportGenerator
@@ -244,6 +249,7 @@ All are maximized. Macro averaging weights every class equally, so a majority-cl
 
 ## Out of Scope
 
+- Clustering. It was a stretch goal and was ruled out at the week 7 scope checkpoint; see [`docs/decisiones/ADR-003-alcance-agrupamiento.md`](docs/decisiones/ADR-003-alcance-agrupamiento.md)
 - Text, time series, or graph data
 - Semantic segmentation and object detection
 - Training or architecture optimization of the user's base model

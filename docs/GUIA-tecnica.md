@@ -1,8 +1,9 @@
 # Guía técnica de AutoPipe
 
-- **Estado:** cubre el núcleo generalizado, las meta-características y la base de meta-conocimiento
+- **Estado:** cubre el núcleo generalizado, las meta-características, la base de
+  meta-conocimiento, el recomendador y el arranque en caliente
 - **Entregable:** RE7
-- **Actualizada:** 2026-08-26
+- **Actualizada:** 2026-09-03
 
 Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
 explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
@@ -10,7 +11,7 @@ extenderlo o para confiar en sus resultados.
 
 ## Qué cambió respecto de AutoPipeAD
 
-Quien conocía la librería base encontrará cinco diferencias:
+Quien conocía la librería base encontrará seis diferencias:
 
 1. **El framework ya no asume una tarea.** Un objeto `Task` agrupa las métricas, la
    dirección de optimización, la normalización de predicciones y la obtención de puntajes.
@@ -23,6 +24,9 @@ Quien conocía la librería base encontrará cinco diferencias:
    (imputación, escalado, codificación y selección de características).
 5. **El espacio de búsqueda tabular es único y versionado.** No se arma a mano: se pide con
    `build_tabular_search_space()`, y lleva un identificador de versión.
+6. **La búsqueda puede arrancar en caliente.** `OptunaSearchEngine` acepta
+   configuraciones inyectadas, que un recomendador por vecinos más cercanos obtiene de
+   la base de meta-conocimiento. Es la capa de meta-aprendizaje que da nombre al TFG.
 
 Nada de lo anterior cambió una interfaz pública: el flujo de imágenes de la librería base
 funciona sin modificar una línea, y sus 134 pruebas de regresión siguen en verde.
@@ -334,6 +338,109 @@ es lo que `optuna.enqueue_trial` consume, y como los parámetros legibles del
 pipeline. `OptunaSearchEngine` expone los índices en `best_configuration_` tras
 `run`.
 
+### El ganador guardado es el canónico del empate
+
+El óptimo casi nunca es único. Sobre un dataset numérico y sin faltantes la
+imputación y la codificación son la identidad, de modo que varias combinaciones de
+esos dos pasos son **el mismo pipeline** y empatan exactamente: la mediana medida
+sobre el corpus es de nueve configuraciones empatadas.
+
+Cuál de ellas guardaría una búsqueda sin más criterio es cuál visitó primero el
+muestreador, que es una propiedad de la corrida y no del dataset. Transferirla como
+arranque en caliente transferiría esa arbitrariedad, y no de forma inocua: un
+ganador que **omite la codificación** es inevaluable en un dataset receptor con
+columnas categóricas, y ese ensayo inyectado se gastaría sin producir métrica.
+
+```python
+from autopipe.search_space import canonical_configuration, omitted_steps
+
+canonical_configuration(motor.tied_configurations_)  # la que omite menos pasos
+```
+
+La regla es **la que omite menos pasos y, a igualdad, la de índices menores**. No
+elige por rendimiento —todas empatan— sino por transferibilidad. El motor expone el
+empate completo en `tied_configurations_`, y el arnés de construcción aplica la
+regla; la medición de su efecto está en `experimentos/DIVERSIDAD-ganadores.md`.
+
+## El recomendador de arranque en caliente
+
+`MetaRecommender` convierte la base en las configuraciones que se inyectan. Es
+**vecinos más cercanos, no un modelo entrenado**: el anteproyecto lo fija como la
+línea base del alcance mínimo.
+
+```python
+from autopipe.meta_recommender import MetaRecommender
+
+recomendador = MetaRecommender().fit(base.without("1590"))   # un pliegue del LODO
+configuraciones = recomendador.recommend(vector_del_excluido)
+recomendador.neighbours_       # de qué dataset salió cada una, con su distancia
+```
+
+**Todo lo que aprende sale de la base que recibe y de nada más.** En el
+*leave-one-dataset-out* hay que pasarle `base.without(d)`, nunca la base completa:
+ajustar la normalización sobre el corpus entero contaminaría cada pliegue e
+inflaría la ventaja del arranque en caliente de un modo difícil de detectar después.
+Es el análogo, en el nivel meta, de ajustar las transformaciones con estado usando
+solo el subconjunto de entrenamiento.
+
+Cuatro decisiones, todas fijadas **a priori** y no midiendo sobre el corpus, porque
+esos 25 datasets *son* los pliegues del experimento:
+
+| Decisión | Valor | Por qué |
+|---|---|---|
+| Distancia | L1 sobre características escaladas | Precedente publicado: auto-sklearn ordena por distancia L1 en el espacio de meta-características (Feurer et al., 2015, §3.1) |
+| Escalado | Mediana y rango intercuartílico | Decisión propia; ese artículo no describe ninguno. Con dos docenas de datasets, un solo valor extremo desplaza media y desviación |
+| Número de vecinos | No es un parámetro | Lo que se fija son las **cinco configuraciones distintas**; se camina hacia afuera saltando las repetidas |
+| Consulta fuera de rango | Se recorta al rango del pliegue | Sin recorte, en 2 de 25 pliegues una sola meta-característica aportaba más de la mitad de la distancia |
+
+**Por qué se saltan las repetidas.** Inyectar dos veces la misma configuración
+gasta dos de los treinta ensayos para devolver el mismo valor. La diversidad entre
+las cinco importa además por el modo de fallo del spike A: cinco recomendaciones
+parecidas entre sí y equivocadas resultaron peores que no recomendar nada.
+
+**Por qué se recorta la consulta.** El escalado robusto controla los valores
+extremos *dentro* del conjunto de ajuste, pero el dataset excluido puede caer muy
+fuera. El recorte no necesita ninguna constante arbitraria: el recomendador no puede
+medir *cuánto* fuera del corpus cae un dataset, solo que cae fuera. `clipped_features_`
+dice en qué columnas ocurrió.
+
+## Arranque en caliente en el motor
+
+```python
+motor = OptunaSearchEngine(
+    build_tabular_search_space(),
+    n_trials=30,
+    task="classification",
+    warm_start=configuraciones,      # lo que devolvió el recomendador
+)
+```
+
+El parámetro es **aditivo**: sin él, el motor se comporta exactamente como antes.
+
+**Los ensayos inyectados se consumen primero, en orden, y descuentan del
+presupuesto.** Con cinco configuraciones y `n_trials=30` la búsqueda ejecuta treinta
+ensayos, no treinta y cinco, de modo que quedan veinticinco de exploración propia.
+El pre-registro los cuenta dentro de «ensayos hasta el objetivo» por esa razón: no
+contarlos daría al arranque en caliente una ventaja puramente contable.
+
+**Las configuraciones se validan al construir el motor**, no al lanzar la búsqueda,
+y la validación no es defensiva sino imprescindible. Los dos modos de fallo de
+`enqueue_trial`, medidos en el spike A y vueltos a comprobar contra el código
+integrado, van en direcciones opuestas:
+
+| Configuración inyectada | Qué hace Optuna |
+|---|---|
+| Índice fuera de rango | `ValueError` que se propaga: **aborta el estudio completo** |
+| Clave desconocida | **Se acepta en silencio**: se ignora, se muestrea el resto y el ensayo termina sin aviso |
+
+Por eso las claves deben coincidir **exactamente** con las del espacio, ni sobrar ni
+faltar, y se rechazan los índices no enteros y los booleanos, porque `True` valdría 1
+sin que nada lo dijera.
+
+Una configuración inyectada que resulta **inevaluable** en el dataset receptor es
+otra cosa: es legítima, simplemente no corre sobre esos datos. Queda con métrica
+`NaN`, nunca gana, y la búsqueda continúa.
+
 ## Reproducibilidad
 
 - `random_state` gobierna la partición y el muestreador de Optuna. La misma semilla produce
@@ -362,6 +469,12 @@ pipeline. `OptunaSearchEngine` expone los índices en `best_configuration_` tras
 | «No se pudo puntuar la tabla con 'f_classif'» | Quedan valores faltantes; falta el paso de imputación |
 | «fraction debe estar en (0, 1]» | Se pasó un número absoluto de columnas en vez de una fracción |
 | «La configuración proviene del espacio de búsqueda X» | La configuración es de otra versión del espacio y no se puede reinterpretar |
+| «El recomendador no está ajustado» | Se llamó a `recommend()` sin haber llamado antes a `fit(base)` |
+| «Ninguna meta-característica varía entre los datasets» | El pliegue no tiene variación: todas las distancias serían cero |
+| «El vector consultado no comparte ninguna meta-característica finita» | La consulta no tiene ninguna columna finita en común con las del ajuste |
+| «no nombra los pasos del espacio de búsqueda: faltan … y sobran …» | La configuración inyectada no encaja en el espacio; Optuna ignoraría las claves desconocidas sin avisar |
+| «Inyectarlo abortaría el estudio completo» | Un índice del arranque en caliente está fuera del rango de su paso |
+| «no llegarían a ejecutarse» | Se pidieron más configuraciones inyectadas que ensayos de presupuesto |
 
 ## Dónde está cada decisión
 
@@ -369,11 +482,13 @@ pipeline. `OptunaSearchEngine` expone los índices en `best_configuration_` tras
 |---|---|
 | `decisiones/ADR-001-contrato-fit-transform.md` | Por qué el contrato se extendió y qué alternativas se rechazaron |
 | `decisiones/ADR-002-interfaz-de-tarea.md` | Diseño del registro de tareas |
+| `decisiones/ADR-003-alcance-agrupamiento.md` | Por qué el agrupamiento queda fuera del alcance, con las horas que lo respaldan |
 | `decisiones/AUDITORIA-acoplamiento.md` | Qué dependía de imágenes y anomalías, con los fallos silenciosos encontrados |
 | `experimentos/Preregistro.tex` | Protocolo experimental, fijado antes de ejecutar |
 | `experimentos/ESPACIO-tabular-v1.md` | Composición congelada del espacio, tabla de índices y fracción inevaluable |
 | `experimentos/CORPUS-seleccionado.md` | Los 25 datasets del corpus, con su IQR y el motivo de cada exclusión |
 | `experimentos/BASE-meta-conocimiento.md` | Resumen de la base: supervivientes, diversidad de ganadores y tiempos |
+| `experimentos/DIVERSIDAD-ganadores.md` | Análisis exploratorio: forma de la diversidad, anchura de la meseta y efecto piso |
 | `experimentos/CORPUS-criterios-inclusion.md` | Cómo se selecciona el corpus |
 | `experimentos/SPIKE-A-enqueue-trial.md` | Viabilidad del arranque en caliente |
 | `experimentos/SPIKE-B-pymfe.md` | Costo y robustez de la extracción de meta-características |
@@ -398,6 +513,6 @@ un sustituto sintético. Los datos reales van fuera del repositorio; véase
 
 ## Pendiente en esta guía
 
-Se amplía a medida que existan los módulos que faltan: el extractor de
-meta-características (semana 5), la base de meta-conocimiento (semana 6) y el recomendador
-con el arranque en caliente integrado en el motor de Optuna (semanas 7 y 8).
+Se amplía a medida que existan los módulos que faltan: las estrategias de
+recomendación y su evaluación sobre datasets retenidos (semana 8), y el arnés de
+validación *leave-one-dataset-out* con sus reportes comparativos (semanas 9 a 11).
