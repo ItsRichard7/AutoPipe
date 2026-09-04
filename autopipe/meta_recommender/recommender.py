@@ -1,0 +1,447 @@
+# autopipe/meta_recommender/recommender.py
+"""Recomendador de arranque en caliente por vecinos más cercanos.
+
+Dado el vector de meta-características de un dataset nuevo, busca en la base de
+meta-conocimiento los datasets más parecidos y devuelve sus configuraciones
+ganadoras, listas para inyectarse en el motor de búsqueda con
+``optuna.enqueue_trial``.
+
+**Es una línea base deliberada, no un modelo entrenado.** El anteproyecto fija los
+vecinos más cercanos como el recomendador del alcance mínimo y deja «un
+meta-modelo más sofisticado» como extensión deseable.
+
+Las tres decisiones de diseño, y por qué son las que son:
+
+* **La normalización se ajusta con la base recibida y nada más.** En el
+  *leave-one-dataset-out*, cada pliegue construye el recomendador con
+  ``base.without(d)``, de modo que ni la mediana, ni el rango intercuartílico, ni
+  el conjunto de meta-características supervivientes ven jamás el dataset
+  excluido. Ajustarlos sobre el corpus completo contaminaría cada pliegue e
+  inflaría la ventaja del arranque en caliente de un modo difícil de detectar a
+  posteriori. Es el análogo, en el nivel meta, de ajustar las transformaciones
+  con estado usando solo el subconjunto de entrenamiento.
+
+* **La distancia es L1 sobre características escaladas de forma robusta.** La L1
+  tiene precedente publicado para exactamente esta tarea: auto-sklearn ordena los
+  datasets por su distancia L1 en el espacio de meta-características y usa los
+  *k* más cercanos para arrancar en caliente su optimización bayesiana (Feurer
+  et al., 2015, sección 3.1). El escalado, en cambio, **no** proviene de ahí: ese
+  artículo no describe ninguno, y aquí hace falta porque el corpus mezcla
+  meta-características acotadas con otras que van de 500 a 45 000; sin escalar,
+  esas últimas dominarían la distancia por su magnitud. Se usan la mediana y el
+  rango intercuartílico, y no la media y la desviación, porque con dos docenas de
+  datasets un solo valor extremo desplaza ambos estadísticos.
+
+* **El vector consultado se recorta al rango observado en el pliegue.** El
+  escalado robusto controla los valores extremos *dentro* del conjunto de ajuste,
+  pero no los de la consulta, y en el *leave-one-dataset-out* el dataset excluido
+  puede caer muy fuera del corpus. Medido sobre el corpus real, sin recorte hay
+  dos pliegues en los que **una sola meta-característica aporta más de la mitad
+  de la distancia** —hasta el 71 %—, de modo que el vecino más parecido no lo
+  elige un espacio de 87 meta-características sino una estadística de
+  covarianza. El recorte acota lo que cualquier característica puede aportar sin
+  necesidad de una constante arbitraria, y descansa en un argumento sencillo: el
+  recomendador no puede medir *cuánto* fuera del corpus cae un dataset, solo que
+  cae fuera. Afecta únicamente a la consulta, nunca al ajuste, así que no abre
+  ninguna vía de fuga.
+
+* **El número de vecinos no es un parámetro libre.** Lo que el anteproyecto fija
+  son las **cinco configuraciones** que se inyectan, así que el recomendador
+  camina hacia afuera desde el vecino más cercano hasta reunir cinco
+  configuraciones **distintas**. Inyectar duplicados sería pérdida pura de
+  presupuesto: dos ensayos idénticos gastan dos de los treinta y devuelven el
+  mismo valor. La diversidad entre las cinco importa además por el modo de fallo
+  que midió el spike A, donde cinco recomendaciones parecidas entre sí y
+  equivocadas resultaron peores que no recomendar nada.
+"""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Mapping
+
+import numpy as np
+
+from autopipe.meta_knowledge import MetaKnowledgeBase
+from autopipe.pipeline.base import NotFittedError
+from autopipe.search_space import pipeline_from_configuration, validate_space_version
+
+logger = logging.getLogger(__name__)
+
+ESCALADOS = ("robust", "standard")
+"""Formas de escalar el espacio de meta-características.
+
+``robust`` (mediana y rango intercuartílico) es la primaria. ``standard`` (media
+y desviación típica) existe para el análisis de sensibilidad declarado de
+antemano, con el mismo patrón que ``n_startup_trials``: un valor primario y una
+alternativa anunciada antes de ver los resultados.
+"""
+
+METRICAS = ("manhattan", "euclidean")
+"""Distancias admitidas. ``manhattan`` (L1) es la primaria."""
+
+
+class MetaRecommender:
+    """Recomienda configuraciones iniciales por vecinos más cercanos.
+
+    Uso en un pliegue del *leave-one-dataset-out*::
+
+        recomendador = MetaRecommender().fit(base.without(dataset_excluido))
+        configuraciones = recomendador.recommend(vector_del_excluido)
+
+    Attributes:
+        n_configurations (int): Configuraciones distintas a devolver.
+        scaling (str): Forma de escalar, de :data:`ESCALADOS`.
+        metric (str): Distancia, de :data:`METRICAS`.
+        feature_names_ (list[str]): Meta-características con las que se ajustó,
+            disponibles tras :meth:`fit`. Son las supervivientes **de la base
+            recibida**, recalculadas por pliegue.
+        center_ (np.ndarray): Centro de cada característica.
+        scale_ (np.ndarray): Escala de cada característica.
+        lower_ (np.ndarray): Mínimo observado en el pliegue por característica.
+        upper_ (np.ndarray): Máximo observado en el pliegue por característica.
+        clipped_features_ (list[str]): Meta-características en las que la última
+            consulta cayó fuera del rango del pliegue y se recortó. Se expone
+            porque un recorte es información: dice en qué se sale del corpus el
+            dataset consultado.
+        neighbours_ (list[dict]): Vecinos que aportaron cada configuración
+            devuelta, disponibles tras :meth:`recommend`. Cada elemento lleva el
+            identificador y el nombre del dataset, su distancia y su
+            configuración. Existe para que una recomendación sea auditable: sin
+            esto, el experimento registraría qué se inyectó pero no de dónde
+            salió.
+        used_features_ (list[str]): Meta-características que intervinieron de
+            hecho en la última consulta.
+    """
+
+    def __init__(
+        self,
+        n_configurations: int = 5,
+        scaling: str = "robust",
+        metric: str = "manhattan",
+    ) -> None:
+        """Inicializa el recomendador.
+
+        Args:
+            n_configurations: Cuántas configuraciones distintas devolver. El
+                anteproyecto fija cinco en sus criterios de éxito.
+            scaling: Forma de escalar el espacio de meta-características.
+            metric: Distancia entre vectores escalados.
+
+        Raises:
+            ValueError: Si el número de configuraciones no es positivo, o si el
+                escalado o la distancia no están soportados.
+        """
+        if n_configurations < 1:
+            raise ValueError(
+                f"Hay que pedir al menos una configuración, no {n_configurations}."
+            )
+        if scaling not in ESCALADOS:
+            raise ValueError(f"Escalado {scaling!r} no soportado. Use uno de {ESCALADOS}.")
+        if metric not in METRICAS:
+            raise ValueError(f"Distancia {metric!r} no soportada. Use una de {METRICAS}.")
+        self.n_configurations = n_configurations
+        self.scaling = scaling
+        self.metric = metric
+        self.feature_names_: list[str] | None = None
+        self.center_: np.ndarray | None = None
+        self.scale_: np.ndarray | None = None
+        self.lower_: np.ndarray | None = None
+        self.upper_: np.ndarray | None = None
+        self.neighbours_: list[dict] | None = None
+        self.used_features_: list[str] | None = None
+        self.clipped_features_: list[str] | None = None
+        self._base: MetaKnowledgeBase | None = None
+
+    def fit(self, base: MetaKnowledgeBase) -> MetaRecommender:
+        """Ajusta el recomendador con los datasets de un pliegue.
+
+        Todo lo que aprende —qué meta-características sobreviven, y el centro y la
+        escala de cada una— sale **exclusivamente** de las entradas recibidas. En
+        el *leave-one-dataset-out* hay que pasarle ``base.without(d)``, nunca la
+        base completa.
+
+        Args:
+            base: Base de meta-conocimiento del pliegue. No se modifica.
+
+        Returns:
+            El propio recomendador, para encadenar.
+
+        Raises:
+            ValueError: Si la base está vacía, si no deja ninguna
+                meta-característica superviviente, o si sus entradas provienen de
+                una versión del espacio de búsqueda que no es la vigente.
+        """
+        if not len(base):
+            raise ValueError(
+                "No se puede ajustar el recomendador con una base vacía: no habría "
+                "vecinos entre los que buscar."
+            )
+        validate_space_version(base.entries[0].space_version)
+
+        nombres = base.surviving_features()
+        if not nombres:
+            raise ValueError(
+                "Ninguna meta-característica es finita en todas las entradas de la "
+                "base, así que no queda espacio en el que medir distancias."
+            )
+        matriz, nombres = base.feature_matrix(nombres)
+        centro, escala = self._centro_y_escala(matriz)
+
+        # Una característica cuya escala es cero no varía entre los datasets del
+        # pliegue: no aporta nada para ordenar vecinos, y dejarla sin escalar
+        # haría que su magnitud en bruto dominara la distancia. Se descarta, que
+        # es la misma operación conservadora que el pre-registro elige para las
+        # meta-características no finitas.
+        utiles = escala > 0
+        descartadas = [n for n, util in zip(nombres, utiles) if not util]
+        if descartadas:
+            logger.info(
+                "Se descartan %d meta-características sin variación en el pliegue: %s",
+                len(descartadas),
+                ", ".join(descartadas),
+            )
+        if not utiles.any():
+            raise ValueError(
+                "Ninguna meta-característica varía entre los datasets de la base: "
+                "todas las distancias serían cero y el orden de vecinos sería "
+                "arbitrario."
+            )
+
+        self.feature_names_ = [n for n, util in zip(nombres, utiles) if util]
+        self.center_ = centro[utiles]
+        self.scale_ = escala[utiles]
+        self.lower_ = matriz.min(axis=0)[utiles]
+        self.upper_ = matriz.max(axis=0)[utiles]
+        self._base = base
+        self.neighbours_ = None
+        self.used_features_ = None
+        self.clipped_features_ = None
+        return self
+
+    def recommend(self, meta_features: Mapping[str, float]) -> list[dict[str, int]]:
+        """Devuelve las configuraciones a inyectar como arranque en caliente.
+
+        Camina desde el vecino más cercano hacia afuera, quedándose con la
+        configuración ganadora de cada uno y **saltando las repetidas**, hasta
+        reunir :attr:`n_configurations` distintas. Si la base no contiene tantas
+        configuraciones distintas, devuelve las que haya y lo registra.
+
+        Cada configuración devuelta se resuelve contra el espacio vigente antes de
+        salir. No es una formalidad: el spike A midió que un índice fuera de rango
+        pasado a ``enqueue_trial`` **aborta el estudio completo**, y que una clave
+        desconocida se ignora en silencio.
+
+        Args:
+            meta_features: Vector del dataset consultado. Puede traer valores no
+                finitos y meta-características que la base no tenga: se usa la
+                intersección con las del ajuste.
+
+        Returns:
+            Lista de configuraciones, de más a menos parecida, sin repetidas.
+
+        Raises:
+            NotFittedError: Si no se llamó antes a :meth:`fit`.
+            ValueError: Si el vector consultado no comparte ninguna
+                meta-característica finita con las del ajuste.
+        """
+        base, ajuste = self._ajustado()
+
+        columnas, indices = self._columnas_comunes(ajuste["names"], meta_features)
+        matriz, _ = base.feature_matrix(columnas)
+        centro = ajuste["center"][indices]
+        escala = ajuste["scale"][indices]
+
+        bruto = np.array([meta_features[n] for n in columnas], float)
+        recortado = np.clip(bruto, ajuste["lower"][indices], ajuste["upper"][indices])
+        consulta = (recortado - centro) / escala
+        vecinos = (matriz - centro) / escala
+        distancias = self._distancias(vecinos, consulta)
+
+        self.used_features_ = columnas
+        self.clipped_features_ = [
+            nombre
+            for nombre, antes, despues in zip(columnas, bruto, recortado)
+            if antes != despues
+        ]
+        if self.clipped_features_:
+            logger.info(
+                "El dataset consultado cae fuera del rango del pliegue en %d de %d "
+                "meta-características; se recortan al rango observado.",
+                len(self.clipped_features_),
+                len(columnas),
+            )
+        return self._caminar(base, distancias)
+
+    # ------------------------------------------------------------------ #
+    # Interno
+    # ------------------------------------------------------------------ #
+    def _ajustado(self) -> tuple[MetaKnowledgeBase, dict]:
+        """Devuelve el estado del ajuste, o falla si no lo hay.
+
+        Returns:
+            Tupla ``(base, ajuste)``, donde el ajuste lleva los nombres, el
+            centro, la escala y el rango observado de cada característica.
+
+        Raises:
+            NotFittedError: Si no se llamó antes a :meth:`fit`.
+        """
+        if (
+            self._base is None
+            or self.feature_names_ is None
+            or self.center_ is None
+            or self.scale_ is None
+            or self.lower_ is None
+            or self.upper_ is None
+        ):
+            raise NotFittedError(
+                "El recomendador no está ajustado. Llame a fit(base) con los "
+                "datasets del pliegue antes de pedir recomendaciones."
+            )
+        return self._base, {
+            "names": self.feature_names_,
+            "center": self.center_,
+            "scale": self.scale_,
+            "lower": self.lower_,
+            "upper": self.upper_,
+        }
+
+    def _centro_y_escala(self, matriz: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Calcula el centro y la escala de cada meta-característica.
+
+        Args:
+            matriz: Una fila por dataset del pliegue.
+
+        Returns:
+            Tupla ``(centro, escala)``, una entrada por columna.
+        """
+        if self.scaling == "robust":
+            centro = np.median(matriz, axis=0)
+            cuartiles = np.percentile(matriz, [25, 75], axis=0)
+            return centro, cuartiles[1] - cuartiles[0]
+        return matriz.mean(axis=0), matriz.std(axis=0)
+
+    @staticmethod
+    def _columnas_comunes(
+        nombres: list[str], meta_features: Mapping[str, float]
+    ) -> tuple[list[str], np.ndarray]:
+        """Meta-características del ajuste que la consulta trae y son finitas.
+
+        La regla del pre-registro descarta las no finitas en lugar de imputarlas,
+        y la intersección la extiende a la consulta: una columna que el pliegue
+        conserva puede no ser finita en el dataset excluido, y meterla en la
+        distancia propagaría un ``NaN`` a todos los vecinos por igual.
+
+        Args:
+            nombres: Meta-características con las que se ajustó el recomendador.
+            meta_features: Vector consultado.
+
+        Returns:
+            Tupla ``(nombres, posiciones)`` con las columnas utilizables y su
+            posición dentro de :attr:`feature_names_`.
+
+        Raises:
+            ValueError: Si no queda ninguna columna utilizable.
+        """
+        pares = [
+            (posicion, nombre)
+            for posicion, nombre in enumerate(nombres)
+            if nombre in meta_features and np.isfinite(meta_features[nombre])
+        ]
+        if not pares:
+            raise ValueError(
+                "El vector consultado no comparte ninguna meta-característica finita "
+                "con las del ajuste, así que no hay espacio en el que medir su "
+                "distancia a los vecinos."
+            )
+        if len(pares) < len(nombres):
+            logger.info(
+                "La consulta aporta %d de las %d meta-características del ajuste; "
+                "el resto no es finito o no viene en el vector.",
+                len(pares),
+                len(nombres),
+            )
+        return [nombre for _, nombre in pares], np.array([p for p, _ in pares])
+
+    def _distancias(self, vecinos: np.ndarray, consulta: np.ndarray) -> np.ndarray:
+        """Distancia de la consulta a cada vecino.
+
+        Args:
+            vecinos: Matriz escalada, una fila por dataset.
+            consulta: Vector escalado del dataset consultado.
+
+        Returns:
+            Una distancia por vecino.
+        """
+        diferencias = vecinos - consulta
+        if self.metric == "manhattan":
+            return np.abs(diferencias).sum(axis=1)
+        return np.sqrt((diferencias**2).sum(axis=1))
+
+    def _caminar(
+        self, base: MetaKnowledgeBase, distancias: np.ndarray
+    ) -> list[dict[str, int]]:
+        """Recorre los vecinos por cercanía reuniendo configuraciones distintas.
+
+        El desempate entre vecinos a la misma distancia se resuelve por su
+        posición en la base, que es fija: sin un criterio determinista, dos
+        ejecuciones con la misma semilla podrían inyectar configuraciones
+        distintas y se rompería el criterio de reproducibilidad.
+
+        Args:
+            base: Base del pliegue, en su orden de inserción.
+            distancias: Distancia de la consulta a cada entrada de la base.
+
+        Returns:
+            Las configuraciones reunidas, de más a menos cercana.
+        """
+        orden = sorted(range(len(base)), key=lambda i: (float(distancias[i]), i))
+
+        configuraciones: list[dict[str, int]] = []
+        vecinos: list[dict] = []
+        for posicion in orden:
+            entrada = base.entries[posicion]
+            if entrada.configuration in configuraciones:
+                continue
+            self._validar(entrada.configuration, entrada.dataset_name)
+            configuraciones.append(entrada.configuration)
+            vecinos.append(
+                {
+                    "dataset_id": entrada.dataset_id,
+                    "dataset_name": entrada.dataset_name,
+                    "distance": float(distancias[posicion]),
+                    "configuration": entrada.configuration,
+                }
+            )
+            if len(configuraciones) == self.n_configurations:
+                break
+
+        if len(configuraciones) < self.n_configurations:
+            logger.warning(
+                "Se pidieron %d configuraciones distintas y la base solo contiene "
+                "%d: se devuelven las que hay.",
+                self.n_configurations,
+                len(configuraciones),
+            )
+        self.neighbours_ = vecinos
+        return configuraciones
+
+    @staticmethod
+    def _validar(configuracion: dict[str, int], dataset_name: str) -> None:
+        """Comprueba que una configuración se resuelva contra el espacio vigente.
+
+        Args:
+            configuracion: Índice elegido por cada paso.
+            dataset_name: Dataset del que proviene, para el mensaje de error.
+
+        Raises:
+            ValueError: Si la configuración no pertenece al espacio vigente.
+        """
+        try:
+            pipeline_from_configuration(configuracion)
+        except ValueError as exc:
+            raise ValueError(
+                f"La configuración ganadora de {dataset_name!r} no se puede resolver "
+                f"contra el espacio de búsqueda vigente, así que no se inyecta: "
+                f"pasársela a enqueue_trial abortaría la búsqueda entera. {exc}"
+            ) from exc
