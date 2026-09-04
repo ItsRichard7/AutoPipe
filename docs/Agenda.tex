@@ -941,6 +941,44 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  125 recomendaciones posibles resultan inevaluables por omisión. Las cuatro decisiones del
  recomendador se registran en el pre-registro v1.0.}
 
+\entrada{2026-09-02}{6}
+{Integré el arranque en caliente en el motor de Optuna, que es la costura entre el
+ recomendador y la búsqueda. El motor acepta ahora un parámetro \texttt{warm\_start} con las
+ configuraciones a inyectar, las valida al construirse —y no al lanzar la búsqueda, para que
+ una configuración imposible falle antes de gastar cómputo— y las encola antes de que el
+ muestreador proponga nada. Veinte pruebas nuevas en \texttt{tests/test\_warm\_start.py};
+ suite en 540, el módulo al 100\% de cobertura, con \texttt{ruff} y \texttt{mypy} limpios.}
+{El cambio es \textbf{aditivo}: un parámetro opcional del constructor con valor por defecto
+ \texttt{None}. No toqué la firma de \texttt{run(...)}, que la guía del proyecto señala como
+ interfaz que no se cambia sin confirmación, ni la forma de la tabla de resultados. Verifiqué
+ que el generador de reportes solo lee claves concretas, de modo que añadir una a esa tabla
+ habría sido seguro, pero preferí no hacerlo: la propiedad que el experimento necesita queda
+ fijada por una prueba en lugar de por una clave nueva. Antes de escribir la validación
+ reproduje los dos modos de fallo de \texttt{enqueue\_trial} contra el código ya integrado y
+ la versión actual de Optuna, en vez de fiarme del spike A de julio: siguen vivos y siguen
+ yendo en direcciones opuestas —un índice fuera de rango lanza \texttt{ValueError} y
+ \textbf{aborta el estudio completo}, y una clave desconocida se acepta \textbf{en silencio},
+ ejecutando los cinco ensayos sin avisar de que aplicó una recomendación parcial—. Por eso la
+ validación exige que las claves coincidan \emph{exactamente} con las del espacio, ni sobrar
+ ni faltar, y rechaza además los índices no enteros y los booleanos, porque \texttt{True}
+ valdría 1 sin que nada lo dijera. Rechaza también que se pidan más configuraciones que
+ ensayos de presupuesto, porque las sobrantes no llegarían a ejecutarse y descartarlas
+ calladamente sería el mismo tipo de fallo mudo. Las tres propiedades de las que va a depender
+ el arnés del experimento quedan ahora sostenidas por pruebas y no por suposición: los ensayos
+ inyectados se consumen \textbf{primero y en el orden de inyección}; \textbf{descuentan del
+ presupuesto}, de modo que tres inyectadas con ocho ensayos ejecutan ocho y no once, que es lo
+ que sostiene la regla del pre-registro de contarlas dentro de «ensayos hasta el objetivo»; y
+ una configuración inyectada que resulta \textbf{inevaluable} en el dataset receptor queda en
+ \texttt{NaN} sin abortar la búsqueda, caso que no es hipotético porque el recomendador
+ transfiere precisamente configuraciones halladas en otros datasets. Una prueba más lleva la
+ salida del recomendador al motor sobre el espacio canónico tabular sin adaptarla, que es la
+ costura completa: si cualquiera de las dos piezas cambiara de formato, caería. Decidí
+ explícitamente \textbf{no} correr un pliegue real de frío contra caliente como comprobación
+ de extremo a extremo, aunque el código ya lo permite y la tentación era grande: eso
+ \emph{es} el experimento, produciría antes de tiempo el número que mide la hipótesis y
+ contaminaría todo lo que viene, porque la v1.0 del pre-registro todavía no está cerrada. La
+ costura queda verificada con datos sintéticos, que es lo que corresponde a esta semana.}
+
 \newpage
 \section*{Resumen de horas}
 

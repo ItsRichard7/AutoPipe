@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 import numpy as np
 import optuna
@@ -23,6 +23,89 @@ from autopipe.search_engine.grid_search import (
 from autopipe.tasks import DEFAULT_TASK, Task, get_task
 
 logger = logging.getLogger(__name__)
+
+
+def validate_warm_start(
+    warm_start: Sequence[Mapping[str, int]],
+    search_space: dict[str, Sequence[BaseTransform]],
+    n_trials: int,
+) -> list[dict[str, int]]:
+    """Comprueba que unas configuraciones se puedan inyectar sin romper nada.
+
+    Validar antes de inyectar **no es opcional**, y las razones están medidas en
+    el spike A (``docs/experimentos/SPIKE-A-enqueue-trial.md``), donde los dos
+    modos de fallo de ``enqueue_trial`` resultaron peligrosos en direcciones
+    opuestas:
+
+    * un **índice fuera de rango** hace fallar el ensayo y la excepción se
+      propaga, de modo que **aborta el estudio completo**;
+    * una **clave desconocida se acepta en silencio**: Optuna la ignora, muestrea
+      normalmente los parámetros que faltan y el ensayo termina sin aviso, con lo
+      que se aplica una recomendación parcial que nadie pidió.
+
+    Por eso las claves tienen que coincidir **exactamente** con las del espacio:
+    ni sobrar ni faltar.
+
+    Args:
+        warm_start: Configuraciones a inyectar, una por ensayo inicial.
+        search_space: Espacio sobre el que se interpretan los índices.
+        n_trials: Presupuesto de la búsqueda.
+
+    Returns:
+        Las configuraciones normalizadas a enteros de Python.
+
+    Raises:
+        ValueError: Si hay más configuraciones que ensayos, si alguna no nombra
+            exactamente los pasos del espacio, o si algún índice no es un entero
+            dentro del rango del paso.
+    """
+    if len(warm_start) > n_trials:
+        raise ValueError(
+            f"Se pidió inyectar {len(warm_start)} configuraciones con un presupuesto "
+            f"de {n_trials} ensayos. Las que sobran no llegarían a ejecutarse, así "
+            f"que se rechaza en lugar de descartarlas en silencio."
+        )
+
+    esperadas = set(search_space)
+    validadas: list[dict[str, int]] = []
+    for posicion, configuracion in enumerate(warm_start):
+        recibidas = set(configuracion)
+        if recibidas != esperadas:
+            faltan = sorted(esperadas - recibidas)
+            sobran = sorted(recibidas - esperadas)
+            raise ValueError(
+                f"La configuración {posicion} no nombra los pasos del espacio de "
+                f"búsqueda: faltan {faltan} y sobran {sobran}. Optuna ignoraría las "
+                f"claves desconocidas sin avisar y muestrearía por su cuenta los "
+                f"pasos que faltan, de modo que se ejecutaría una recomendación "
+                f"parcial que nadie pidió."
+            )
+        limpia: dict[str, int] = {}
+        for paso, indice in configuracion.items():
+            if isinstance(indice, bool) or not isinstance(indice, (int, np.integer)):
+                raise ValueError(
+                    f"El índice del paso {paso!r} en la configuración {posicion} es "
+                    f"{indice!r}, que no es un entero. Los parámetros que el "
+                    f"muestreador registra por ensayo son índices sobre las listas "
+                    f"de opciones."
+                )
+            opciones = search_space[paso]
+            if not 0 <= int(indice) <= len(opciones):
+                raise ValueError(
+                    f"El índice {int(indice)} del paso {paso!r} en la configuración "
+                    f"{posicion} está fuera de rango: el paso admite de 0 a "
+                    f"{len(opciones)}, donde {len(opciones)} significa omitirlo. "
+                    f"Inyectarlo abortaría el estudio completo."
+                )
+            limpia[paso] = int(indice)
+        if limpia in validadas:
+            logger.warning(
+                "La configuración %d repite una ya inyectada: gastará un ensayo del "
+                "presupuesto para devolver el mismo valor.",
+                posicion,
+            )
+        validadas.append(limpia)
+    return validadas
 
 
 class OptunaSearchEngine:
@@ -57,6 +140,9 @@ class OptunaSearchEngine:
             **transferir** la configuración a otro dataset debe desempatar con un
             criterio explícito en lugar de heredar el orden de visita (véase
             :func:`~autopipe.search_space.canonical_configuration`).
+        warm_start (list[dict]): Configuraciones inyectadas al principio de la
+            búsqueda, ya validadas. Vacía si no se pidió arranque en caliente,
+            en cuyo caso el motor se comporta exactamente como antes.
     """
 
     def __init__(
@@ -68,6 +154,7 @@ class OptunaSearchEngine:
         threshold: float = 0.5,
         task: str | Task = DEFAULT_TASK,
         n_startup_trials: int = 10,
+        warm_start: Sequence[Mapping[str, int]] | None = None,
     ) -> None:
         """Inicializa el motor de búsqueda con Optuna.
 
@@ -86,10 +173,31 @@ class OptunaSearchEngine:
                 experimentos dejarían de ser reproducibles en silencio. El spike A
                 midió además que interactúa con el arranque en caliente (véase
                 ``docs/experimentos/SPIKE-A-enqueue-trial.md``).
+            warm_start: Configuraciones a evaluar antes de que el muestreador
+                empiece a proponer las suyas, una por ensayo inicial: es el
+                **arranque en caliente**. Cada una es un índice por paso, en el
+                mismo formato que :attr:`best_configuration_` y que la base de
+                meta-conocimiento. Se validan aquí, al construir el motor, y no
+                al lanzar la búsqueda, para que una configuración imposible falle
+                antes de gastar cómputo.
+
+                Los ensayos inyectados **consumen presupuesto**: con cinco
+                configuraciones y ``n_trials=30``, la búsqueda ejecuta treinta
+                ensayos en total y no treinta y cinco, de modo que quedan
+                veinticinco de exploración propia. El spike A lo verificó
+                empíricamente y el pre-registro lo recoge al contar los ensayos
+                inyectados dentro de «ensayos hasta el objetivo».
+
+        Raises:
+            ValueError: Si alguna configuración del arranque en caliente no
+                encaja en el espacio de búsqueda. Véase :func:`validate_warm_start`.
         """
         self.search_space = search_space
         self.n_trials = n_trials
         self.n_startup_trials = n_startup_trials
+        self.warm_start = (
+            [] if warm_start is None else validate_warm_start(warm_start, search_space, n_trials)
+        )
         self.seed = random_state
         self.task = get_task(task)
         self.splitter = DataSplitter(val_size=val_size, random_state=random_state)
@@ -164,6 +272,16 @@ class OptunaSearchEngine:
             sampler=TPESampler(seed=self.seed, n_startup_trials=self.n_startup_trials),
             pruner=MedianPruner(),
         )
+        # Las inyectadas se consumen antes que ninguna propuesta del muestreador,
+        # en el orden de inyección, y descuentan del presupuesto.
+        for configuracion in self.warm_start:
+            study.enqueue_trial(dict(configuracion))
+        if self.warm_start:
+            logger.info(
+                "Arranque en caliente: %d configuraciones inyectadas de %d ensayos.",
+                len(self.warm_start),
+                self.n_trials,
+            )
         study.optimize(objective, n_trials=self.n_trials)
 
         best_steps = []
