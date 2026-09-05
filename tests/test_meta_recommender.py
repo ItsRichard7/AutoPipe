@@ -19,7 +19,7 @@ import numpy as np
 import pytest
 
 from autopipe.meta_knowledge import MetaKnowledgeBase, MetaKnowledgeEntry
-from autopipe.meta_recommender import MetaRecommender
+from autopipe.meta_recommender import ESTRATEGIAS, MetaRecommender
 from autopipe.pipeline.base import NotFittedError
 from autopipe.search_space import TABULAR_SPACE_VERSION
 
@@ -591,3 +591,217 @@ def test_the_two_metrics_can_disagree() -> None:
 
     assert manhattan.fit(base).recommend(consulta) == [CONFIG_B]
     assert euclidean.fit(base).recommend(consulta) == [CONFIG_A]
+
+
+# --------------------------------------------------------------------------- #
+# Estrategias de recomendación
+#
+# Las cuatro devuelven ganadoras de datasets reales de la base y saltan las
+# repetidas, de modo que lo único que las distingue es de qué datasets toman las
+# configuraciones. Es lo que permite compararlas sin que la comparación se
+# contamine con la calidad intrínseca de lo inyectado.
+# --------------------------------------------------------------------------- #
+def test_an_unsupported_strategy_is_rejected() -> None:
+    with pytest.raises(ValueError, match="no soportada"):
+        MetaRecommender(strategy="oracle")
+
+
+def test_the_default_strategy_is_the_primary_one() -> None:
+    assert MetaRecommender().strategy == "nearest"
+
+
+@pytest.fixture
+def base_con_frecuencias() -> MetaKnowledgeBase:
+    """Base donde CONFIG_A gana tres veces, CONFIG_B dos y CONFIG_C una.
+
+    El orden por cercanía al origen es el inverso al orden por frecuencia, de
+    modo que las dos estrategias no pueden coincidir por casualidad.
+    """
+    filas = [
+        ("0", 0.0, CONFIG_C),
+        ("1", 1.0, CONFIG_B),
+        ("2", 2.0, CONFIG_B),
+        ("3", 3.0, CONFIG_A),
+        ("4", 4.0, CONFIG_A),
+        ("5", 5.0, CONFIG_A),
+    ]
+    return MetaKnowledgeBase([entrada(i, {"a": v, "b": v * 2}, c) for i, v, c in filas])
+
+
+def test_every_strategy_returns_winners_from_the_base(base_con_frecuencias) -> None:
+    """Ninguna inventa configuraciones: todas salen de un dataset real."""
+    ganadoras = [e.configuration for e in base_con_frecuencias]
+    for estrategia in ESTRATEGIAS:
+        recomendador = MetaRecommender(
+            n_configurations=2, strategy=estrategia, random_state=7
+        ).fit(base_con_frecuencias)
+
+        for configuracion in recomendador.recommend({"a": 0.0, "b": 0.0}):
+            assert configuracion in ganadoras
+
+
+def test_every_strategy_returns_distinct_configurations(base_con_frecuencias) -> None:
+    """Inyectar repetidas gastaría presupuesto para obtener el mismo valor."""
+    for estrategia in ESTRATEGIAS:
+        recomendador = MetaRecommender(
+            n_configurations=3, strategy=estrategia, random_state=7
+        ).fit(base_con_frecuencias)
+
+        configuraciones = recomendador.recommend({"a": 0.0, "b": 0.0})
+
+        assert len(configuraciones) == 3
+        for posicion, una in enumerate(configuraciones):
+            assert una not in configuraciones[:posicion]
+
+
+def test_the_frequent_strategy_ignores_the_meta_features(base_con_frecuencias) -> None:
+    """Devuelve las que más ganan, esté donde esté el dataset consultado.
+
+    Es el control que aísla la contribución del meta-aprendizaje: si la
+    estrategia primaria no le gana a esto, las meta-características no aportan
+    nada y bastaría recomendar siempre lo mismo.
+    """
+    recomendador = MetaRecommender(n_configurations=2, strategy="frequent")
+    recomendador.fit(base_con_frecuencias)
+
+    cerca = recomendador.recommend({"a": 0.0, "b": 0.0})
+    lejos = recomendador.recommend({"a": 99.0, "b": 99.0})
+
+    assert cerca == [CONFIG_A, CONFIG_B]
+    assert cerca == lejos
+
+
+def test_the_nearest_strategy_does_depend_on_the_meta_features(
+    base_con_frecuencias,
+) -> None:
+    """La primaria sí cambia con la consulta: es lo que la frecuente no hace."""
+    recomendador = MetaRecommender(n_configurations=1, strategy="nearest")
+    recomendador.fit(base_con_frecuencias)
+
+    assert recomendador.recommend({"a": 0.0, "b": 0.0}) == [CONFIG_C]
+    assert recomendador.recommend({"a": 5.0, "b": 10.0}) == [CONFIG_A]
+
+
+def test_the_random_strategy_is_reproducible(base_con_frecuencias) -> None:
+    """Criterio de reproducibilidad del anteproyecto, Sección 4.3.5."""
+    consulta = {"a": 0.0, "b": 0.0}
+    primero = MetaRecommender(n_configurations=2, strategy="random", random_state=3)
+    segundo = MetaRecommender(n_configurations=2, strategy="random", random_state=3)
+
+    esperado = primero.fit(base_con_frecuencias).recommend(consulta)
+    assert segundo.fit(base_con_frecuencias).recommend(consulta) == esperado
+
+
+def test_the_random_strategy_ignores_distance(base_con_frecuencias) -> None:
+    """Con distintas semillas no siempre elige al más cercano.
+
+    Es toda su razón de ser como ablación: si acabara eligiendo siempre a los
+    vecinos, no aislaría la contribución de la similitud.
+    """
+    consulta = {"a": 0.0, "b": 0.0}
+    elegidos = {
+        tuple(
+            sorted(
+                MetaRecommender(
+                    n_configurations=1, strategy="random", random_state=semilla
+                )
+                .fit(base_con_frecuencias)
+                .recommend(consulta)[0]
+                .items()
+            )
+        )
+        for semilla in range(12)
+    }
+
+    assert len(elegidos) > 1
+
+
+def test_the_diverse_strategy_spreads_the_recommendations() -> None:
+    """Prefiere separarse aunque haya candidatas más cercanas y parecidas.
+
+    Ataca el modo de fallo del spike A: cinco recomendaciones parecidas entre sí
+    y equivocadas forman una región que el muestreador lee como buena y deja de
+    explorar. Se construyen dos vecinos próximos con configuraciones casi
+    idénticas y uno más lejano que difiere en todo; la primaria toma los dos más
+    cercanos y la diversa cambia el segundo por el lejano.
+    """
+    casi_igual = {**CONFIG_A, "selection": 1}
+    filas = [("cerca", 0.0, CONFIG_A), ("casi", 1.0, casi_igual), ("lejos", 4.0, CONFIG_B)]
+    base = MetaKnowledgeBase([entrada(i, {"a": v, "b": v}, c) for i, v, c in filas])
+    consulta = {"a": 0.0, "b": 0.0}
+
+    primaria = MetaRecommender(n_configurations=2, strategy="nearest").fit(base)
+    diversa = MetaRecommender(n_configurations=2, strategy="diverse").fit(base)
+
+    assert primaria.recommend(consulta) == [CONFIG_A, casi_igual]
+    assert diversa.recommend(consulta) == [CONFIG_A, CONFIG_B]
+
+
+def test_the_diverse_strategy_still_starts_from_the_closest() -> None:
+    """La primera inyectada sigue siendo la del vecino más cercano."""
+    filas = [("cerca", 0.0, CONFIG_A), ("media", 2.0, CONFIG_B), ("lejos", 9.0, CONFIG_C)]
+    base = MetaKnowledgeBase([entrada(i, {"a": v, "b": v}, c) for i, v, c in filas])
+
+    diversa = MetaRecommender(n_configurations=2, strategy="diverse").fit(base)
+
+    assert diversa.recommend({"a": 0.0, "b": 0.0})[0] == CONFIG_A
+    assert diversa.neighbours_[0]["dataset_name"] == "dcerca"
+
+
+def test_the_diverse_strategy_limits_how_far_it_looks() -> None:
+    """Solo considera el doble de candidatas de las que va a elegir.
+
+    Sin ese tope, la diversidad se compraría yendo a buscar datasets
+    arbitrariamente lejanos, que es justo lo que un recomendador por similitud no
+    debe hacer.
+    """
+    lejanisimo = {"imputation": 2, "scaling": 3, "encoding": 2, "selection": 3}
+    filas = [
+        ("c0", 0.0, CONFIG_A),
+        ("c1", 1.0, {**CONFIG_A, "selection": 1}),
+        ("c2", 2.0, {**CONFIG_A, "selection": 2}),
+        ("c3", 3.0, {**CONFIG_A, "scaling": 1}),
+        ("c4", 50.0, lejanisimo),
+    ]
+    base = MetaKnowledgeBase([entrada(i, {"a": v, "b": v}, c) for i, v, c in filas])
+
+    diversa = MetaRecommender(n_configurations=2, strategy="diverse").fit(base)
+    configuraciones = diversa.recommend({"a": 0.0, "b": 0.0})
+
+    # Con n_configurations=2 la reserva son las cuatro candidatas más cercanas, de
+    # modo que la quinta queda fuera pese a ser, con diferencia, la más distinta
+    # de todas. Sin el tope la diversidad la habría elegido.
+    assert len(configuraciones) == 2
+    assert configuraciones[0] == CONFIG_A
+    assert lejanisimo not in configuraciones
+
+
+def test_every_strategy_validates_before_returning() -> None:
+    """Ninguna deja pasar una configuración que abortaría el estudio."""
+    rota = {"imputation": 99, "scaling": 0, "encoding": 0, "selection": 0}
+    base = MetaKnowledgeBase(
+        [entrada(str(i), {"a": float(i), "b": float(i)}, rota) for i in range(3)]
+    )
+
+    for estrategia in ESTRATEGIAS:
+        recomendador = MetaRecommender(
+            n_configurations=1, strategy=estrategia, random_state=1
+        ).fit(base)
+
+        with pytest.raises(ValueError, match="abortaría la búsqueda entera"):
+            recomendador.recommend({"a": 0.0, "b": 0.0})
+
+
+def test_every_strategy_records_its_neighbours(base_con_frecuencias) -> None:
+    """La recomendación es auditable venga de donde venga."""
+    for estrategia in ESTRATEGIAS:
+        recomendador = MetaRecommender(
+            n_configurations=2, strategy=estrategia, random_state=5
+        ).fit(base_con_frecuencias)
+
+        configuraciones = recomendador.recommend({"a": 0.0, "b": 0.0})
+
+        assert len(recomendador.neighbours_) == len(configuraciones)
+        for vecino, configuracion in zip(recomendador.neighbours_, configuraciones):
+            assert vecino["configuration"] == configuracion
+            assert vecino["dataset_id"] in base_con_frecuencias.dataset_ids
