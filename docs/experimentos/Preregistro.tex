@@ -89,19 +89,21 @@ reglas de extracción de meta-características y el tratamiento de los pipelines
 inevaluables en el cribado. Se cierra \textbf{antes} de ejecutar el cribado de
 sensibilidad. Pendiente de la v1.0: el número de semillas y la ejecución del
 \textit{leave-one-dataset-out}. \\
-Etiqueta de git & \texttt{\preregtag}, etiqueta anotada creada al cerrar esta
-versión. Su fecha de creación, registrada por git, es el fechado verificable de
-este documento. \\
+Etiqueta de git & \texttt{\preregtag}, etiqueta anotada que apunta al
+\emph{commit} que cierra esta versión. El fechado verificable es la fecha de
+\textbf{ese commit}, no la de creación de la etiqueta, y se obtiene con
+\texttt{git log -1 \preregtag}. Véase la fe de erratas de la
+Sección~\ref{sec:erratas}. \\
 Forma de cita en el informe & «Pre-registro \preregversion, etiqueta
 \texttt{\preregtag}, \preregfecha» \\
 \bottomrule
 \end{tabularx}
 
 \vspace{6pt}
-{\small\color{gris} El documento se identifica por su etiqueta y no por el hash del
-commit que lo congela: ese hash se calcula sobre el contenido del documento, de modo
-que escribirlo dentro de él lo alteraría. El hash correspondiente se obtiene con
-\texttt{git rev-parse \preregtag}.\par}
+{\small\color{gris} El documento no lleva escrito dentro el hash del commit que lo
+congela: ese hash se calcula sobre el contenido del documento, de modo que
+escribirlo dentro de él lo alteraría. Por la misma razón tampoco lleva la fecha de
+ese commit. Ambos se obtienen desde fuera, con \texttt{git log -1 \preregtag}.\par}
 \end{center}
 
 \vspace{10pt}
@@ -182,9 +184,14 @@ Lateralidad de la prueba y análisis secundarios, que no sustituyen al primario
 El modelo base es \texttt{KNeighborsClassifier} de scikit-learn, con esta
 configuración literal, idéntica en todas las condiciones, datasets y semillas:
 
+% \shorthandoff{"} es imprescindible aquí: con babel en español, la comilla es un
+% carácter activo y la secuencia "u compone «ü», de modo que weights="uniform" se
+% imprimía como weights=üniform". Afecta justo al literal que hay que copiar.
 \begin{center}
+\shorthandoff{"}%
 \texttt{KNeighborsClassifier(n\_neighbors=5, weights="uniform",\\
-metric="minkowski", p=2, algorithm="brute")}
+metric="minkowski", p=2, algorithm="brute")}%
+\shorthandon{"}
 \end{center}
 
 \textbf{Justificación de la elección.} La Sección~4.3.3 del anteproyecto autoriza
@@ -739,7 +746,8 @@ el remuestreo de los pipelines inevaluables en el cribado; y precisa dónde qued
 registrado el corpus resultante. Se cierra \textbf{antes} de ejecutar el cribado
 de sensibilidad. Corrige además dos anuncios de la v0.1 que eran irrealizables:
 el costo de cómputo y la identidad del corpus no pueden registrarse en esta
-versión (véase la Sección~\ref{sec:fuera}). \\
+versión (véase la Sección~\ref{sec:fuera}). Lleva una errata sobre su fechado,
+registrada en la Sección~\ref{sec:erratas}. \\
 \midrule
 v1.0 & Semana 9 &
 Pendiente. Versión congelada previa a la ejecución del
@@ -750,5 +758,87 @@ experimental. \\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+% =========== 9. FE DE ERRATAS ===============================
+\section{Fe de erratas}
+\label{sec:erratas}
+
+Las correcciones posteriores al cierre de una versión se registran aquí, en lugar
+de aplicarse en silencio sobre el texto congelado. \textbf{Ninguna de ellas puede
+modificar una regla del protocolo}: si una regla tuviera que cambiar, eso exige una
+versión nueva y no una errata.
+
+El estado exacto de cada versión en el momento de cerrarse queda preservado por su
+etiqueta y se recupera con \texttt{git show \preregtag}, de modo que cualquier
+diferencia entre este documento y el texto etiquetado es auditable.
+
+\subsection*{2026-09-04 --- Fechado de la versión v0.2}
+
+\textbf{Qué decía.} La portada afirmaba que la etiqueta \texttt{prereg-v0.2} era
+una «etiqueta anotada creada al cerrar esta versión» y que «su fecha de creación,
+registrada por git, es el fechado verificable de este documento».
+
+\textbf{Por qué es incorrecto.} La etiqueta se creó el 4 de septiembre de 2026,
+siete días después del commit que cierra la versión, y no el mismo día como sí
+ocurrió con la v0.1. Su fecha de creación es por tanto posterior a las ejecuciones
+que esta versión gobierna, y no sirve como fechado de nada.
+
+\textbf{Corrección.} La portada pasa a señalar como fechado verificable la fecha
+del \emph{commit} etiquetado, que sí es anterior a esas ejecuciones. La etiqueta
+conserva su función de identificar la versión, pero no la de fecharla.
+
+\textbf{Qué sostiene el fechado.} El orden de los commits, que es independiente de
+la etiqueta y no puede alterarse sin que el historial lo delate:
+
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{L{2.2cm} L{3.4cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Commit} & \textbf{Fecha} & \textbf{Qué hizo} \\
+\midrule
+\texttt{8e4cb10} & 2026-08-28 11:10 & Cierra el pre-registro v0.2 \textit{(commit etiquetado)} \\
+\texttt{014da98} & 2026-08-28 11:35 & Ejecuta el cribado y selecciona el corpus \\
+\texttt{18fc1a3} & 2026-08-28 15:36 & Construye la base de meta-conocimiento \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+El documento se cerró veinticinco minutos antes del cribado y cinco horas antes de
+la construcción de la base, de modo que la regla de oro de la Sección~1 se cumple y
+es comprobable por cualquiera con acceso al repositorio.
+
+\textbf{Qué no se hizo.} No se retrodató la etiqueta. Git permite fijar su fecha de
+creación mediante variables de entorno, y hacerlo habría producido un fechado
+aparentemente correcto y falso, que es exactamente lo que un pre-registro existe
+para impedir.
+
+\textbf{Alcance de esta errata.} Corrige una afirmación sobre el \emph{mecanismo}
+de fechado. No altera ninguna decisión de protocolo, ningún criterio de análisis ni
+ninguna regla registrada en las secciones anteriores, y no afecta a ningún
+resultado ya producido bajo esta versión.
+
+\textbf{Consecuencia para la v1.0.} Esa versión precede a la ejecución del
+experimento, así que su etiqueta debe crearse \textbf{el mismo día} que el commit
+que la cierra, como se hizo con la v0.1. De lo contrario volvería a hacer falta una
+errata como esta, en la versión donde menos margen hay para ello.
+
+\subsection*{2026-09-04 --- Composición de la configuración del modelo base}
+
+\textbf{Qué pasaba.} En el PDF de las versiones v0.1 y v0.2, la configuración
+congelada del modelo base de la Sección~\ref{sec:modelo} se imprimía como
+\texttt{weights=üniform"} en lugar de \texttt{weights="uniform"}.
+
+\textbf{Causa.} Con \texttt{babel} en español la comilla recta es un carácter
+activo, y la secuencia \texttt{"u} compone «ü». Afectaba solo a ese parámetro:
+\texttt{metric="minkowski"} y \texttt{algorithm="brute"} salían bien, porque
+\texttt{"m} y \texttt{"b} no son atajos.
+
+\textbf{Corrección.} Se desactiva el atajo alrededor de ese bloque. El código
+fuente del documento \emph{siempre} dijo \texttt{weights="uniform"}: lo que estaba
+mal era la composición tipográfica, no el valor registrado.
+
+\textbf{Alcance.} No cambia el modelo base ni ninguna decisión de protocolo. Se
+registra porque el literal afectado es el que hay que copiar para reproducir el
+experimento, y quien lo tomara del PDF de una versión anterior obtendría un
+parámetro que scikit-learn rechaza.
 
 \end{document}
