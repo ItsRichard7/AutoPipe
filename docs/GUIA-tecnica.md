@@ -3,7 +3,7 @@
 - **Estado:** cubre el núcleo generalizado, las meta-características, la base de
   meta-conocimiento, el recomendador y el arranque en caliente
 - **Entregable:** RE7
-- **Actualizada:** 2026-09-12
+- **Actualizada:** 2026-09-08
 
 Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
 explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
