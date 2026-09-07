@@ -3,7 +3,7 @@
 - **Estado:** cubre el núcleo generalizado, las meta-características, la base de
   meta-conocimiento, el recomendador y el arranque en caliente
 - **Entregable:** RE7
-- **Actualizada:** 2026-09-03
+- **Actualizada:** 2026-09-08
 
 Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
 explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
@@ -404,6 +404,63 @@ fuera. El recorte no necesita ninguna constante arbitraria: el recomendador no p
 medir *cuánto* fuera del corpus cae un dataset, solo que cae fuera. `clipped_features_`
 dice en qué columnas ocurrió.
 
+### Las cuatro estrategias
+
+`strategy=` decide **de qué datasets** se toman las configuraciones. Las cuatro
+devuelven ganadoras de datasets reales de la base y saltan las repetidas, de modo
+que una comparación entre ellas no se contamina con la calidad intrínseca de lo
+inyectado: es lo único que las hace comparables entre sí.
+
+| Estrategia | De dónde toma | Para qué existe |
+|---|---|---|
+| `nearest` | Vecinos más cercanos | Primaria; la línea base del anteproyecto |
+| `diverse` | El subconjunto más separado entre las cercanas | El modo de fallo del spike A |
+| `frequent` | Las que más ganan, **ignorando** meta-características | Aísla el meta-aprendizaje |
+| `random` | Ganadoras de datasets al azar | Ablación: aísla la similitud |
+
+**`frequent` es el control que más importa.** Si la primaria no le gana, las
+meta-características no están aportando nada y bastaría recomendar siempre lo
+mismo. Sin ese control, un resultado positivo tampoco sería atribuible: no se
+podría distinguir «la similitud ayuda» de «inyectar lo que suele ganar ayuda».
+
+**`diverse`** parte del vecino más cercano y añade cada vez la candidata cuya
+distancia de Hamming mínima a las ya elegidas sea mayor, considerando el doble de
+candidatas de las que va a elegir (`FACTOR_DIVERSIDAD`). El tope evita comprar
+diversidad yendo a buscar datasets arbitrariamente lejanos.
+
+**`random`** toma ganadoras de datasets al azar y **no** configuraciones al azar
+del espacio. La diferencia es la pregunta que responde: así aísla si lo que aporta
+es la **similitud**, y no el mero hecho de arrancar en caliente con
+configuraciones plausibles. Necesita `random_state`.
+
+### Dónde se puede evaluar el recomendador, y dónde no
+
+El corpus son 25 de los 52 candidatos cribados, y esos 25 **son los pliegues** del
+*leave-one-dataset-out*. Medir sobre ellos es medir sobre el conjunto de prueba.
+
+`scripts/evaluate_recommender.py` evalúa sobre los **27 que quedaron fuera**, que
+no entran nunca al experimento. Hay una prueba escrita para fallar si alguno del
+corpus se cuela en ese conjunto.
+
+Los dos grupos de retenidos sesgan en direcciones opuestas y se reportan por
+separado: los excluidos por orden tienen un IQR por debajo del mínimo del corpus
+y sesgan hacia «da igual lo que se recomiende»; los excluidos por familia
+comparten origen con un dataset de la base y sesgan al contrario.
+
+### Las tres capas de validación de una configuración
+
+Una configuración recorre tres comprobaciones antes de llegar a `enqueue_trial`, y
+ninguna sobra, porque cada una mira algo distinto:
+
+| Capa | Qué verifica | Dónde |
+|---|---|---|
+| Base | Todas las entradas comparten nombres de meta-características y versión del espacio | `MetaKnowledgeBase.__post_init__` |
+| Recomendador | La versión es la vigente y cada configuración devuelta **se resuelve** a un pipeline | `MetaRecommender.fit` / `recommend` |
+| Motor | Las claves coinciden **exactamente** con las de *su* espacio y los índices están en rango | `validate_warm_start` |
+
+La última no puede delegarse en la anterior: el motor también corre sobre el
+espacio de imágenes, que no es el canónico tabular, así que valida contra el suyo.
+
 ## Arranque en caliente en el motor
 
 ```python
@@ -489,6 +546,7 @@ otra cosa: es legítima, simplemente no corre sobre esos datos. Queda con métri
 | `experimentos/CORPUS-seleccionado.md` | Los 25 datasets del corpus, con su IQR y el motivo de cada exclusión |
 | `experimentos/BASE-meta-conocimiento.md` | Resumen de la base: supervivientes, diversidad de ganadores y tiempos |
 | `experimentos/DIVERSIDAD-ganadores.md` | Análisis exploratorio: forma de la diversidad, anchura de la meseta y efecto piso |
+| `experimentos/EVALUACION-recomendador.md` | Evaluación de las estrategias sobre los 27 datasets fuera del corpus |
 | `experimentos/CORPUS-criterios-inclusion.md` | Cómo se selecciona el corpus |
 | `experimentos/SPIKE-A-enqueue-trial.md` | Viabilidad del arranque en caliente |
 | `experimentos/SPIKE-B-pymfe.md` | Costo y robustez de la extracción de meta-características |
@@ -513,6 +571,5 @@ un sustituto sintético. Los datos reales van fuera del repositorio; véase
 
 ## Pendiente en esta guía
 
-Se amplía a medida que existan los módulos que faltan: las estrategias de
-recomendación y su evaluación sobre datasets retenidos (semana 8), y el arnés de
-validación *leave-one-dataset-out* con sus reportes comparativos (semanas 9 a 11).
+Se amplía con el arnés de validación *leave-one-dataset-out* y sus reportes
+comparativos (semanas 9 a 11).

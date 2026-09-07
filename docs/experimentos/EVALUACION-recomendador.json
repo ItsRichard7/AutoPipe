@@ -1,0 +1,1933 @@
+{
+  "datasets": [
+    {
+      "dataset_id": "22",
+      "dataset_name": "mfeat-zernike",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.002562,
+          "mejor": 0.816547,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "diabetes",
+            "qsar-biodeg",
+            "eucalyptus",
+            "GesturePhaseSegmentationProcessed"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.013126,
+          "mejor": 0.805983,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.002562,
+          "mejor": 0.816547,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "eucalyptus",
+            "GesturePhaseSegmentationProcessed",
+            "diabetes",
+            "banknote-authentication"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.002562,
+          "mejor": 0.816547,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0577,
+      "motivo": "familia",
+      "n_en_meseta": 99,
+      "n_evaluables": 144,
+      "optimo": 0.819109,
+      "umbral": 0.778154
+    },
+    {
+      "dataset_id": "32",
+      "dataset_name": "pendigits",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000864,
+          "mejor": 0.989686,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "car",
+            "GesturePhaseSegmentationProcessed",
+            "phoneme",
+            "diabetes"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000927,
+          "mejor": 0.989623,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000864,
+          "mejor": 0.989686,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "banknote-authentication",
+            "GesturePhaseSegmentationProcessed",
+            "car",
+            "phoneme"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.99055,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0566,
+      "motivo": "familia",
+      "n_en_meseta": 108,
+      "n_evaluables": 144,
+      "optimo": 0.99055,
+      "umbral": 0.941023
+    },
+    {
+      "dataset_id": "14",
+      "dataset_name": "mfeat-fourier",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.006482,
+          "mejor": 0.864426,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "eucalyptus",
+            "diabetes",
+            "vehicle",
+            "car"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.006235,
+          "mejor": 0.864673,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.870908,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "vehicle",
+            "car",
+            "eucalyptus",
+            "balance-scale"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.870908,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0476,
+      "motivo": "familia",
+      "n_en_meseta": 144,
+      "n_evaluables": 144,
+      "optimo": 0.870908,
+      "umbral": 0.827363
+    },
+    {
+      "dataset_id": "23",
+      "dataset_name": "cmc",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.03243,
+          "mejor": 0.47179,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "phoneme",
+            "car",
+            "balance-scale"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.035552,
+          "mejor": 0.468667,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.03243,
+          "mejor": 0.47179,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "car",
+            "balance-scale",
+            "qsar-biodeg"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.03243,
+          "mejor": 0.47179,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0433,
+      "motivo": "orden",
+      "n_en_meseta": 12,
+      "n_evaluables": 144,
+      "optimo": 0.504219,
+      "umbral": 0.479008
+    },
+    {
+      "dataset_id": "1461",
+      "dataset_name": "bank-marketing",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.019253,
+          "mejor": 0.691439,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "churn",
+            "diabetes",
+            "wilt",
+            "credit-g",
+            "electricity"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.710692,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.710692,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "churn",
+            "credit-g",
+            "credit-approval",
+            "sick",
+            "qsar-biodeg"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.022274,
+          "mejor": 0.688417,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0425,
+      "motivo": "orden",
+      "n_en_meseta": 39,
+      "n_evaluables": 96,
+      "optimo": 0.710692,
+      "umbral": 0.675157
+    },
+    {
+      "dataset_id": "1497",
+      "dataset_name": "wall-robot-navigation",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.922406,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "car",
+            "eucalyptus",
+            "balance-scale",
+            "GesturePhaseSegmentationProcessed",
+            "phoneme"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000631,
+          "mejor": 0.921774,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.024648,
+          "mejor": 0.897758,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "car",
+            "GesturePhaseSegmentationProcessed",
+            "phoneme",
+            "balance-scale",
+            "diabetes"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.922406,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0384,
+      "motivo": "orden",
+      "n_en_meseta": 117,
+      "n_evaluables": 144,
+      "optimo": 0.922406,
+      "umbral": 0.876285
+    },
+    {
+      "dataset_id": "1067",
+      "dataset_name": "kc1",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.679681,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "blood-transfusion-service-center",
+            "diabetes",
+            "credit-approval",
+            "vehicle",
+            "churn"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.679681,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.679681,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "blood-transfusion-service-center",
+            "credit-approval",
+            "diabetes",
+            "credit-g",
+            "churn"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.014473,
+          "mejor": 0.665208,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0369,
+      "motivo": "familia",
+      "n_en_meseta": 36,
+      "n_evaluables": 144,
+      "optimo": 0.679681,
+      "umbral": 0.645697
+    },
+    {
+      "dataset_id": "1590",
+      "dataset_name": "adult",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.005648,
+          "mejor": 0.79882,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "jungle_chess_2pcs_raw_endgame_complete",
+            "churn",
+            "credit-approval",
+            "electricity"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.005648,
+          "mejor": 0.79882,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.005648,
+          "mejor": 0.79882,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "credit-approval",
+            "mfeat-morphological",
+            "electricity",
+            "churn"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.012173,
+          "mejor": 0.792296,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0359,
+      "motivo": "orden",
+      "n_en_meseta": 46,
+      "n_evaluables": 96,
+      "optimo": 0.804469,
+      "umbral": 0.764245
+    },
+    {
+      "dataset_id": "1050",
+      "dataset_name": "pc3",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.058886,
+          "mejor": 0.574431,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "pc1",
+            "blood-transfusion-service-center",
+            "diabetes",
+            "credit-approval",
+            "churn"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.063962,
+          "mejor": 0.569356,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.058886,
+          "mejor": 0.574431,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "pc1",
+            "blood-transfusion-service-center",
+            "credit-approval",
+            "churn",
+            "wilt"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.016146,
+          "mejor": 0.617172,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0311,
+      "motivo": "familia",
+      "n_en_meseta": 18,
+      "n_evaluables": 144,
+      "optimo": 0.633318,
+      "umbral": 0.601652
+    },
+    {
+      "dataset_id": "1480",
+      "dataset_name": "ilpd",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.634016,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "diabetes",
+            "credit-g",
+            "balance-scale",
+            "qsar-biodeg",
+            "phoneme"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.048615,
+          "mejor": 0.5854,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.634016,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "diabetes",
+            "qsar-biodeg",
+            "credit-g",
+            "phoneme",
+            "balance-scale"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.634016,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.031,
+      "motivo": "orden",
+      "n_en_meseta": 9,
+      "n_evaluables": 96,
+      "optimo": 0.634016,
+      "umbral": 0.602315
+    },
+    {
+      "dataset_id": "1510",
+      "dataset_name": "wdbc",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.009672,
+          "mejor": 0.961911,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "phoneme",
+            "diabetes",
+            "climate-model-simulation-crashes",
+            "qsar-biodeg"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.009672,
+          "mejor": 0.961911,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.009672,
+          "mejor": 0.961911,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "vehicle",
+            "qsar-biodeg",
+            "diabetes",
+            "phoneme"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.971583,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0301,
+      "motivo": "orden",
+      "n_en_meseta": 108,
+      "n_evaluables": 144,
+      "optimo": 0.971583,
+      "umbral": 0.923004
+    },
+    {
+      "dataset_id": "16",
+      "dataset_name": "mfeat-karhunen",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.964895,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "eucalyptus",
+            "diabetes",
+            "banknote-authentication",
+            "car"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.002472,
+          "mejor": 0.962423,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.964895,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "banknote-authentication",
+            "vehicle",
+            "car",
+            "qsar-biodeg"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.964895,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0282,
+      "motivo": "familia",
+      "n_en_meseta": 144,
+      "n_evaluables": 144,
+      "optimo": 0.964895,
+      "umbral": 0.91665
+    },
+    {
+      "dataset_id": "182",
+      "dataset_name": "satimage",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001354,
+          "mejor": 0.887251,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "car",
+            "GesturePhaseSegmentationProcessed",
+            "phoneme",
+            "eucalyptus"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.00169,
+          "mejor": 0.886915,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001354,
+          "mejor": 0.887251,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "banknote-authentication",
+            "GesturePhaseSegmentationProcessed",
+            "car",
+            "phoneme"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001499,
+          "mejor": 0.887105,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0271,
+      "motivo": "orden",
+      "n_en_meseta": 144,
+      "n_evaluables": 144,
+      "optimo": 0.888605,
+      "umbral": 0.844175
+    },
+    {
+      "dataset_id": "40966",
+      "dataset_name": "MiceProtein",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.971594,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "phoneme",
+            "diabetes",
+            "climate-model-simulation-crashes",
+            "GesturePhaseSegmentationProcessed"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000413,
+          "mejor": 0.971182,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.004185,
+          "mejor": 0.967409,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "GesturePhaseSegmentationProcessed",
+            "vehicle",
+            "qsar-biodeg",
+            "tic-tac-toe"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000933,
+          "mejor": 0.970661,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0241,
+      "motivo": "orden",
+      "n_en_meseta": 72,
+      "n_evaluables": 96,
+      "optimo": 0.971594,
+      "umbral": 0.923015
+    },
+    {
+      "dataset_id": "1063",
+      "dataset_name": "kc2",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.023579,
+          "mejor": 0.664751,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "pc1",
+            "blood-transfusion-service-center",
+            "diabetes",
+            "credit-approval",
+            "mfeat-morphological"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.009627,
+          "mejor": 0.678703,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.039266,
+          "mejor": 0.649064,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "pc1",
+            "blood-transfusion-service-center",
+            "credit-approval",
+            "mfeat-morphological",
+            "credit-g"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.023579,
+          "mejor": 0.664751,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0227,
+      "motivo": "familia",
+      "n_en_meseta": 45,
+      "n_evaluables": 144,
+      "optimo": 0.68833,
+      "umbral": 0.653913
+    },
+    {
+      "dataset_id": "28",
+      "dataset_name": "optdigits",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000901,
+          "mejor": 0.98935,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "eucalyptus",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "banknote-authentication"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000901,
+          "mejor": 0.98935,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000901,
+          "mejor": 0.98935,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "GesturePhaseSegmentationProcessed",
+            "banknote-authentication",
+            "car",
+            "vehicle"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.000901,
+          "mejor": 0.98935,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0225,
+      "motivo": "familia",
+      "n_en_meseta": 144,
+      "n_evaluables": 144,
+      "optimo": 0.990251,
+      "umbral": 0.940738
+    },
+    {
+      "dataset_id": "1049",
+      "dataset_name": "pc4",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.027662,
+          "mejor": 0.723485,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "blood-transfusion-service-center",
+            "diabetes",
+            "credit-approval",
+            "vehicle",
+            "churn"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.027662,
+          "mejor": 0.723485,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.027662,
+          "mejor": 0.723485,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "blood-transfusion-service-center",
+            "credit-approval",
+            "churn",
+            "wilt",
+            "credit-g"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.033047,
+          "mejor": 0.7181,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.022,
+      "motivo": "familia",
+      "n_en_meseta": 27,
+      "n_evaluables": 144,
+      "optimo": 0.751147,
+      "umbral": 0.71359
+    },
+    {
+      "dataset_id": "469",
+      "dataset_name": "analcatdata_dmft",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.025176,
+          "mejor": 0.207702,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "diabetes",
+            "phoneme",
+            "car",
+            "balance-scale"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.232878,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.232878,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "car",
+            "balance-scale",
+            "diabetes",
+            "dresses-sales"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": false,
+          "distancia_al_optimo": 0.076228,
+          "mejor": 0.15665,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0207,
+      "motivo": "orden",
+      "n_en_meseta": 12,
+      "n_evaluables": 96,
+      "optimo": 0.232878,
+      "umbral": 0.221234
+    },
+    {
+      "dataset_id": "1053",
+      "dataset_name": "jm1",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.018218,
+          "mejor": 0.589372,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "pc1",
+            "blood-transfusion-service-center",
+            "diabetes",
+            "credit-approval",
+            "mfeat-morphological"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.005458,
+          "mejor": 0.602132,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.016162,
+          "mejor": 0.591427,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "pc1",
+            "blood-transfusion-service-center",
+            "credit-approval",
+            "mfeat-morphological",
+            "churn"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.010947,
+          "mejor": 0.596642,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.018,
+      "motivo": "familia",
+      "n_en_meseta": 84,
+      "n_evaluables": 96,
+      "optimo": 0.60759,
+      "umbral": 0.57721
+    },
+    {
+      "dataset_id": "1475",
+      "dataset_name": "first-order-theorem-proving",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001019,
+          "mejor": 0.480908,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "diabetes",
+            "eucalyptus",
+            "qsar-biodeg",
+            "phoneme"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.01122,
+          "mejor": 0.470707,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001019,
+          "mejor": 0.480908,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "GesturePhaseSegmentationProcessed",
+            "qsar-biodeg",
+            "diabetes",
+            "dresses-sales",
+            "car"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.481927,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0173,
+      "motivo": "orden",
+      "n_en_meseta": 99,
+      "n_evaluables": 144,
+      "optimo": 0.481927,
+      "umbral": 0.45783
+    },
+    {
+      "dataset_id": "458",
+      "dataset_name": "analcatdata_authorship",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 5e-06,
+          "mejor": 0.995925,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "phoneme",
+            "diabetes",
+            "climate-model-simulation-crashes",
+            "qsar-biodeg"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.995931,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 5e-06,
+          "mejor": 0.995925,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "tic-tac-toe",
+            "qsar-biodeg",
+            "vehicle",
+            "GesturePhaseSegmentationProcessed"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 5e-06,
+          "mejor": 0.995925,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0154,
+      "motivo": "orden",
+      "n_en_meseta": 144,
+      "n_evaluables": 144,
+      "optimo": 0.995931,
+      "umbral": 0.946134
+    },
+    {
+      "dataset_id": "44",
+      "dataset_name": "spambase",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.004754,
+          "mejor": 0.898482,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "diabetes",
+            "phoneme",
+            "balance-scale",
+            "GesturePhaseSegmentationProcessed"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.007617,
+          "mejor": 0.895619,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.004754,
+          "mejor": 0.898482,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "diabetes",
+            "phoneme",
+            "balance-scale",
+            "car"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.903237,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0152,
+      "motivo": "orden",
+      "n_en_meseta": 108,
+      "n_evaluables": 144,
+      "optimo": 0.903237,
+      "umbral": 0.858075
+    },
+    {
+      "dataset_id": "1487",
+      "dataset_name": "ozone-level-8hr",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.703962,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "wilt",
+            "diabetes",
+            "climate-model-simulation-crashes",
+            "banknote-authentication",
+            "qsar-biodeg"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.02686,
+          "mejor": 0.677102,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.02686,
+          "mejor": 0.677102,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "wilt",
+            "climate-model-simulation-crashes",
+            "qsar-biodeg",
+            "churn",
+            "diabetes"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.703962,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0143,
+      "motivo": "orden",
+      "n_en_meseta": 27,
+      "n_evaluables": 144,
+      "optimo": 0.703962,
+      "umbral": 0.668763
+    },
+    {
+      "dataset_id": "3",
+      "dataset_name": "kr-vs-kp",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.962367,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "diabetes",
+            "sick",
+            "balance-scale",
+            "phoneme"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.962367,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.962367,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "sick",
+            "tic-tac-toe",
+            "dresses-sales",
+            "balance-scale"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.003121,
+          "mejor": 0.959246,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.011,
+      "motivo": "orden",
+      "n_en_meseta": 96,
+      "n_evaluables": 96,
+      "optimo": 0.962367,
+      "umbral": 0.914249
+    },
+    {
+      "dataset_id": "40984",
+      "dataset_name": "segment",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.011537,
+          "mejor": 0.900832,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "car",
+            "eucalyptus",
+            "GesturePhaseSegmentationProcessed",
+            "diabetes"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.912369,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.011537,
+          "mejor": 0.900832,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "vehicle",
+            "banknote-authentication",
+            "eucalyptus",
+            "car",
+            "GesturePhaseSegmentationProcessed"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.011537,
+          "mejor": 0.900832,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0072,
+      "motivo": "orden",
+      "n_en_meseta": 117,
+      "n_evaluables": 144,
+      "optimo": 0.912369,
+      "umbral": 0.86675
+    },
+    {
+      "dataset_id": "15",
+      "dataset_name": "breast-w",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.960566,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "phoneme",
+            "diabetes",
+            "climate-model-simulation-crashes",
+            "qsar-biodeg"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.960566,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.960566,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "banknote-authentication",
+            "tic-tac-toe",
+            "phoneme",
+            "qsar-biodeg",
+            "diabetes"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.00812,
+          "mejor": 0.952446,
+          "n_inevaluables": 1,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0049,
+      "motivo": "orden",
+      "n_en_meseta": 93,
+      "n_evaluables": 96,
+      "optimo": 0.960566,
+      "umbral": 0.912537
+    },
+    {
+      "dataset_id": "4534",
+      "dataset_name": "PhishingWebsites",
+      "estrategias": {
+        "diverse": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001847,
+          "mejor": 0.958191,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "diabetes",
+            "phoneme",
+            "balance-scale",
+            "sick"
+          ]
+        },
+        "frequent": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001847,
+          "mejor": 0.958191,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "credit-approval",
+            "steel-plates-fault",
+            "car",
+            "churn",
+            "mfeat-morphological"
+          ]
+        },
+        "nearest": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.001847,
+          "mejor": 0.958191,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "qsar-biodeg",
+            "car",
+            "phoneme",
+            "balance-scale",
+            "diabetes"
+          ]
+        },
+        "random": {
+          "alcanza_el_objetivo": true,
+          "distancia_al_optimo": 0.0,
+          "mejor": 0.960038,
+          "n_inevaluables": 0,
+          "n_recomendadas": 5,
+          "vecinos": [
+            "cylinder-bands",
+            "diabetes",
+            "GesturePhaseSegmentationProcessed",
+            "credit-g",
+            "blood-transfusion-service-center"
+          ]
+        }
+      },
+      "iqr": 0.0027,
+      "motivo": "orden",
+      "n_en_meseta": 144,
+      "n_evaluables": 144,
+      "optimo": 0.960038,
+      "umbral": 0.912036
+    }
+  ],
+  "familia": {
+    "diverse": {
+      "distancia_maxima": 0.058886,
+      "distancia_mediana": 0.004522,
+      "n_alcanza_el_objetivo": 9,
+      "n_inevaluables": 1,
+      "n_optimo_exacto": 2
+    },
+    "frequent": {
+      "distancia_maxima": 0.063962,
+      "distancia_mediana": 0.005847,
+      "n_alcanza_el_objetivo": 9,
+      "n_inevaluables": 0,
+      "n_optimo_exacto": 1
+    },
+    "n_datasets": 10,
+    "nearest": {
+      "distancia_maxima": 0.058886,
+      "distancia_mediana": 0.001731,
+      "n_alcanza_el_objetivo": 8,
+      "n_inevaluables": 0,
+      "n_optimo_exacto": 3
+    },
+    "random": {
+      "distancia_maxima": 0.033047,
+      "distancia_mediana": 0.006755,
+      "n_alcanza_el_objetivo": 10,
+      "n_inevaluables": 1,
+      "n_optimo_exacto": 3
+    }
+  },
+  "orden": {
+    "diverse": {
+      "distancia_maxima": 0.03243,
+      "distancia_mediana": 0.001354,
+      "n_alcanza_el_objetivo": 15,
+      "n_inevaluables": 2,
+      "n_optimo_exacto": 6
+    },
+    "frequent": {
+      "distancia_maxima": 0.048615,
+      "distancia_mediana": 0.00169,
+      "n_alcanza_el_objetivo": 15,
+      "n_inevaluables": 0,
+      "n_optimo_exacto": 6
+    },
+    "n_datasets": 17,
+    "nearest": {
+      "distancia_maxima": 0.03243,
+      "distancia_mediana": 0.001847,
+      "n_alcanza_el_objetivo": 16,
+      "n_inevaluables": 1,
+      "n_optimo_exacto": 5
+    },
+    "random": {
+      "distancia_maxima": 0.076228,
+      "distancia_mediana": 0.000933,
+      "n_alcanza_el_objetivo": 15,
+      "n_inevaluables": 2,
+      "n_optimo_exacto": 7
+    }
+  },
+  "total": {
+    "diverse": {
+      "distancia_maxima": 0.058886,
+      "distancia_mediana": 0.001847,
+      "n_alcanza_el_objetivo": 24,
+      "n_inevaluables": 3,
+      "n_optimo_exacto": 8
+    },
+    "frequent": {
+      "distancia_maxima": 0.063962,
+      "distancia_mediana": 0.002472,
+      "n_alcanza_el_objetivo": 24,
+      "n_inevaluables": 0,
+      "n_optimo_exacto": 7
+    },
+    "n_datasets": 27,
+    "nearest": {
+      "distancia_maxima": 0.058886,
+      "distancia_mediana": 0.001847,
+      "n_alcanza_el_objetivo": 24,
+      "n_inevaluables": 1,
+      "n_optimo_exacto": 8
+    },
+    "random": {
+      "distancia_maxima": 0.076228,
+      "distancia_mediana": 0.001499,
+      "n_alcanza_el_objetivo": 25,
+      "n_inevaluables": 3,
+      "n_optimo_exacto": 10
+    }
+  }
+}

@@ -1072,6 +1072,131 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  publicada la etiqueta \texttt{prereg-v0.2}, que se arrastraba desde la semana 5, con la
  errata que su retraso obligó a registrar.}
 
+\semana{8}{2026-09-07 a 2026-09-13 --- E5: recomendador meta-aprendido}
+
+\entrada{2026-09-05}{9}
+{Convertí el recomendador en una familia de cuatro estrategias, seleccionables con un
+ parámetro nuevo del constructor: \texttt{nearest}, la primaria por vecinos más cercanos;
+ \texttt{diverse}, que elige entre las candidatas próximas el subconjunto más separado
+ entre sí; \texttt{frequent}, que devuelve las configuraciones que más ganan en la base
+ \textbf{ignorando por completo las meta-características}; y \texttt{random}, que toma las
+ ganadoras de datasets elegidos al azar. Trece pruebas nuevas; las treinta y siete
+ anteriores pasaron sin tocarlas, que es lo que verifica que el refactor no cambió la
+ conducta de la estrategia primaria. Suite en 553 pruebas y el módulo al 100\% de
+ cobertura.}
+{La decisión de diseño que hace comparables las cuatro es que \textbf{todas devuelven
+ ganadoras de datasets reales de la base} y saltan las repetidas: lo único que cambia entre
+ ellas es \emph{de qué datasets} toman las configuraciones. Si alguna extrajera
+ configuraciones arbitrarias del espacio, la comparación mezclaría dos efectos —el de la
+ similitud y el de la calidad de lo inyectado— y no mediría ninguno. Por esa misma razón la
+ ablación aleatoria toma ganadoras de datasets al azar y no configuraciones al azar de los
+ 144 pipelines: la pregunta que el TFG hace es si la \textbf{similitud} aporta algo, no si
+ arrancar en caliente aporta algo. La que más falta hacía es \texttt{frequent}, que no
+ estaba prevista en la hoja de ruta y decidí añadir: es el control que aísla la
+ contribución del meta-aprendizaje, porque si la estrategia primaria no le gana a
+ recomendar siempre lo que más gana, las meta-características no están aportando nada. Sin
+ ese control un resultado \emph{positivo} tampoco sería atribuible, que es un problema
+ simétrico del que suele preocupar y que nadie mira. La estrategia diversa ataca
+ directamente el modo de fallo que midió el spike A —cinco recomendaciones parecidas entre
+ sí y todas equivocadas, que el muestreador lee como una región buena y deja de explorar—;
+ procede de forma voraz desde el vecino más cercano, maximizando la distancia de Hamming
+ mínima a las ya elegidas, y considera el doble de candidatas de las que va a elegir para
+ que la diversidad no se compre yendo a buscar datasets arbitrariamente lejanos. Ese tope
+ es una decisión declarada, no un valor ajustado sobre los datos. Quité de paso una guarda
+ inalcanzable que había escrito por reflejo: el método de ajuste ya rechaza las bases
+ vacías, de modo que la reserva nunca puede quedar sin candidatas, y la guía del proyecto
+ prohíbe el código muerto.}
+
+\entrada{2026-09-06}{5}
+{Escribí \texttt{scripts/evaluate\_recommender.py} y evalué las cuatro estrategias sobre
+ los \textbf{27 candidatos cribados que no entraron al corpus}. De cada uno se evalúan de
+ forma exhaustiva los 144 pipelines del espacio, lo que da su óptimo exacto, y después se
+ comprueba dónde caen las cinco configuraciones que cada estrategia recomienda, leyéndolas
+ de esa misma rejilla. Quince pruebas nuevas; suite en 568.}
+{El punto de la hoja de ruta decía «evaluación preliminar sobre datasets retenidos», y esa
+ redacción esconde una trampa que casi me lleva por delante: si «retenidos» son los que el
+ \textit{leave-one-dataset-out} deja fuera en cada pliegue, entonces evaluar ahí
+ \textbf{es} el experimento, y ejecutarlo antes de cerrar la v1.0 lo contaminaría. La
+ lectura que sí es legítima es la otra: el corpus son 25 de los 52 candidatos, y los otros
+ 27 no entran nunca al experimento. Hay una prueba escrita para fallar si alguno del corpus
+ se colara en el conjunto evaluado, porque ese error no produciría ningún síntoma. Leer las
+ recomendaciones de la rejilla en lugar de volver a ejecutarlas hace la comparación exacta
+ y no cuesta cómputo. El resultado no es el que esperaba y conviene registrarlo tal cual:
+ \textbf{las cuatro estrategias quedan empatadas y la ablación aleatoria va nominalmente
+ primera}. La distancia mediana al óptimo va de 0,0015 con la aleatoria a 0,0025 con la
+ frecuente, una separación de 0,0010 de macro-F1, y entre 24 y 25 de los 27 datasets
+ alcanzan el objetivo con cualquiera de las cuatro. Desglosado es todavía más incómodo:
+ sobre los 17 excluidos por orden la aleatoria gana en todas las medidas, y el único grupo
+ donde la primaria queda por delante es el de los 10 excluidos por familia, que es
+ exactamente el grupo cuyo sesgo la favorece porque comparten origen con un dataset que sí
+ está en la base. Ahora bien, lo que ese empate mide es \textbf{la medición y no las
+ estrategias}: con 24 de 27 alcanzando el objetivo pase lo que pase, el conjunto está
+ saturado y no puede discriminar. Es el mismo efecto piso que el análisis de la semana 7
+ midió sobre el corpus, y era además el sesgo que yo mismo había predicho antes de correrlo,
+ porque los 17 excluidos por orden tienen un IQR por debajo del mínimo del corpus. Lo que sí
+ queda comprobado es la sensatez mecánica, que es lo que este punto tenía que verificar: las
+ cuatro producen configuraciones válidas, ejecutables casi siempre y muy cercanas al óptimo.
+ El veredicto del informe se genera desde los números en lugar de escribirse a mano, y hay
+ dos pruebas que construyen un caso donde gana la aleatoria y otro donde gana la primaria
+ para verificar que el texto dice lo que corresponde en cada uno: un documento que afirme
+ algo distinto de lo que produjo la ejecución es peor que no tenerlo.}
+
+\entrada{2026-09-07}{2}
+{Consolidé y documenté las tres capas de validación que recorre una configuración antes de
+ llegar a \texttt{enqueue\_trial}, y verifiqué cobertura, linter y tipos sobre todo lo
+ nuevo: \texttt{ruff} y \texttt{mypy} limpios, los dos módulos del recomendador al 100\% y
+ 99\% global.}
+{Aquí tengo que ser honesto con la hoja de ruta: este punto tenía seis horas asignadas y
+ \textbf{estaba casi todo hecho ya}. La verificación de versión del espacio, los rangos de
+ índices al resolver una configuración, la validación de lo que se inyecta y los
+ invariantes de la base se habían construido en las semanas 6 y 7, cada uno con sus
+ pruebas. Lo que faltaba de verdad era dejar escrito por qué son tres capas y no una, que
+ es la pregunta que se hará cualquiera que las lea: la base comprueba que sus entradas sean
+ comparables entre sí; el recomendador comprueba que la versión sea la vigente y que cada
+ configuración devuelta se resuelva a un pipeline; y el motor comprueba que las claves
+ coincidan exactamente con las de \emph{su} espacio, que no tiene por qué ser el canónico
+ tabular, porque el mismo motor corre sobre imágenes. Esa última no se puede delegar en la
+ anterior. Preferí registrar dos horas reales y devolver cuatro a la reserva antes que
+ inventar trabajo para llenar la estimación.}
+
+\entrada{2026-09-08}{2}
+{Amplié \texttt{docs/GUIA-tecnica.md} con las cuatro estrategias, dónde se puede evaluar el
+ recomendador y dónde no, y la tabla de las tres capas de validación; y puse al día
+ \texttt{CLAUDE.md} con el estado de la semana. Con esto RE5 queda completo.}
+{Dejo anotada la recomendación sobre el hallazgo del empate, que es lo que hay que llevar a
+ la v1.0 del pre-registro la semana que viene. Van ya \textbf{dos señales independientes}
+ apuntando a que el experimento podría no discriminar: la meseta del corpus, con una
+ mediana de cuatro ensayos aleatorios hasta el objetivo, y ahora esta evaluación. Lo que
+ propongo no es tocar los criterios de éxito —están comprometidos, y cambiarlos para
+ agrandar el efecto sería justo lo que un pre-registro impide— sino tres cosas que caben
+ dentro de lo que la v1.0 todavía tiene abierto. Primera y más importante: declarar la
+ anchura de la meseta como \textbf{covariable} antes de ejecutar, para que un resultado
+ nulo venga con su explicación en lugar de quedar mudo; ya está medida por dataset desde la
+ semana 7, así que no cuesta nada, y convierte un nulo débil en un hallazgo sustantivo
+ sobre \emph{cuándo} puede ayudar el arranque en caliente. Segunda: subir a cinco semillas,
+ que es la única palanca legítima que aumenta la potencia del contraste y cuyo cómputo son
+ minutos. Tercera: declarar también \texttt{frequent} como análisis, y no solo la ablación
+ aleatoria. Y una consideración de fondo que conviene tener escrita desde ahora: si en el
+ corpus la primaria también empata con la aleatoria, \emph{ese} es el resultado, y es
+ defendible. El spike A ya lo había anticipado y el anteproyecto contempla expresamente el
+ resultado negativo. Medir con rigor que un método extendido no ayuda en espacios tabulares
+ pequeños, y poder explicar por qué con la meseta en la mano, vale más que encontrar un
+ efecto que no se sabe atribuir.}
+
+\cierresemana{8}{18}{24}{RE5 completo: el recomendador con sus cuatro estrategias, la
+ inyección validada en tres capas y la evaluación sobre los 27 datasets fuera del corpus.
+ Suite de 540 a 568 pruebas, 99\% de cobertura y los módulos del recomendador al 100\%. Se
+ gastaron 18\,h de las 24 comprometidas, y la diferencia tiene una causa concreta: el punto
+ de validación contra la versión del espacio estaba sobrevalorado en la hoja de ruta porque
+ casi todo se había construido ya en las semanas 6 y 7. Se añadió a cambio una estrategia
+ que la hoja de ruta no contemplaba, \texttt{frequent}, que es el control que aísla la
+ contribución del meta-aprendizaje. El hallazgo de la semana es un empate entre las cuatro
+ estrategias sobre los datasets retenidos, que hay que leer como un efecto piso de la
+ medición y no como un resultado sobre las estrategias. Cuatro cosas van a la v1.0 del
+ pre-registro: la anchura de la meseta como covariable, el paso a cinco semillas, la
+ ablación aleatoria definida como ganadoras de datasets al azar, y \texttt{frequent} como
+ análisis declarado.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1095,7 +1220,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 5  & E3, E4, E8        & 27 & 27 & RE3 completo, corpus de 25 seleccionado \\
 6  & E4, E8            & 25 & 13 & Base construida; el arnés no necesitó paralelismo \\
 7  & E4, E5, E8        & 25 & 30 & Hito: base y control de alcance; RE5 funcional \\
-8  & E5, E8            & 24 & --- & \\
+8  & E5, E8            & 24 & 18 & RE5 completo; 4 estrategias con controles \\
 9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
 10 & E6, E7, E8        & 22 & --- & \\
 11 & E6, E7, E8        & 23 & --- & \\

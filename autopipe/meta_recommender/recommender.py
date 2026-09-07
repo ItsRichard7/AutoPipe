@@ -80,6 +80,39 @@ alternativa anunciada antes de ver los resultados.
 METRICAS = ("manhattan", "euclidean")
 """Distancias admitidas. ``manhattan`` (L1) es la primaria."""
 
+ESTRATEGIAS = ("nearest", "diverse", "frequent", "random")
+"""Cómo se eligen las configuraciones a recomendar.
+
+Las cuatro devuelven configuraciones ganadoras de datasets reales de la base, de
+modo que ninguna comparación entre ellas se contamina con la calidad intrínseca
+de lo inyectado: lo único que cambia es **de qué datasets** se toman.
+
+* ``nearest`` --- los vecinos más cercanos en el espacio de meta-características.
+  Es la estrategia primaria y la que el anteproyecto fija como línea base.
+* ``diverse`` --- también por cercanía, pero eligiendo entre las candidatas
+  próximas el subconjunto más separado entre sí. El spike A midió que el modo de
+  fallo del arranque en caliente son cinco recomendaciones parecidas entre sí y
+  todas equivocadas, que TPE interpreta como una región buena; esta estrategia
+  ataca ese modo de fallo directamente.
+* ``frequent`` --- las configuraciones que más veces ganan en la base,
+  **ignorando por completo las meta-características**. Es el control que aísla
+  la contribución del meta-aprendizaje: si la estrategia primaria no le gana a
+  esto, las meta-características no están aportando nada y bastaría recomendar
+  siempre lo mismo.
+* ``random`` --- las ganadoras de datasets elegidos al azar. Es la ablación que
+  el pre-registro prevé: aísla si lo que aporta es la **similitud**, y no el
+  mero hecho de arrancar en caliente con configuraciones plausibles.
+"""
+
+FACTOR_DIVERSIDAD = 2
+"""Cuántas candidatas considera ``diverse`` por cada una que elige.
+
+Acota lo lejos que la estrategia puede ir a buscar diversidad: con el doble de
+candidatas, el subconjunto más separado sigue saliendo del entorno cercano del
+dataset consultado. Es una decisión de diseño declarada, no un valor ajustado
+sobre los datos.
+"""
+
 
 class MetaRecommender:
     """Recomienda configuraciones iniciales por vecinos más cercanos.
@@ -93,6 +126,9 @@ class MetaRecommender:
         n_configurations (int): Configuraciones distintas a devolver.
         scaling (str): Forma de escalar, de :data:`ESCALADOS`.
         metric (str): Distancia, de :data:`METRICAS`.
+        strategy (str): Cómo se eligen las configuraciones, de
+            :data:`ESTRATEGIAS`. La primaria es ``nearest``.
+        random_state (int | None): Semilla de la estrategia ``random``.
         feature_names_ (list[str]): Meta-características con las que se ajustó,
             disponibles tras :meth:`fit`. Son las supervivientes **de la base
             recibida**, recalculadas por pliegue.
@@ -119,6 +155,8 @@ class MetaRecommender:
         n_configurations: int = 5,
         scaling: str = "robust",
         metric: str = "manhattan",
+        strategy: str = "nearest",
+        random_state: int | None = None,
     ) -> None:
         """Inicializa el recomendador.
 
@@ -127,10 +165,16 @@ class MetaRecommender:
                 anteproyecto fija cinco en sus criterios de éxito.
             scaling: Forma de escalar el espacio de meta-características.
             metric: Distancia entre vectores escalados.
+            strategy: Cómo se eligen las configuraciones, de :data:`ESTRATEGIAS`.
+                La primaria es ``nearest``; las otras tres existen como controles
+                declarados de antemano, no como alternativas a elegir después de
+                ver los resultados.
+            random_state: Semilla de la estrategia ``random``. Se ignora en las
+                demás, que son deterministas.
 
         Raises:
             ValueError: Si el número de configuraciones no es positivo, o si el
-                escalado o la distancia no están soportados.
+                escalado, la distancia o la estrategia no están soportados.
         """
         if n_configurations < 1:
             raise ValueError(
@@ -140,9 +184,15 @@ class MetaRecommender:
             raise ValueError(f"Escalado {scaling!r} no soportado. Use uno de {ESCALADOS}.")
         if metric not in METRICAS:
             raise ValueError(f"Distancia {metric!r} no soportada. Use una de {METRICAS}.")
+        if strategy not in ESTRATEGIAS:
+            raise ValueError(
+                f"Estrategia {strategy!r} no soportada. Use una de {ESTRATEGIAS}."
+            )
         self.n_configurations = n_configurations
         self.scaling = scaling
         self.metric = metric
+        self.strategy = strategy
+        self.random_state = random_state
         self.feature_names_: list[str] | None = None
         self.center_: np.ndarray | None = None
         self.scale_: np.ndarray | None = None
@@ -222,10 +272,11 @@ class MetaRecommender:
     def recommend(self, meta_features: Mapping[str, float]) -> list[dict[str, int]]:
         """Devuelve las configuraciones a inyectar como arranque en caliente.
 
-        Camina desde el vecino más cercano hacia afuera, quedándose con la
-        configuración ganadora de cada uno y **saltando las repetidas**, hasta
-        reunir :attr:`n_configurations` distintas. Si la base no contiene tantas
-        configuraciones distintas, devuelve las que haya y lo registra.
+        Reúne :attr:`n_configurations` configuraciones **distintas** entre las
+        ganadoras de la base, eligiendo de qué datasets tomarlas según
+        :attr:`strategy`. Con la estrategia primaria camina desde el vecino más
+        cercano hacia afuera, saltando las repetidas. Si la base no contiene
+        tantas configuraciones distintas, devuelve las que haya y lo registra.
 
         Cada configuración devuelta se resuelve contra el espacio vigente antes de
         salir. No es una formalidad: el spike A midió que un índice fuera de rango
@@ -381,28 +432,30 @@ class MetaRecommender:
     def _caminar(
         self, base: MetaKnowledgeBase, distancias: np.ndarray
     ) -> list[dict[str, int]]:
-        """Recorre los vecinos por cercanía reuniendo configuraciones distintas.
+        """Reúne configuraciones distintas según la estrategia configurada.
 
-        El desempate entre vecinos a la misma distancia se resuelve por su
-        posición en la base, que es fija: sin un criterio determinista, dos
-        ejecuciones con la misma semilla podrían inyectar configuraciones
-        distintas y se rompería el criterio de reproducibilidad.
+        Todas las estrategias devuelven ganadoras de datasets reales de la base y
+        saltan las repetidas, de modo que lo único que las distingue es **de qué
+        datasets** toman las configuraciones. Eso es lo que permite compararlas
+        sin que la comparación se contamine con la calidad de lo inyectado.
 
         Args:
             base: Base del pliegue, en su orden de inserción.
             distancias: Distancia de la consulta a cada entrada de la base.
 
         Returns:
-            Las configuraciones reunidas, de más a menos cercana.
+            Las configuraciones elegidas, en el orden en que se inyectarán.
         """
-        orden = sorted(range(len(base)), key=lambda i: (float(distancias[i]), i))
+        candidatos = self._candidatos(base, distancias)
+        if self.strategy == "diverse":
+            elegidos = self._diversificar(base, candidatos)
+        else:
+            elegidos = candidatos[: self.n_configurations]
 
         configuraciones: list[dict[str, int]] = []
         vecinos: list[dict] = []
-        for posicion in orden:
+        for posicion in elegidos:
             entrada = base.entries[posicion]
-            if entrada.configuration in configuraciones:
-                continue
             self._validar(entrada.configuration, entrada.dataset_name)
             configuraciones.append(entrada.configuration)
             vecinos.append(
@@ -413,8 +466,6 @@ class MetaRecommender:
                     "configuration": entrada.configuration,
                 }
             )
-            if len(configuraciones) == self.n_configurations:
-                break
 
         if len(configuraciones) < self.n_configurations:
             logger.warning(
@@ -425,6 +476,106 @@ class MetaRecommender:
             )
         self.neighbours_ = vecinos
         return configuraciones
+
+    def _candidatos(self, base: MetaKnowledgeBase, distancias: np.ndarray) -> list[int]:
+        """Entradas con configuración distinta, en el orden que fija la estrategia.
+
+        El desempate se resuelve siempre por la posición en la base, que es fija:
+        sin un criterio determinista, dos ejecuciones con la misma semilla podrían
+        inyectar configuraciones distintas y se rompería el criterio de
+        reproducibilidad del anteproyecto.
+
+        Args:
+            base: Base del pliegue.
+            distancias: Distancia de la consulta a cada entrada.
+
+        Returns:
+            Posiciones en la base, una por configuración distinta.
+        """
+        posiciones = range(len(base))
+        if self.strategy == "random":
+            generador = np.random.default_rng(self.random_state)
+            orden = [int(i) for i in generador.permutation(len(base))]
+        elif self.strategy == "frequent":
+            conteo: dict[tuple, int] = {}
+            for entrada in base:
+                clave = self._clave(entrada.configuration)
+                conteo[clave] = conteo.get(clave, 0) + 1
+            orden = sorted(
+                posiciones,
+                key=lambda i: (
+                    -conteo[self._clave(base.entries[i].configuration)],
+                    self._clave(base.entries[i].configuration),
+                    i,
+                ),
+            )
+        else:
+            orden = sorted(posiciones, key=lambda i: (float(distancias[i]), i))
+
+        vistas: list[dict[str, int]] = []
+        candidatos: list[int] = []
+        for posicion in orden:
+            configuracion = base.entries[posicion].configuration
+            if configuracion in vistas:
+                continue
+            vistas.append(configuracion)
+            candidatos.append(posicion)
+        return candidatos
+
+    def _diversificar(self, base: MetaKnowledgeBase, candidatos: list[int]) -> list[int]:
+        """Elige, entre las candidatas más cercanas, el subconjunto más separado.
+
+        Ataca el modo de fallo que midió el spike A: cinco configuraciones
+        parecidas entre sí y todas equivocadas forman, para el muestreador, una
+        región aparentemente buena, y la búsqueda se concentra ahí en lugar de
+        explorar. Un recomendador aleatorio no caía en la trampa precisamente
+        porque sus puntos estaban dispersos.
+
+        El procedimiento es voraz: se parte del vecino más cercano y se añade
+        cada vez la candidata cuya distancia de Hamming mínima a las ya elegidas
+        sea mayor, resolviendo empates por cercanía. Se consideran el **doble**
+        de candidatas de las que se van a elegir, para que la diversidad no se
+        compre yendo a buscar datasets arbitrariamente lejanos.
+
+        Args:
+            base: Base del pliegue.
+            candidatos: Posiciones con configuración distinta, por cercanía.
+
+        Returns:
+            Las posiciones elegidas, empezando por la más cercana.
+        """
+        # La reserva nunca queda vacía: :meth:`fit` rechaza una base sin entradas,
+        # de modo que siempre hay al menos una configuración candidata.
+        reserva = candidatos[: FACTOR_DIVERSIDAD * self.n_configurations]
+        elegidos = [reserva[0]]
+        while len(elegidos) < min(self.n_configurations, len(reserva)):
+            restantes = [p for p in reserva if p not in elegidos]
+            elegidos.append(
+                max(
+                    restantes,
+                    key=lambda p: (
+                        min(
+                            self._hamming(
+                                base.entries[p].configuration,
+                                base.entries[q].configuration,
+                            )
+                            for q in elegidos
+                        ),
+                        -reserva.index(p),
+                    ),
+                )
+            )
+        return elegidos
+
+    @staticmethod
+    def _clave(configuracion: dict[str, int]) -> tuple:
+        """Clave ordenable y estable de una configuración."""
+        return tuple(sorted(configuracion.items()))
+
+    @staticmethod
+    def _hamming(una: dict[str, int], otra: dict[str, int]) -> int:
+        """Número de pasos en los que dos configuraciones difieren."""
+        return sum(1 for paso, indice in una.items() if otra.get(paso) != indice)
 
     @staticmethod
     def _validar(configuracion: dict[str, int], dataset_name: str) -> None:
