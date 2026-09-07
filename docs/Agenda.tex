@@ -1197,7 +1197,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  ablación aleatoria definida como ganadoras de datasets al azar, y \texttt{frequent} como
  análisis declarado.}
 
-\semana{9}{2026-09-07 --- E5 cierre y E6 inicio: hito del recomendador funcional}
+\semana{9}{2026-09-07 a 2026-09-12 --- E5 cierre y E6 inicio: hito del recomendador}
 
 \entrada{2026-09-07}{7}
 {Cerré el recomendador como API pública y congelé el pre-registro en su versión
@@ -1246,6 +1246,79 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  cierra, como exige la fe de erratas que dejó escrita la v0.2 al llegar la suya con siete
  días de retraso.}
 
+\entrada{2026-09-09}{11}
+{Escribí el arnés del experimento, \texttt{scripts/run\_lodo.py}, contra la
+ especificación que la v1.0 acababa de congelar. Por cada dataset del corpus lo excluye,
+ ajusta el recomendador con los 24 restantes y ejecuta sobre el excluido cuatro
+ condiciones —arranque en frío y las tres estrategias calientes declaradas— con las cinco
+ semillas, guardando la curva completa de treinta ensayos de cada corrida. Encima de eso
+ van la agregación por mediana, el contraste de Wilcoxon de una cola con su valor de dos
+ colas, los dos análisis secundarios, el recálculo con las censuras de robustez y la tabla
+ por dataset con las dos covariables.}
+{La decisión de diseño que más me importa es que \textbf{el cargador de datasets entra por
+ parámetro}. Parece un detalle de estilo y es lo que hace que el arnés se pueda probar
+ entero sin tocar la red ni el corpus: las pruebas le pasan un corpus sintético de juguete
+ y recorren el protocolo completo sin producir un solo número del experimento, que sigue
+ perteneciendo a la semana 10. Guardo además la curva entera de cada corrida y no el número
+ resumen, porque de esa curva salen tres cosas: la variable primaria, la medida descriptiva
+ a quince ensayos que define el anteproyecto, y el recálculo bajo las censuras de 60 y 300;
+ con solo el resumen habría que reejecutar el experimento para cada una. Implementé además
+ como comprobación activa la propiedad que el pre-registro demuestra: \textbf{el arranque en
+ frío no puede censurarse}, porque el objetivo es el 95\% de su propio mejor valor, de modo
+ que si ese máximo ocurre en el ensayo $t$ el frío cruzó el umbral en algún ensayo menor o
+ igual que $t$. No es improbable, es imposible. El arnés aborta si alguna vez ocurre, con un
+ mensaje que dice que indica un error de implementación y no un resultado; es la clase de
+ fallo que de otro modo se colaría como un dato más en la tabla.}
+
+\entrada{2026-09-11}{4}
+{Escribí las 24 pruebas del arnés sobre un corpus sintético de juguete. Se dividen en dos
+ clases: las que fijan la \textbf{definición} de la variable medida contra curvas
+ construidas a mano, donde la respuesta se puede calcular mentalmente, y las que recorren el
+ protocolo entero comprobando las propiedades que el pre-registro declara. Suite en 596
+ pruebas y 99\% de cobertura, con \texttt{ruff} y \texttt{mypy} limpios.}
+{Los errores posibles de este arnés no son excepciones: son valores plausibles y
+ equivocados. Un conteo desplazado en uno, un ensayo inevaluable descontado, un pliegue
+ ajustado con el corpus completo. Nada de eso falla al ejecutarse, así que las pruebas
+ tienen que atacar cada uno por separado. Las cuatro que más pesan son la del conteo
+ empezando en uno, la de que un \texttt{NaN} consume su turno, la de que ningún pliegue ve
+ su propio dataset entre los vecinos, y la que \textbf{fuerza el caso imposible} —una curva
+ enteramente inevaluable en el frío— para comprobar que el arnés aborta en vez de seguir.
+ Añadí también una prueba que fija las constantes del protocolo contra los valores de la
+ v1.0: si alguien cambiara las semillas o el presupuesto, el arnés dejaría de medir lo
+ pre-registrado sin que ninguna prueba de comportamiento se enterara. Dos hallazgos de
+ costo. El primero: montar la corrida de juguete una vez y compartirla entre las pruebas
+ estructurales bajó su tiempo de 164 a 50 segundos, porque cada una la estaba relanzando sin
+ comprobar nada nuevo. El segundo, que me sorprendió: reducir las tablas de juguete de 60 a
+ 40 filas no cambió nada, 50,8 contra 50,2 segundos. El costo no es evaluar los pipelines
+ sino la sobrecarga de Optuna por ensayo, y son 3000 ensayos reales. Lo dejo así y lo
+ documento: la alternativa sería simular el motor, y entonces las pruebas dejarían de
+ verificar justo lo que importa, que el motor, el recomendador y el conteo funcionan juntos.
+ Descubrí por último una restricción del propio protocolo que no había anticipado: el corpus
+ de juguete necesita \textbf{tres} datasets como mínimo, porque con dos cada pliegue dejaría
+ un solo vecino y el recomendador rechaza —con razón— una base cuyas meta-características no
+ varían.}
+
+\entrada{2026-09-12}{1}
+{Documenté el arnés en \texttt{docs/GUIA-tecnica.md}: las tres precisiones del conteo, la
+ propiedad del frío que se comprueba en vez de suponerse, y por qué el cargador de datasets
+ entra por parámetro. Con esto la semana 9 cierra sus cinco puntos y el hito del recomendador
+ funcional queda alcanzado.}
+{Anoté en la guía el costo de las pruebas del arnés y la razón de aceptarlo, para que quien
+ lo vea crecer no lo tome por descuido. Queda todo listo para la semana 10, que es la que
+ ejecuta el experimento sobre el corpus: el arnés está escrito y probado, el pre-registro
+ congelado y etiquetado, y la orden de no ejecutar el LODO antes de tiempo ya no aplica
+ porque la v1.0 está cerrada. Conviene decir con precisión qué falta para poder ejecutarlo:
+ nada de código.}
+
+\cierresemana{9}{23}{23}{Hito del recomendador funcional alcanzado, y con él la pieza que
+ gobierna todo lo que viene: el \textbf{pre-registro v1.0 congelado y etiquetado el mismo
+ día que su commit}, cerrando las dos decisiones que quedaban abiertas —cinco semillas y la
+ región inevaluable declarada como covariable en lugar de corregida—. RE5 cerrado con su API
+ pública y su ejemplo ejecutable; el arnés del \textit{leave-one-dataset-out} escrito contra
+ la especificación ya congelada y probado sobre un corpus de juguete. Suite de 572 a 596
+ pruebas y 99\% de cobertura. Se gastaron las 23\,h comprometidas, exactamente. La semana 10
+ puede ejecutar el experimento sin escribir una línea más de código.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1270,7 +1343,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 6  & E4, E8            & 25 & 13 & Base construida; el arnés no necesitó paralelismo \\
 7  & E4, E5, E8        & 25 & 30 & Hito: base y control de alcance; RE5 funcional \\
 8  & E5, E8            & 24 & 18 & RE5 completo; 4 estrategias con controles \\
-9  & E5, E6, E8        & 23 & --- & Hito: recomendador funcional \\
+9  & E5, E6, E8        & 23 & 23 & Hito: recomendador funcional; v1.0 congelada \\
 10 & E6, E7, E8        & 22 & --- & \\
 11 & E6, E7, E8        & 23 & --- & \\
 12 & E8                & 21 & --- & Hito: cierre del proyecto \\

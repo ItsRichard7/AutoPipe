@@ -1,9 +1,10 @@
 # Guía técnica de AutoPipe
 
 - **Estado:** cubre el núcleo generalizado, las meta-características, la base de
-  meta-conocimiento, el recomendador y el arranque en caliente
+  meta-conocimiento, el recomendador, el arranque en caliente y el arnés del
+  experimento
 - **Entregable:** RE7
-- **Actualizada:** 2026-09-08
+- **Actualizada:** 2026-09-12
 
 Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
 explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
@@ -447,6 +448,61 @@ separado: los excluidos por orden tienen un IQR por debajo del mínimo del corpu
 y sesgan hacia «da igual lo que se recomiende»; los excluidos por familia
 comparten origen con un dataset de la base y sesgan al contrario.
 
+## El arnés del experimento
+
+`scripts/run_lodo.py` ejecuta la validación *leave-one-dataset-out* tal como la
+congela el pre-registro v1.0, y **solo** lo que ese documento dice. Cada constante
+del protocolo está declarada arriba del archivo con la sección que la fija.
+
+```python
+resultado = ejecutar_lodo(base, cargar_dataset, meseta=leer_meseta(DIVERSIDAD))
+```
+
+Por cada dataset: lo excluye, ajusta el recomendador con `base.without(d)`, y
+corre dos condiciones con las mismas cinco semillas. De cada corrida guarda la
+**curva completa** de treinta ensayos, no el número resumen, porque de ahí salen
+la variable primaria, la medida a quince ensayos y las reglas de censura
+alternativas sin volver a ejecutar nada.
+
+### Las tres precisiones del conteo
+
+Son las que el pre-registro v1.0 añadió al implementar el arnés, y las tres son
+fáciles de implementar mal sin que nada falle:
+
+1. **El conteo empieza en uno**, coherente con que la censura valga 31.
+2. **Los ensayos inevaluables consumen su turno.** Saltar los `NaN` daría a ambas
+   condiciones un número menor que el real, y más a la caliente que a la fría,
+   porque el frío cae más en la región inevaluable.
+3. **Se guarda la curva completa**, no solo el ensayo en que se cruza el umbral.
+
+### Una propiedad que se comprueba, no se supone
+
+**El arranque en frío no puede censurarse.** El objetivo es el 95 % del mejor
+valor que él mismo alcanza, de modo que si ese máximo ocurre en el ensayo *t*, el
+frío cruzó el umbral en algún ensayo menor o igual que *t*. No es improbable: es
+imposible.
+
+El arnés lo verifica en cada corrida y **aborta** si ocurre, porque solo podría
+deberse a un error de implementación. Hay una prueba que fuerza el caso imposible
+y comprueba que falle ruidosamente.
+
+### Por qué el cargador de datasets entra por parámetro
+
+Para que las pruebas recorran el protocolo entero sobre un **corpus sintético de
+juguete**, sin red y sin producir un solo número del experimento. `tests/test_lodo_harness.py`
+verifica sobre él las propiedades que el pre-registro declara: que el frío nunca
+se censura, que cada pliegue excluye su propio dataset de los vecinos, que las
+cinco semillas dan cinco observaciones y que un pliegue es reproducible.
+
+El corpus de juguete son tres datasets, que es el mínimo: con dos, cada pliegue
+dejaría un solo vecino y el recomendador rechaza —con razón— una base cuyas
+meta-características no varían.
+
+**Esas pruebas cuestan unos 50 segundos**, y el costo no es el tamaño de las
+tablas sino la sobrecarga de Optuna por ensayo: son 3000 ensayos reales. Se
+aceptan tal cual porque son las únicas que verifican que el motor, el
+recomendador y el conteo funcionan juntos.
+
 ### Las tres capas de validación de una configuración
 
 Una configuración recorre tres comprobaciones antes de llegar a `enqueue_trial`, y
@@ -547,6 +603,7 @@ otra cosa: es legítima, simplemente no corre sobre esos datos. Queda con métri
 | `experimentos/BASE-meta-conocimiento.md` | Resumen de la base: supervivientes, diversidad de ganadores y tiempos |
 | `experimentos/DIVERSIDAD-ganadores.md` | Análisis exploratorio: forma de la diversidad, anchura de la meseta y efecto piso |
 | `experimentos/EVALUACION-recomendador.md` | Evaluación de las estrategias sobre los 27 datasets fuera del corpus |
+| `experimentos/LODO-resultados.json` | Curvas y análisis del experimento, generado en la semana 10 |
 | `experimentos/CORPUS-criterios-inclusion.md` | Cómo se selecciona el corpus |
 | `experimentos/SPIKE-A-enqueue-trial.md` | Viabilidad del arranque en caliente |
 | `experimentos/SPIKE-B-pymfe.md` | Costo y robustez de la extracción de meta-características |
@@ -571,5 +628,5 @@ un sustituto sintético. Los datos reales van fuera del repositorio; véase
 
 ## Pendiente en esta guía
 
-Se amplía con el arnés de validación *leave-one-dataset-out* y sus reportes
-comparativos (semanas 9 a 11).
+Se amplía con los reportes comparativos del experimento y el análisis de causas
+(semanas 10 y 11).
