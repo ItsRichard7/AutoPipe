@@ -63,12 +63,13 @@
 \fancyfoot[C]{\thepage}
 
 % --- Identidad de la version --------------------------------
-\newcommand{\preregversion}{v0.2}
-\newcommand{\preregfecha}{20 de agosto de 2026}
-\newcommand{\preregtag}{prereg-v0.2}
+\newcommand{\preregversion}{v1.0}
+\newcommand{\preregfecha}{7 de septiembre de 2026}
+\newcommand{\preregtag}{prereg-v1.0}
 
-% Fecha de cierre de la version anterior, para el historial.
+% Fechas de cierre de las versiones anteriores, para el historial.
 \newcommand{\preregfechauno}{21 de julio de 2026}
+\newcommand{\preregfechados}{20 de agosto de 2026}
 
 \begin{document}
 
@@ -84,11 +85,12 @@
 \midrule
 Versión & \preregversion \\
 Fecha de cierre & \preregfecha \\
-Estado & Decisiones de protocolo fijadas, más el espacio de búsqueda congelado, las
-reglas de extracción de meta-características y el tratamiento de los pipelines
-inevaluables en el cribado. Se cierra \textbf{antes} de ejecutar el cribado de
-sensibilidad. Pendiente de la v1.0: el número de semillas y la ejecución del
-\textit{leave-one-dataset-out}. \\
+Estado & \textbf{Versión congelada previa a la ejecución del experimento.} Cierra
+las dos decisiones que quedaban abiertas —el número de semillas y el tratamiento
+de la región inevaluable— y registra las reglas del recomendador y de la variable
+medida. Se cierra \textbf{antes} de ejecutar el
+\textit{leave-one-dataset-out}: ningún resultado del experimento existía cuando
+se escribió. \\
 Etiqueta de git & \texttt{\preregtag}, etiqueta anotada que apunta al
 \emph{commit} que cierra esta versión. El fechado verificable es la fecha de
 \textbf{ese commit}, no la de creación de la etiqueta, y se obtiene con
@@ -312,11 +314,34 @@ el protocolo:
   \item Sobre la variable «ensayos hasta el objetivo»: el arranque en caliente
         inyecta configuraciones ganadoras, que por construcción no caen en la
         región inevaluable, mientras que el frío gasta ahí parte de sus ensayos
-        aleatorios. \textbf{Queda abierta} y se resuelve en la v1.0, antes de
-        ejecutar el \textit{leave-one-dataset-out}. La ablación con recomendador
-        aleatorio prevista en el plan de trabajo la controla en parte, porque ese
-        recomendador sí puede caer en la región.
+        aleatorios. Se resuelve a continuación.
 \end{enumerate}
+
+\textbf{Decisión cerrada en esta versión.} La región inevaluable \textbf{se deja
+como está}: ni el espacio ni los motores se modifican, y los candidatos que no se
+pueden evaluar siguen registrándose con métrica \texttt{NaN} y consumiendo su
+ensayo. En su lugar se declara una covariable, descrita en la
+Sección~\ref{sec:covariables}.
+
+La alternativa que la v0.2 contemplaba era introducir la noción de \emph{paso
+obligatorio} en los motores, de modo que no se pudiera omitir la codificación en
+un dataset con categóricas. Se descarta por tres razones, y ninguna es de
+comodidad. Primera: sería un cambio de comportamiento público de los motores
+introducido después de que el espacio quedara congelado, lo que obligaría a
+incrementar el identificador de versión. Segunda: eso invalidaría la base de
+meta-conocimiento ya construida, cuyos índices solo significan algo respecto de
+\texttt{tabular-v1}, y habría que reconstruirla entera. Tercera, y la que más
+pesa: cambiaría el espacio sobre el que se mide justo antes de medir, y el efecto
+de ese cambio sobre la variable de interés sería favorable al arranque en
+caliente, porque eliminaría precisamente los ensayos que el frío desperdicia. Una
+modificación que agranda el efecto esperado, decidida después de conocer la
+magnitud del problema, es exactamente lo que un pre-registro existe para impedir.
+
+Se asume por tanto que la asimetría existe, se declara aquí, y se controla por
+dos vías independientes: la covariable de la Sección~\ref{sec:covariables}, que la
+hace visible dataset por dataset, y la ablación aleatoria de la
+Sección~\ref{sec:analisis}, cuyas configuraciones provienen de datasets distintos
+y por tanto sí pueden caer en la región inevaluable del dataset receptor.
 
 % =========== 4. META-CARACTERISTICAS ========================
 \section{Extracción de meta-características}
@@ -520,7 +545,136 @@ Sección~\ref{sec:analisis} queda vacía. En ese caso se reporta como tal. El
 umbral no se redefine después de observar la distribución para forzar una
 partición del corpus.
 
-% =========== 5. PROTOCOLO LODO ==============================
+% =========== 6. RECOMENDADOR ================================
+\section{El recomendador de arranque en caliente}
+\label{sec:recomendador}
+
+El anteproyecto fija dos cosas: que el arranque en caliente inyecta cinco
+configuraciones y que el recomendador es de vecinos más cercanos, dejando «un
+meta-modelo más sofisticado» como extensión deseable. No especifica cómo se mide
+la distancia entre datasets ni cómo se eligen las cinco configuraciones. Esta
+sección cierra esos silencios.
+
+\textbf{Todas las reglas siguientes se fijaron a priori}, sin medir sobre el
+corpus. La razón es que los 25 datasets del corpus \emph{son} los pliegues del
+\textit{leave-one-dataset-out}: elegir un parámetro porque funciona bien sobre
+ellos sería seleccionar sobre el conjunto de prueba.
+
+\subsection{Distancia y normalización}
+
+La distancia entre dos datasets es la \textbf{$L_1$ sobre el vector de
+meta-características escalado}. La elección de $L_1$ tiene precedente publicado
+para exactamente esta tarea: auto-sklearn ordena los datasets por su distancia
+$L_1$ en el espacio de meta-características y usa los más cercanos para arrancar
+en caliente su optimización bayesiana (Feurer et al., 2015, sección 3.1).
+
+El escalado \textbf{no} proviene de esa referencia, que no describe ninguno, y se
+declara aquí como decisión propia: se usan la \textbf{mediana y el rango
+intercuartílico}, y no la media y la desviación típica, porque con dos docenas de
+datasets un solo valor extremo desplaza ambos estadísticos. Escalar es
+imprescindible porque el corpus mezcla meta-características acotadas con otras
+que van de 500 a 45\,000; sin escalar, esas últimas dominarían la distancia por su
+magnitud.
+
+Como análisis de sensibilidad declarado de antemano, con el mismo patrón que
+\texttt{n\_startup\_trials}, se admite repetir el análisis con escalado por media
+y desviación y con distancia euclídea. Esa repetición es secundaria y no
+sustituye al análisis primario.
+
+\subsection{Cuántos vecinos}
+
+\textbf{El número de vecinos no es un parámetro.} Lo que el anteproyecto fija son
+las cinco configuraciones inyectadas, de modo que el recomendador recorre los
+vecinos por cercanía y \textbf{salta las configuraciones repetidas} hasta reunir
+cinco \emph{distintas}.
+
+\textit{Razón:} inyectar dos veces la misma configuración gastaría dos de los
+treinta ensayos del presupuesto para obtener el mismo valor. Con 17
+configuraciones ganadoras distintas entre los 25 datasets del corpus, los
+repetidos aparecen con frecuencia y no son un caso de borde.
+
+\subsection{Consulta fuera del rango del pliegue}
+
+Antes de escalar, cada valor del vector consultado se \textbf{recorta al mínimo y
+al máximo observados en el pliegue}. El recorte afecta únicamente a la consulta,
+nunca al ajuste, de modo que no abre ninguna vía de fuga.
+
+\textit{Razón:} el escalado robusto controla los valores extremos \emph{dentro}
+del conjunto de ajuste, pero en el \textit{leave-one-dataset-out} el dataset
+excluido puede caer muy fuera. Sin recorte, y medido sobre el corpus real, hay dos
+pliegues en los que una sola meta-característica aporta más de la mitad de la
+distancia —hasta el 71\%—, de modo que el vecino más parecido no lo elegiría un
+espacio de 87 meta-características sino una estadística de covarianza. El recorte
+no necesita ninguna constante arbitraria: el recomendador no puede medir
+\emph{cuánto} fuera del corpus cae un dataset, solo que cae fuera.
+
+\subsection{Meta-características supervivientes, por pliegue}
+\label{sec:supervivientes}
+
+La Sección~\ref{sec:metacar} establece que se descarta toda meta-característica no
+finita en algún dataset del corpus, y añadía que ese descarte se calcula «una sola
+vez, sobre el corpus definitivo». \textbf{Esta versión lo corrige}: el descarte se
+recalcula \textbf{en cada pliegue}, usando solo sus datasets de entrenamiento, y
+se interseca además con las meta-características finitas del dataset consultado.
+
+\textit{Razón:} calcularlo sobre el corpus completo usaría el patrón de finitud
+del dataset excluido para decidir qué columnas existen, que es una forma —débil,
+porque solo usa el hecho binario de ser finito y nunca un valor— de fuga en el
+nivel meta. La regla por pliegue la elimina.
+
+\textit{Costo:} ninguno. Medido sobre el corpus, solo un pliegue conserva
+meta-características que el corpus completo descarta, son dos, y ambas resultan no
+finitas en el propio dataset excluido, de modo que la intersección las descarta
+igual. Las 88 supervivientes son las mismas en los 25 pliegues bajo cualquiera de
+las dos reglas. Se adopta la estricta porque no cuesta nada y elimina la fuga.
+
+\subsection{Las cuatro estrategias y su papel}
+\label{sec:estrategias}
+
+Las cuatro estrategias devuelven configuraciones ganadoras de datasets reales de
+la base y saltan las repetidas. Lo único que las distingue es \textbf{de qué
+datasets} toman las configuraciones, y esa es la propiedad que las hace
+comparables: una estrategia que extrajera configuraciones arbitrarias del espacio
+mezclaría el efecto de la similitud con el de la calidad de lo inyectado y no
+mediría ninguno de los dos.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{2.2cm} L{4.6cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Estrategia} & \textbf{De dónde toma} & \textbf{Papel en el análisis} \\
+\midrule
+\texttt{nearest} & Los vecinos más cercanos &
+\textbf{Primaria.} Es la que produce el contraste confirmatorio de la
+Sección~\ref{sec:analisis}. \\
+\midrule
+\texttt{random} & Ganadoras de datasets al azar &
+\textbf{Ablación, secundaria.} Aísla si lo que aporta es la similitud. \\
+\midrule
+\texttt{frequent} & Las que más ganan en la base, ignorando las
+meta-características &
+\textbf{Control, secundario.} Aísla la contribución del meta-aprendizaje. \\
+\midrule
+\texttt{diverse} & El subconjunto más separado entre las cercanas &
+\textbf{Exploratoria.} No puede sostener conclusiones. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{La ablación aleatoria toma ganadoras de datasets al azar, y no
+configuraciones al azar del espacio.} Son dos preguntas distintas: la primera
+aísla si la \textbf{similitud} aporta algo, que es lo que el TFG afirma; la
+segunda solo preguntaría si arrancar en caliente aporta algo, y al poder caer en
+la región inevaluable mezclaría el efecto de la similitud con el de la validez de
+las configuraciones. Emplea la semilla $202$.
+
+\textbf{El control \texttt{frequent} se declara porque sin él un resultado
+positivo tampoco sería atribuible.} Si el arranque en caliente redujera los
+ensayos hasta el objetivo, sin este control no se podría distinguir «los datasets
+parecidos comparten buen preprocesamiento» de «hay configuraciones que van bien
+casi siempre y conviene probarlas primero». La segunda explicación no necesita
+meta-aprendizaje alguno.
+
+% =========== 7. PROTOCOLO LODO ==============================
 \section{Protocolo de comparación}
 \label{sec:lodo}
 
@@ -532,22 +686,34 @@ sigue precisa sus puntos no especificados.
 
 \subsection{Semillas}
 
-Cada condición se ejecuta con \textbf{tres semillas}, y son las \textbf{mismas
-tres} en ambas condiciones: $\{101,\ 202,\ 303\}$. La construcción de la base de
-meta-conocimiento, que el anteproyecto define con un presupuesto único de 50
-ensayos por dataset, emplea la semilla $42$. El cribado de sensibilidad emplea la
-semilla $4242$.
+Cada condición se ejecuta con \textbf{cinco semillas}, y son las \textbf{mismas
+cinco} en ambas condiciones: $\{101,\ 202,\ 303,\ 404,\ 505\}$. La construcción de
+la base de meta-conocimiento, que el anteproyecto define con un presupuesto único
+de 50 ensayos por dataset, emplea la semilla $42$. El cribado de sensibilidad
+emplea la semilla $4242$. La estrategia de recomendación aleatoria de la
+Sección~\ref{sec:recomendador} emplea la semilla $202$.
 
-Repetir con tres semillas responde a que una sola corrida por condición produce
+Repetir con varias semillas responde a que una sola corrida por condición produce
 una observación pareada ruidosa: el muestreador TPE con 30 ensayos tiene varianza
 apreciable entre semillas, y una conclusión que dependa de la semilla que tocó no
 es defendible. Esto no altera el presupuesto de 30 ensayos, ni el emparejamiento
 por dataset, ni el número de pares de la prueba estadística.
 
-Si la medición de costo de la semana 6 muestra que el cómputo lo permite, el
-número de semillas asciende a cinco. La decisión se registra en la versión v1.0
-de este documento, antes de ejecutar el experimento, y en ningún caso se toma
-después de observar los resultados.
+\textbf{Decisión cerrada en esta versión: se pasa de tres semillas a cinco.} La
+v0.1 fijó tres y condicionó el ascenso a cinco al costo de cómputo medido, que la
+v0.2 aplazó por no existir todavía. La medición ya existe y descarta el cómputo
+como obstáculo: la base de meta-conocimiento completa, con 50 ensayos sobre cada
+uno de los 25 datasets, se construyó en 1,1 minutos, y el cribado de los 52
+candidatos tardó 42 segundos. A ese orden de magnitud, el
+\textit{leave-one-dataset-out} completo son minutos con tres semillas y siguen
+siendo minutos con cinco.
+
+Las tres semillas originales se conservan y se añaden dos: la decisión amplía y
+no sustituye. El motivo de ampliar es que \textbf{cinco observaciones por dataset hacen
+más estable la mediana} de la que depende cada par de la prueba de Wilcoxon, y
+que con la regla de censura de la Sección~\ref{sec:censura} hace falta que la
+mayoría de las semillas de un dataset queden censuradas para desplazar su
+observación: con tres bastaban dos, con cinco hacen falta tres.
 
 En la implementación, la semilla gobierna tanto la partición de entrenamiento y
 validación como el muestreador de Optuna. Como ambas condiciones comparten la
@@ -561,10 +727,10 @@ y la semilla $s$, el objetivo es el 95\% del mejor valor de macro-F1 que
 alcanza el arranque en frío con la semilla $s$ sobre el dataset $d$ en su
 presupuesto completo de 30 ensayos. Los ensayos hasta el objetivo se calculan por
 semilla, y la observación pareada de cada dataset es la \textbf{mediana de las
-tres semillas} en cada condición.
+cinco semillas} en cada condición.
 
 \textit{Razón:} la alternativa —definir un objetivo único por dataset a partir de
-la agregación de las tres corridas en frío— permitiría que el arranque en frío no
+la agregación de las cinco corridas en frío— permitiría que el arranque en frío no
 alcanzara su propio objetivo en alguna semilla, reintroduciendo la censura en la
 condición de referencia. La definición por pareja preserva el emparejamiento de
 semillas que exige el anteproyecto y mantiene la propiedad de la
@@ -579,6 +745,35 @@ veinticinco ensayos de exploración propia dentro del presupuesto de treinta.
 \textit{Razón:} no contarlas otorgaría al arranque en caliente una ventaja
 puramente contable, ajena a la hipótesis, que se investiga sobre el costo total
 de la búsqueda.
+
+\subsection{Cómo se cuenta la variable}
+\label{sec:conteo}
+
+Estas tres precisiones no cambian el protocolo: cierran silencios que solo se
+hacen visibles al implementar el arnés de medición, y quedan aquí registradas
+antes de ejecutarlo.
+
+\begin{enumerate}
+  \item \textbf{El conteo empieza en uno.} «Ensayos hasta el objetivo» es la
+        posición del primer ensayo cuya métrica alcanza el umbral, con el primer
+        ensayo de la búsqueda numerado como $1$. Es lo coherente con que la regla
+        de censura de la Sección~\ref{sec:censura} valga $31$, es decir
+        presupuesto más uno.
+
+  \item \textbf{Los ensayos inevaluables consumen su turno.} Un candidato que no
+        se puede evaluar sobre el dataset se registra con métrica \texttt{NaN},
+        nunca alcanza el objetivo y \textbf{no se descuenta} del conteo. Vale
+        tanto para el arranque en frío, que llega a esa región por muestreo, como
+        para el caliente, cuyas configuraciones provienen de otros datasets y
+        pueden no ser ejecutables en el receptor.
+
+  \item \textbf{Se registra la curva completa por ensayo.} De cada corrida se
+        guardan las treinta métricas en orden, y no solo el ensayo en que se
+        cruza el umbral. Es lo que permite calcular la medida descriptiva de
+        desempeño a quince ensayos que define la Sección~4.3.3 del anteproyecto,
+        y recalcular la variable bajo las reglas de censura alternativas de la
+        Sección~\ref{sec:censura} sin volver a ejecutar nada.
+\end{enumerate}
 
 \subsection{Casos censurados}
 \label{sec:censura}
@@ -603,8 +798,8 @@ reglas, se declara explícitamente en el informe que la conclusión no depende d
 la regla de censura. Si cambia con alguna, se reporta con qué regla y en qué
 sentido, sin seleccionar la más favorable.
 
-Con la mediana de tres semillas, la regla de censura solo desplaza la observación
-de un dataset cuando al menos dos de sus tres semillas quedan censuradas; el
+Con la mediana de cinco semillas, la regla de censura solo desplaza la observación
+de un dataset cuando al menos tres de sus cinco semillas quedan censuradas; el
 reporte a nivel de semilla hace visible esa situación.
 
 \subsection{Ausencia de poda efectiva}
@@ -666,12 +861,61 @@ Sección~4.3.4 hace depender exclusivamente de los ensayos hasta el objetivo.
         Sección~\ref{sec:censura}.
   \item \textbf{Tabla por dataset}, con sensibilidad, margen sobre el pipeline
         vacío, ensayos hasta el objetivo por semilla y condición, casos
-        censurados y desempeño a quince ensayos. Los datasets planos aparecen en
-        su propia fila con su valor de sensibilidad visible, no promediados
-        dentro de la mediana global.
+        censurados, desempeño a quince ensayos y las dos covariables de la
+        Sección~\ref{sec:covariables}. Los datasets planos aparecen en su propia
+        fila con su valor de sensibilidad visible, no promediados dentro de la
+        mediana global.
+  \item \textbf{Ablación aleatoria.} El mismo contraste sustituyendo la
+        estrategia primaria por \texttt{random} (Sección~\ref{sec:estrategias}).
+        Responde a si lo que aporta el arranque en caliente es la
+        \textbf{similitud} o el mero hecho de inyectar ganadoras plausibles.
+  \item \textbf{Control por frecuencia.} El mismo contraste sustituyendo la
+        estrategia primaria por la que recomienda, sin mirar las
+        meta-características, las configuraciones que más ganan en la base.
+        Responde a si el meta-aprendizaje aporta algo sobre esa regla.
 \end{enumerate}
 
 Ningún análisis secundario sustituye al primario en la conclusión del proyecto.
+Los dos últimos existen porque \textbf{condicionan cómo se puede interpretar un
+resultado positivo}, no solo uno negativo: si el arranque en caliente redujera los
+ensayos hasta el objetivo pero \texttt{frequent} lograra lo mismo, la reducción no
+sería atribuible al meta-aprendizaje.
+
+\subsection{Covariables declaradas}
+\label{sec:covariables}
+
+Se registran de antemano dos covariables descriptivas, ambas \textbf{ya medidas
+antes de escribir esta versión} y ninguna derivada del experimento. No entran en
+el criterio de confirmación de la Sección~4.3.4 del anteproyecto: su función es
+que el resultado, sea cual sea, pueda interpretarse.
+
+\begin{enumerate}
+  \item \textbf{Fracción de ensayos inevaluables}, por dataset y condición. Hace
+        visible dataset por dataset la asimetría que la
+        Sección~\ref{sec:espacio} declara y no corrige.
+
+  \item \textbf{Anchura de la meseta}: cuántas de las 144 configuraciones del
+        espacio alcanzan el 95\% del óptimo de ese dataset. Se mide por rejilla
+        exhaustiva y queda registrada en el documento
+        % \allowbreak permite partir el nombre del archivo sin añadir un guion:
+        % dentro de la sangría de la lista no cabe entero en una línea.
+        \texttt{DIVERSIDAD-\allowbreak ganadores.md} de esta misma carpeta.
+\end{enumerate}
+
+\textbf{Por qué la segunda, y por qué antes de ejecutar.} La medición previa da
+una mediana de 36 de 144 configuraciones dentro de la meseta, lo que equivale a
+unos cuatro ensayos aleatorios esperados hasta el objetivo en el dataset mediano,
+y menos de dos en cuatro datasets. Donde la meseta es ancha, el arranque en frío
+cruza el objetivo dentro de su propia fase aleatoria y no queda margen para
+mejorarlo: el contraste no puede discriminar por construcción, con independencia
+de la calidad del recomendador.
+
+Declararla ahora tiene una consecuencia concreta sobre lo que el proyecto podrá
+afirmar. Sin ella, un resultado nulo solo permitiría decir que no se observó
+reducción. Con ella, permite decir \emph{en qué datasets había margen para
+observarla y en cuáles no}, que es una afirmación sustantiva sobre cuándo puede
+ayudar el arranque en caliente meta-aprendido y no una excusa construida después
+de ver los resultados. Por eso se declara antes y no después.
 
 \subsection{Análisis exploratorios, no confirmatorios}
 
@@ -700,13 +944,6 @@ constituyen resultados defendibles por sí mismos.
 \label{sec:fuera}
 
 \begin{itemize}
-  \item La medición del costo de cómputo y la decisión entre tres y cinco
-        semillas: se mide en la semana 6 y se registra en la \textbf{v1.0}. La
-        v0.1 anunciaba que iría en la v0.2, lo que era imposible: esta versión se
-        cierra en la semana 5, antes de que exista la medición.
-  \item El tratamiento de la región inevaluable del espacio en la variable
-        «ensayos hasta el objetivo»: se resuelve en la v1.0, antes de ejecutar el
-        \textit{leave-one-dataset-out} (Sección~\ref{sec:espacio}).
   \item La identidad de los datasets del corpus y sus valores de IQR: son
         resultado de aplicar la Sección~\ref{sec:corpus}, no reglas, y se
         registran en \texttt{docs/experimentos/CORPUS-seleccionado.md}. La v0.1
@@ -716,11 +953,36 @@ constituyen resultados defendibles por sí mismos.
         el resultado de aplicar la regla de la Sección~\ref{sec:metacar} al corpus
         definitivo, y se registra junto a la base de meta-conocimiento.
   \item La incorporación o el descarte del agrupamiento como extensión deseable:
-        se decide en el punto de control de alcance de la semana 7, con los
-        criterios del plan de trabajo, y no afecta el protocolo aquí registrado.
+        se decidió en el punto de control de alcance de la semana 7 y quedó
+        \textbf{fuera}, sin afectar al protocolo aquí registrado
+        (\texttt{docs/decisiones/ADR-003-alcance-agrupamiento.md}).
   \item Todo resultado experimental. Este documento registra reglas, no
         hallazgos.
 \end{itemize}
+
+\subsection{Reglas que gobiernan entradas ya construidas}
+
+Una precisión necesaria para que nadie tenga que adivinarla. Dos de las reglas
+registradas en esta versión \textbf{ya se habían aplicado} cuando se escribió:
+
+\begin{itemize}
+  \item El \textbf{desempate canónico} entre configuraciones ganadoras
+        empatadas, que gobernó la construcción de la base de meta-conocimiento en
+        la semana 7.
+  \item Las reglas del \textbf{recomendador} de la
+        Sección~\ref{sec:recomendador}, aplicadas en la evaluación exploratoria
+        sobre datasets fuera del corpus de la semana 8.
+\end{itemize}
+
+Ninguna de las dos vulnera la regla de oro, porque esa regla protege el
+\textbf{experimento} y ninguna de esas dos ejecuciones es un contraste de la
+hipótesis: la base es una entrada del experimento y la evaluación fue exploratoria
+y se declaró como tal, sin usarse para elegir ningún parámetro. Pero conviene que
+el lector pueda distinguir sin esfuerzo qué se fijó antes de qué, así que se dice
+aquí en lugar de dejarlo implícito.
+
+Todo lo demás que esta versión registra gobierna el \textit{leave-one-dataset-out},
+que no se había ejecutado ni siquiera en parte cuando el documento se cerró.
 
 % =========== 8. HISTORIAL ===================================
 \section{Historial de versiones}
@@ -737,7 +999,7 @@ semillas, la definición del objetivo, el conteo de los ensayos inyectados, la
 regla de censura con su chequeo de robustez y el plan de análisis. Se cierra en
 la semana 1 para que las decisiones queden fechadas el día en que se tomaron. \\
 \midrule
-v0.2 & \preregfecha &
+v0.2 & \preregfechados &
 Congela la composición del espacio de búsqueda \texttt{tabular-v1} y declara su
 región inevaluable; fija las reglas de extracción de meta-características
 (biblioteca, grupos, submuestreo de 500 con su semilla y estratificación,
@@ -749,11 +1011,18 @@ el costo de cómputo y la identidad del corpus no pueden registrarse en esta
 versión (véase la Sección~\ref{sec:fuera}). Lleva una errata sobre su fechado,
 registrada en la Sección~\ref{sec:erratas}. \\
 \midrule
-v1.0 & Semana 9 &
-Pendiente. Versión congelada previa a la ejecución del
-\textit{leave-one-dataset-out}. Añadirá el número de semillas a partir del costo
-medido en la semana 6 y el tratamiento de la región inevaluable en la variable
-«ensayos hasta el objetivo». Se cierra antes de generar cualquier resultado
+v1.0 & \preregfecha &
+\textbf{Versión congelada previa a la ejecución del experimento.} Cierra las dos
+decisiones que quedaban abiertas: el número de semillas asciende de tres a cinco,
+porque el costo medido descarta el cómputo como obstáculo, y la región inevaluable
+se deja como está en lugar de introducir pasos obligatorios, declarándola en su
+lugar como covariable. Añade la Sección~\ref{sec:recomendador} con las reglas del
+recomendador —distancia, escalado, número de vecinos, recorte de la consulta y
+supervivientes por pliegue—, que corrige en ese último punto lo que la v0.2 decía;
+la Sección~\ref{sec:estrategias} con las cuatro estrategias y su papel en el
+análisis; la Sección~\ref{sec:conteo} con las tres precisiones sobre cómo se
+cuenta la variable medida; y la Sección~\ref{sec:covariables} con las dos
+covariables declaradas. Se cierra \textbf{antes} de generar cualquier resultado
 experimental. \\
 \bottomrule
 \end{tabularx}
