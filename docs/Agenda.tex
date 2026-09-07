@@ -1197,6 +1197,55 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  ablación aleatoria definida como ganadoras de datasets al azar, y \texttt{frequent} como
  análisis declarado.}
 
+\semana{9}{2026-09-07 --- E5 cierre y E6 inicio: hito del recomendador funcional}
+
+\entrada{2026-09-07}{7}
+{Cerré el recomendador como API pública y congelé el pre-registro en su versión
+ \textbf{v1.0}. Del recomendador: \texttt{MetaFeatureExtractor}, \texttt{MetaRecommender} y
+ las estrategias pasan a exportarse desde el paquete —hasta ahora había que importarlos por
+ su módulo—, y escribí \texttt{examples/\allowbreak warm\_start\_\allowbreak quickstart.py}, el flujo completo del
+ arranque en caliente en 19 instrucciones, con cuatro pruebas nuevas. Corregí de paso la
+ primera línea del paquete, que seguía describiéndolo como una librería de detección de
+ anomalías en imágenes. Del pre-registro: dieciocho páginas, sin un solo aviso de
+ composición.}
+{La v1.0 cierra las dos decisiones que quedaban abiertas y registra todo lo que las semanas
+ 7 y 8 fueron acumulando. \textbf{Semillas: se pasa de tres a cinco}, $\{101, 202, 303, 404,
+ 505\}$; la medición descarta el cómputo como obstáculo —la base entera se construyó en 1,1
+ minutos— y cinco observaciones hacen más estable la mediana de la que depende cada par del
+ Wilcoxon. \textbf{Región inevaluable: se deja como está}, y en su lugar se declara como
+ covariable. Descarté la alternativa que la propia v0.2 contemplaba, introducir pasos
+ obligatorios en los motores, por tres razones: sería un cambio de comportamiento público
+ posterior al congelamiento del espacio, invalidaría la base ya construida porque sus
+ índices solo significan algo respecto de \texttt{tabular-v1}, y —la que más pesa— cambiaría
+ el espacio sobre el que se mide justo antes de medir, en la dirección que \emph{favorece}
+ al arranque en caliente, porque eliminaría precisamente los ensayos que el frío
+ desperdicia. Una modificación que agranda el efecto esperado, decidida después de conocer
+ la magnitud del problema, es exactamente lo que un pre-registro existe para impedir.
+ Declaré además dos covariables, ambas ya medidas antes de escribir el documento: la
+ fracción de ensayos inevaluables y la anchura de la meseta. La segunda es la que más me
+ importa, y conviene decir por qué se declara \emph{antes} y no después: sin ella, un
+ resultado nulo solo permitiría afirmar que no se observó reducción; con ella, permite
+ afirmar en qué datasets había margen para observarla y en cuáles no, que es una afirmación
+ sustantiva sobre cuándo puede ayudar el arranque en caliente y no una excusa construida a
+ posteriori. Escribir el arnés en la cabeza antes que el documento resultó ser el orden
+ correcto: destapó tres silencios que no habría visto de otro modo, y que ahora quedan
+ registrados —que el conteo de ensayos empieza en uno, coherente con que la censura valga
+ 31; que los ensayos inevaluables consumen su turno y no se descuentan; y que se guarda la
+ curva completa por ensayo, sin lo cual no se podría calcular el desempeño a quince ensayos
+ que el anteproyecto define ni recalcular la variable bajo las reglas de censura
+ alternativas—. Añadí por último una subsección que distingue las reglas que gobiernan el
+ experimento que viene de las dos que gobiernan entradas ya construidas: el desempate
+ canónico, aplicado al reconstruir la base en la semana 7, y las reglas del recomendador,
+ aplicadas en la evaluación exploratoria de la semana 8. Ninguna vulnera la regla de oro,
+ porque esa regla protege el experimento y ninguna de esas ejecuciones es un contraste de la
+ hipótesis, pero el lector no tiene por qué deducirlo: se dice. Compilando encontré una
+ inconsistencia mía que el PDF hizo evidente y el fuente no: al pasar de tres semillas a
+ cinco quedaron tres frases hablando de «la mediana de las tres semillas» y de que bastan
+ dos censuradas para desplazar un dataset, cuando ahora hacen falta tres de cinco.
+ Corregidas. La etiqueta de la versión se crea \textbf{el mismo día} que el commit que la
+ cierra, como exige la fe de erratas que dejó escrita la v0.2 al llegar la suya con siete
+ días de retraso.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1282,6 +1331,12 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
         los \emph{commits} de git no se pueden mover y no coincidían con la bitácora
         tampoco antes del cambio, porque el repositorio se migró y se puso al día en
         bloque.
+  \item \textbf{Cronograma comprimido a partir de la semana 9.} Las semanas de la hoja
+        de ruta son unidades de \emph{trabajo}, no de calendario, y desde la semana 9 se
+        ejecutan a mayor ritmo que una por semana natural. Por eso las fechas de las
+        entradas no coinciden con el rango que encabeza cada semana: el rango conserva la
+        planificación original y las entradas registran cuándo ocurrió el trabajo de
+        verdad. Donde las dos cosas discrepan, la fecha de la entrada es la buena.
   \item \texttt{n\_startup\_trials} figuraba en la semana 7 y tuvo que adelantarse: la
         construcción del corpus de la semana 6 usa el mismo motor de búsqueda. Resuelto.
   \item La semana 3 bajó de 26 a 22 horas comprometidas porque el desacople del motor

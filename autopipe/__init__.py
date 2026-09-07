@@ -1,5 +1,5 @@
 """
-AutoPipe - Automatic Pipeline Selection for Anomaly Detection in Image Datasets.
+AutoPipe - Task-agnostic automatic pipeline selection with meta-learned warm start.
 
 Main modules:
     data_loader     -- image dataset loading and validation
@@ -9,6 +9,7 @@ Main modules:
     search_space    -- canonical, versioned search spaces shared across datasets
     meta_features   -- dataset meta-feature extraction, on top of pymfe
     meta_knowledge  -- the meta-knowledge base the warm-start recommender queries
+    meta_recommender -- nearest-neighbour warm-start recommender over meta-features
     evaluator       -- dataset splitting and metric calculation
     parallel_runner -- parallel pipeline evaluation
     reporter        -- report generation (PDF / HTML)
@@ -23,7 +24,9 @@ from autopipe.evaluator import (
     DataSplitter,
     MetricCalculator,
 )
+from autopipe.meta_features import MetaFeatureError, MetaFeatureExtractor
 from autopipe.meta_knowledge import MetaKnowledgeBase, MetaKnowledgeEntry
+from autopipe.meta_recommender import ESTRATEGIAS, MetaRecommender
 from autopipe.parallel_runner import ParallelRunner
 from autopipe.pipeline import (
     BaseTransform,
@@ -49,7 +52,9 @@ from autopipe.search_space import (
     TABULAR_SPACE_STEPS,
     TABULAR_SPACE_VERSION,
     build_tabular_search_space,
+    canonical_configuration,
     describe_tabular_search_space,
+    omitted_steps,
     pipeline_from_configuration,
     validate_space_version,
 )
@@ -96,8 +101,14 @@ __all__ = [
     "validate_space_version",
     "describe_tabular_search_space",
     "pipeline_from_configuration",
+    "omitted_steps",
+    "canonical_configuration",
     "ParallelRunner",
     "ReportGenerator",
+    "MetaFeatureExtractor",
+    "MetaFeatureError",
     "MetaKnowledgeBase",
     "MetaKnowledgeEntry",
+    "MetaRecommender",
+    "ESTRATEGIAS",
 ]
