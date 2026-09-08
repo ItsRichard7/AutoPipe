@@ -503,6 +503,37 @@ tablas sino la sobrecarga de Optuna por ensayo: son 3000 ensayos reales. Se
 aceptan tal cual porque son las únicas que verifican que el motor, el
 recomendador y el conteo funcionan juntos.
 
+### El reporte comparativo no calcula estadísticos
+
+`ComparativeReportGenerator` extiende `ReportGenerator` —hereda el directorio de
+salida, la codificación de figuras y la exportación tolerante a PDF— y añade la
+plantilla del LODO: veredicto, contraste primario, controles secundarios, robustez
+de la censura y tabla por dataset con las dos covariables.
+
+```python
+from autopipe.reporter import ComparativeReportGenerator
+
+analisis = json.loads(Path("docs/experimentos/LODO-resultados.json").read_text())["analisis"]
+ComparativeReportGenerator("reportes").generate_comparison(analisis, protocolo=PROTOCOLO)
+```
+
+**Todos los números vienen del arnés.** El reporte los transcribe. Es deliberado:
+el pre-registro fija el análisis y este vive junto al arnés que lo ejecuta; si el
+reporte recomputara los contrastes existirían dos implementaciones del mismo
+estadístico y nada garantizaría que coincidan.
+
+La única excepción es el veredicto, y lo es por seguridad: `redactar_veredicto`
+**deriva** de las cifras si se cumplen las dos condiciones del criterio —reducción
+≥30 % y *p* de una cola <0,05— en vez de copiar la bandera `confirma`. Si ambas
+discrepan, el texto lo denuncia en lugar de elegir una. Hay dos pruebas por
+sabotaje que fallan si alguien vuelve a la versión que copiaba la bandera: la
+ingenua llega a redactar «la reducción es del 1,0 % … con un valor p de 0,9000, por
+debajo de 0,05».
+
+Las condiciones de la tabla **se deducen** de las columnas, así que añadir una
+estrategia al arnés la hace aparecer en el reporte sin tocarlo. Las covariables
+(`*_inevaluable`, `*_a_15`) acompañan a cada condición y no se confunden con una.
+
 ### Las tres capas de validación de una configuración
 
 Una configuración recorre tres comprobaciones antes de llegar a `enqueue_trial`, y

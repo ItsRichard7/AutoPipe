@@ -1319,6 +1319,110 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  pruebas y 99\% de cobertura. Se gastaron las 23\,h comprometidas, exactamente. La semana 10
  puede ejecutar el experimento sin escribir una línea más de código.}
 
+\semana{10}{2026-09-13 a 2026-09-16 --- E6 ejecución y E7: el experimento y sus reportes}
+
+\entrada{2026-09-13}{5}
+{Ejecuté el experimento completo sobre el corpus. Antes medí lo que iba a costar, porque
+ una corrida que se descubre inviable a mitad de camino cuesta el doble: cronometré una
+ condición sobre los cinco conjuntos más caros y extrapolé a las veinte corridas por
+ conjunto que exige el protocolo. La estimación dio unos 20 minutos y la ejecución real
+ tardó \textbf{13,4}: 25 pliegues, 4 condiciones, 5 semillas, 500 corridas y 15\,000
+ ensayos. Ninguna abortó, de modo que la comprobación del arnés —que el arranque en frío no
+ puede censurarse— se sostuvo sobre las 125 corridas frías reales.}
+{El resultado principal: \textbf{la hipótesis no se confirma}. De las dos condiciones que
+ el anteproyecto exige a la vez, se cumple una. La reducción de la mediana es del 33,3\%
+ —el criterio pide 30\%— pero el Wilcoxon de una cola da $p = 0{,}3115$. Y hay que decir
+ algo incómodo sobre esa reducción antes de que alguien la cite: es la mediana de 3 ensayos
+ bajando a 2, o sea \textbf{un solo ensayo}. A esta escala el umbral relativo del 30\% es
+ casi vacuo, porque cualquier mejora de un ensayo sobre una mediana de tres lo supera. No
+ lo escribo como excusa: es una limitación del criterio que solo se puede ver una vez
+ medida la escala real de la variable, y no se puede corregir ahora sin invalidar el
+ pre-registro. Queda anotada como lo que es. El recálculo con las censuras de 60 y de 300
+ no cambia ni una cifra, y también ahí conviene ser preciso en vez de presumir de robustez:
+ solo \textbf{1 de 125} corridas calientes quedó censurada, y una sola no puede mover la
+ mediana de cinco semillas.}
+
+\entrada{2026-09-14}{8}
+{Extendí el generador de reportes con una subclase,
+ \texttt{Comparative\allowbreak Report\allowbreak Generator}, que hereda de
+ \texttt{Report\allowbreak Generator} el directorio de salida, la codificación de figuras y
+ la exportación tolerante a PDF, y añade la plantilla del LODO: veredicto, contraste primario,
+ controles, robustez de la censura, tabla por conjunto con las dos covariables y dos
+ gráficas. Encima va \texttt{scripts/report\_lodo.py}, que produce el resumen en Markdown
+ desde la misma fuente. 41 pruebas nuevas; suite en 637 y 99\% de cobertura.}
+{Dos decisiones de diseño, y las dos son sobre lo que el reporte \emph{no} puede hacer. La
+ primera: \textbf{no calcula ningún estadístico}, los transcribe. El análisis lo fija el
+ pre-registro y vive junto al arnés que lo ejecuta; si el reporte lo recomputara existirían
+ dos implementaciones del mismo contraste y nada garantizaría que coincidan. La segunda es
+ la excepción a la primera, y es de seguridad: el veredicto \textbf{se deriva de las
+ cifras} en vez de copiar la bandera \texttt{confirma} del análisis, y si ambas discrepan el
+ texto lo denuncia en lugar de elegir una. Escribí dos pruebas por sabotaje para eso, y al
+ correrlas contra la versión ingenua vi exactamente por qué hacía falta: llega a redactar
+ «la reducción es del 1,0\% \ldots{} con un valor $p$ de 0,9000, por debajo de 0,05». Un
+ reporte que pueda escribir esa frase no sirve para sostener un capítulo de resultados.
+ Corregí además algo que la primera versión de la tabla hacía mal y que en este
+ experimento concreto resulta grave: no distinguía el contraste primario de los
+ controles. Como \texttt{frequent} sí cumple el criterio y \texttt{nearest} no, un
+ lector habría concluido que la hipótesis se confirmó. Ahora cada fila lleva marcado
+ su papel, y el texto dice que la hipótesis se juega solo en la primaria.}
+
+\entrada{2026-09-15}{5}
+{Escribí la discusión de los resultados en \texttt{docs/experimentos/LODO-discusion.md}: por
+ qué se pierde la significancia, qué dicen los controles, y qué explica el tamaño del efecto.}
+{El recuento por conjunto parece favorable —el caliente llega antes en 14, empata en 4 y
+ llega después en 7— y sin embargo la prueba ni se acerca a 0,05. La razón está en las
+ magnitudes, que es lo que Wilcoxon pondera y un recuento ignora: \texttt{nearest}
+ \textbf{gana a menudo y poco, y pierde raro y mucho}. Ahorra 2,14 ensayos de media cuando
+ acierta y cuesta 3,57 cuando falla. Es el riesgo RI1 del anteproyecto hecho visible sobre
+ el corpus entero, y el spike A ya lo había medido en pequeño: una recomendación plausible
+ pero equivocada sale más cara que no recomendar nada. El segundo hallazgo es el que más me
+ interesa. \texttt{frequent} —que inyecta las ganadoras más frecuentes del pliegue y
+ \emph{no} mira las meta-características del conjunto consultado— alcanza $p = 0{,}0239$, y
+ \texttt{random} queda en 0,2693, indistinguible de la primaria. Los tres números juntos
+ ordenan las explicaciones: si la similitud aportara señal, \texttt{nearest} debería
+ separarse de \texttt{random}, y no lo hace; si el beneficio viniera de arrancar con
+ configuraciones razonables en vez de aleatorias, \texttt{frequent} debería ser la mejor, y
+ lo es. En este espacio y sobre este corpus, \textbf{un buen valor por defecto vale más que
+ la similitud entre conjuntos}. Eso es una ablación, y llega una semana antes de lo
+ planificado porque los controles secundarios del pre-registro ya la contenían. El tercer
+ hallazgo es el que justifica haber declarado la covariable \emph{antes} de ejecutar: la
+ mediana del frío es de 3 ensayos y en 12 de los 25 conjuntos ya alcanza el objetivo en dos
+ o menos. La correlación entre la anchura de la meseta y los ensayos que necesita el frío es
+ de $-0{,}668$. No hay costo que ahorrar. Los conjuntos donde el caliente ayuda de verdad
+ son los de meseta estrecha —\texttt{car} con 12 de 144 pasa de 7 ensayos a 1— y los tres
+ peores casos del caliente tienen mesetas anchas, donde equivocarse cuesta sin que acertar
+ sirviera de mucho. Sin la covariable el resultado solo permitiría decir que no se observó
+ reducción; con ella permite decir que \textbf{el espacio \texttt{tabular-v1} es demasiado
+ fácil para que el ahorro se pueda medir}, que es una afirmación sustantiva sobre cuándo
+ puede ayudar el método. Dejé escrito también qué \emph{no} se puede concluir, que en un
+ resultado negativo importa tanto como lo que sí: no se puede afirmar que el arranque en
+ caliente no sirva, no se puede tocar ahora el criterio ni el espacio, y no se puede
+ presentar a \texttt{frequent} como una confirmación.}
+
+\entrada{2026-09-16}{2}
+{Documenté el reporte comparativo en la guía técnica y puse al día el estado del proyecto.
+ Retiré del registro de decisiones abiertas las dos que la v1.0 cerró —las cinco semillas y
+ la región inevaluable—, que seguían ahí por descuido, dejando anotado dónde viven ahora.}
+{Queda una sola tarea de la semana sin cerrar, y la dejo explícita en vez de darla por
+ hecha: la sección de resultados del informe. El archivo del informe tiene cambios míos sin
+ confirmar en el momento de escribir esto, y escribir encima arriesgaría perderlos; el
+ material está listo y ordenado en \texttt{LODO-discusion.md} para trasladarlo en cuanto
+ esos cambios entren. La ablación con recomendador aleatorio que la semana 11 tenía
+ planificada ya está hecha en lo esencial, así que esa holgura puede ir al análisis de
+ causas y al caso de imágenes.}
+
+\cierresemana{10}{20}{22}{RE6 con su pieza central hecha: el \textbf{experimento ejecutado}
+ sobre los 25 conjuntos del corpus —500 corridas, 15\,000 ensayos, 13,4 minutos— y sus
+ reportes comparativos. \textbf{La hipótesis no se confirma}: reducción del 33,3\% de la
+ mediana, que cumple el umbral, pero $p = 0{,}3115$, que no. El resultado tiene estructura y
+ no es un simple «no significativo»: una asimetría medida entre acierto y error que reproduce
+ el riesgo RI1 sobre el corpus entero, un control sin meta-características que supera a la
+ estrategia primaria, y una covariable declarada de antemano que explica el tamaño del
+ efecto. Se gastaron 20\,h de las 22 comprometidas; la ejecución costó menos de lo previsto
+ porque el arnés de la semana 9 estaba escrito y probado, y lo ahorrado se fue a la
+ discusión. Suite de 596 a 637 pruebas, 99\% de cobertura. Queda pendiente trasladar la
+ discusión al informe.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1344,7 +1448,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 7  & E4, E5, E8        & 25 & 30 & Hito: base y control de alcance; RE5 funcional \\
 8  & E5, E8            & 24 & 18 & RE5 completo; 4 estrategias con controles \\
 9  & E5, E6, E8        & 23 & 23 & Hito: recomendador funcional; v1.0 congelada \\
-10 & E6, E7, E8        & 22 & --- & \\
+10 & E6, E7, E8        & 22 & 20 & LODO ejecutado; hipótesis no confirmada \\
 11 & E6, E7, E8        & 23 & --- & \\
 12 & E8                & 21 & --- & Hito: cierre del proyecto \\
 \midrule
@@ -1364,18 +1468,15 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
 \textbf{Del proyecto}
 
 \begin{itemize}[leftmargin=1.4em]
-  \item Subir de 3 a 5 semillas por condición: depende del costo de cómputo real
-        medido en la semana 6.
   \item Corregir \texttt{\_normalize\_predictions} en la tarea de anomalías: las
         predicciones todas \texttt{+1} se interpretan como «todo anómalo». Cambia métricas
         ya reportadas, así que requiere decisión explícita.
-  \item Qué hacer con la región inevaluable del espacio canónico: hasta el 56\% de los
-        144 pipelines en un dataset con categóricas y faltantes. Afecta la variable
-        «ensayos hasta el objetivo» del LODO. Opciones: dejarlo y reportar la fracción
-        como covariable, o introducir la noción de paso obligatorio en los motores, que
-        es un cambio de comportamiento público. \textbf{Decidir antes de la semana 9}
-        (pre-registro v1.0).
 \end{itemize}
+
+Las dos decisiones que ocupaban este lugar ---subir de tres a cinco semillas y qué
+hacer con la región inevaluable--- quedaron cerradas en el pre-registro v1.0 y se
+retiran de aquí, que es lo que este registro pide al tomarse una decisión. Viven
+ahora en \texttt{docs/experimentos/Preregistro.tex} y en la entrada del 2026-09-07.
 
 \textbf{Del informe}
 

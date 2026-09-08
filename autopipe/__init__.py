@@ -46,7 +46,7 @@ from autopipe.pipeline import (
     StatefulTransform,
     TabularTransform,
 )
-from autopipe.reporter import ReportGenerator
+from autopipe.reporter import ComparativeReportGenerator, ReportGenerator
 from autopipe.search_engine import GridSearchEngine, OptunaSearchEngine
 from autopipe.search_space import (
     TABULAR_SPACE_STEPS,
@@ -105,6 +105,7 @@ __all__ = [
     "canonical_configuration",
     "ParallelRunner",
     "ReportGenerator",
+    "ComparativeReportGenerator",
     "MetaFeatureExtractor",
     "MetaFeatureError",
     "MetaKnowledgeBase",

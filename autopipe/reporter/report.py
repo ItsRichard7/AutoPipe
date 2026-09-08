@@ -21,6 +21,7 @@ import numpy as np  # noqa: E402
 import pdfkit  # noqa: E402
 import yaml  # noqa: E402
 from jinja2 import Template  # noqa: E402
+from matplotlib.figure import Figure  # noqa: E402
 from PIL import Image  # noqa: E402
 
 from autopipe.pipeline.pipeline import Pipeline  # noqa: E402
@@ -350,7 +351,21 @@ class ReportGenerator:
         axis.set_title(f"Evolución de {metric}")
         axis.grid(True, linestyle="--", alpha=0.5)
         figure.tight_layout()
+        return self._figure_to_data_uri(figure)
 
+    @staticmethod
+    def _figure_to_data_uri(figure: Figure) -> str:
+        """Codifica una figura de matplotlib como data URI PNG y la cierra.
+
+        Se cierra siempre: una figura que queda abierta se acumula en el estado
+        global de matplotlib, y un reporte con varias gráficas las va sumando.
+
+        Args:
+            figure: Figura ya compuesta.
+
+        Returns:
+            Data URI con la imagen PNG codificada en base64.
+        """
         buffer = io.BytesIO()
         figure.savefig(buffer, format="png", dpi=100)
         plt.close(figure)
