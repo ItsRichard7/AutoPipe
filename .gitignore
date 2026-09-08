@@ -72,6 +72,10 @@ CLAUDE.md
 docs/Agenda.pdf
 docs/Informe/Plantilla_Informe_TFG.pdf
 docs/experimentos/Preregistro.pdf
+
+# El reporte del LODO se versiona en HTML, que es la fuente que produce el
+# generador; el PDF se deriva de él con wkhtmltopdf al regenerarlo.
+docs/experimentos/reportes/*.pdf
 # Los informes de avance se entregan en PDF, pero el PDF se regenera desde su
 # .tex: lo que se versiona es la fuente.
 docs/Avances/*.pdf
