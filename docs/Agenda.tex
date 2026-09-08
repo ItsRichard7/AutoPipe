@@ -1423,6 +1423,63 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  discusión. Suite de 596 a 637 pruebas, 99\% de cobertura. Queda pendiente trasladar la
  discusión al informe.}
 
+\semana{11}{2026-09-17 en adelante --- E6 ampliado: diagnóstico y pre-registro del
+ experimento 2}
+
+\entrada{2026-09-17}{3}
+{Medí por qué el experimento 1 no pudo detectar nada, sobre los datos ya ejecutados y
+ \textbf{leyendo únicamente la condición de arranque en frío}. Dos resultados. Endurecer el
+ objetivo del 95\% al 99\% del propio mejor del frío lleva la mediana de \textbf{3 a 10
+ ensayos} y los conjuntos con margen medible de 7 a 20, sin ejecutar un solo ensayo nuevo.
+ Y la variable entera toma 7 valores distintos sobre 25 conjuntos, con \textbf{18
+ colisiones}, mientras que el \emph{regret} normalizado toma 25 valores y ninguna.}
+{Esto corrige una conclusión mía de la semana 10. Al escribir la discusión supuse que la
+ causa dominante del resultado nulo era que el espacio \texttt{tabular-v1} fuera demasiado
+ fácil, y la recomendación que iba a hacer era construir un \texttt{tabular-v2} con
+ hiperparámetros continuos: unas 26 horas y el mayor riesgo de cronograma que quedaba. La
+ medición lo desmintió. El factor dominante era \textbf{la holgura del umbral del 95\%} y la
+ granularidad de la variable, y Wilcoxon además descarta los pares empatados, así que el
+ contraste primario operó sobre menos de la mitad de la muestra. De paso invierte el juicio
+ sobre el espacio pequeño: 144 configuraciones permiten calcular el \textbf{óptimo exacto}
+ por pareja (dataset, semilla) con una rejilla exhaustiva, y en un espacio con
+ hiperparámetros continuos habría que conformarse con un proxy. Lo que parecía la limitación
+ resulta ser lo que habilita una vara externa. La regla que me impuse y que el guion
+ impone por construcción: el instrumento se calibra mirando el frío, nunca la diferencia
+ entre frío y caliente. Elegir el umbral por dónde satura el frío es una propiedad del
+ espacio y del corpus; elegirlo por dónde aparece una diferencia sería exactamente lo que un
+ pre-registro existe para impedir.}
+
+\entrada{2026-09-18}{6}
+{Escribí el \textbf{ADR-004}, que propone ejecutar un segundo experimento, y el
+ \textbf{pre-registro v2.0} que lo gobierna, en un documento aparte
+ (\texttt{Preregistro-E2.tex}, nueve páginas, sin un solo aviso de composición). Cambia el
+ objetivo al 99\% del óptimo exhaustivo, el presupuesto a 60 ensayos, la variable primaria
+ al \emph{regret} normalizado, el corpus a 42 conjuntos, las semillas a diez y añade una
+ quinta condición, \texttt{hybrid}. Ninguno de los dos documentos se etiqueta todavía.}
+{Va en un documento separado y no como versión del pre-registro anterior por una razón
+ concreta: la v1.0 declara en su primera página que no modifica ningún criterio de éxito del
+ anteproyecto, y el experimento 2 sí toca parámetros que la Sección 4.3 fija. Convertirlo en
+ una v2.0 de aquel documento lo pondría a contradecirse, y además dejaría de mostrar en
+ \texttt{HEAD} el texto que gobernó el experimento 1. Dos decisiones de diseño del protocolo
+ me importan más que las demás. La primera: \textbf{\texttt{nearest} no cambia ni una línea}
+ respecto del experimento 1. Es lo que permite atribuir lo que ocurra, porque si mejora,
+ la causa es el instrumento y no el método. Mezclar las dos mejoras en una sola condición
+ haría inatribuible cualquier resultado favorable, y por eso la propuesta nueva viaja en una
+ condición aparte. La segunda: se declaran \textbf{dos contrastes confirmatorios} con
+ corrección de Holm, y el segundo es \texttt{nearest} contra \texttt{frequent}, que es el
+ listón exigente y la pregunta que el experimento 1 dejó planteada. \textbf{Y un error mío
+ que atrapé verificando}: el borrador ponía el corpus en 52, dando por hecho que la regla de
+ familia se había aplicado al cribar los candidatos. No es así: se aplica al seleccionar los
+ 25, y diez de los 27 de fuera están excluidos por ella —seis de «dígitos manuscritos» y
+ cuatro de «NASA MDP»—. Admitirlos habría sido grave justo en una validación por exclusión
+ de conjunto: en el pliegue que excluye a \texttt{mfeat-morphological}, sus cinco casi
+ gemelos seguirían entrenando al recomendador y el vecino más cercano sería un hermano. El
+ sesgo iría \textbf{a favor} de la hipótesis, que es la única dirección en la que un sesgo no
+ se puede admitir. El corpus queda en 42. Dejé por último dos declaraciones obligatorias en
+ la primera sección de contenido y no en una nota al pie: que el umbral del 99\% se eligió
+ midiendo sobre datos ya ejecutados, y que 17 de los 42 conjuntos se observaron en la
+ evaluación exploratoria de la semana 8.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1468,6 +1525,11 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
 \textbf{Del proyecto}
 
 \begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Aprobación del ADR-004 por el profesor asesor.} Propone un segundo
+        experimento con su propio pre-registro. Solo amplía lo comprometido y no retira
+        nada ---la Sección 4.3 ya está cumplida con el experimento 1--- pero modifica
+        parámetros que esa sección fija, así que requiere visto bueno. \textbf{Hasta que
+        llegue no se etiqueta el pre-registro v2.0 ni se ejecuta un solo ensayo.}
   \item Corregir \texttt{\_normalize\_predictions} en la tarea de anomalías: las
         predicciones todas \texttt{+1} se interpretan como «todo anómalo». Cambia métricas
         ya reportadas, así que requiere decisión explícita.

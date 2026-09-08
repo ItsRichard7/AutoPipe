@@ -1,0 +1,603 @@
+% ============================================================
+%  Pre-registro del experimento 2 - TFG AutoPipe
+%  Autor: Ricardo Antonio Borbon Mena
+%
+%  POR QUE ES UN DOCUMENTO SEPARADO
+%  --------------------------------
+%  El pre-registro v1.0 declara en su primera pagina que no
+%  modifica ningun criterio de exito del anteproyecto. El
+%  experimento 2 si toca parametros que la seccion 4.3 fija
+%  (objetivo, presupuesto, corpus, variable primaria), de modo
+%  que no puede ser una version de aquel documento sin
+%  contradecirlo. Aquel gobierna el experimento 1 y queda
+%  intacto, con su etiqueta prereg-v1.0.
+%
+%  REGLA DE ORO
+%  ------------
+%  Ninguna version se escribe DESPUES de la ejecucion que
+%  gobierna. Este documento se cierra con un commit propio y
+%  una etiqueta anotada (prereg-v2.0) creada el MISMO dia,
+%  antes de ejecutar el experimento 2.
+%
+%  Compilar con:  pdflatex Preregistro-E2.tex
+% ============================================================
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[letterpaper,top=2.4cm,bottom=2.4cm,left=2.8cm,right=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{amsmath}
+
+\definecolor{tecnavy}{HTML}{003366}
+\definecolor{gris}{HTML}{666666}
+\definecolor{tablehead}{HTML}{E6EEF5}
+\definecolor{avisofondo}{HTML}{FDF3E7}
+\definecolor{avisoborde}{HTML}{C87A28}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.2}
+\setlist[itemize]{leftmargin=1.4em,topsep=2pt,itemsep=3pt}
+\setlist[enumerate]{leftmargin=1.6em,topsep=2pt,itemsep=3pt}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{tecnavy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\sffamily}{\thesubsection}{0.5em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textit{AutoPipe}}
+\fancyhead[R]{\small Pre-registro del experimento 2 --- \preregversion}
+\fancyfoot[C]{\thepage}
+
+% --- Identidad de la version --------------------------------
+\newcommand{\preregversion}{v2.0}
+\newcommand{\preregtag}{prereg-v2.0}
+\newcommand{\preregfecha}{17 de septiembre de 2026}
+
+% Caja de aviso, para lo que no se puede pasar por alto.
+% Se define como comando y no como entorno a propósito: tabularx lee su cuerpo
+% entero de una vez y no admite abrirse en la parte inicial de un \newenvironment.
+\setlength{\fboxsep}{9pt}
+\newcommand{\aviso}[1]{%
+  \par\vspace{7pt}\noindent
+  \fcolorbox{avisoborde}{avisofondo}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}{#1}%
+  }\par\vspace{7pt}}
+
+\begin{document}
+
+% =========== PORTADA ========================================
+\begin{center}
+{\LARGE\bfseries\color{tecnavy} Pre-registro del experimento 2}\\[6pt]
+{\large AutoPipe --- Trabajo Final de Graduación}\\[4pt]
+{\small Ricardo Antonio Borbón Mena --- Instituto Tecnológico de Costa Rica}\\[14pt]
+
+\begin{tabularx}{0.92\textwidth}{L{3.6cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Identificación de esta versión}} \\
+\midrule
+Versión & \preregversion \\
+Fecha de cierre prevista & \preregfecha \\
+Estado & \textbf{Borrador. NO congelado.} Se congela con el \emph{commit} que lo
+cierre y con su etiqueta anotada, creada \textbf{el mismo día}, y solo después de
+dos condiciones: la aprobación del profesor asesor registrada en el ADR-004, y
+antes de ejecutar un solo ensayo del experimento~2. \\
+Etiqueta de git & \texttt{\preregtag} (aún no creada). El fechado verificable será
+la fecha del \emph{commit} que cierre esta versión, no la de creación de la
+etiqueta. \\
+Gobierna & El \textbf{experimento 2} únicamente. El experimento 1 lo gobierna el
+pre-registro v1.0, etiqueta \texttt{prereg-v1.0}, que \textbf{no se modifica}. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{10pt}
+
+% =========== 1. PROPOSITO ===================================
+\section{Propósito y relación con lo ya comprometido}
+\label{sec:proposito}
+
+El experimento 1 se ejecutó el 2026-09-13 bajo el pre-registro v1.0 y la hipótesis
+no se confirmó. Su análisis dejó al descubierto que la medición tenía poca
+resolución, y el diagnóstico registrado en el ADR-004 lo cuantificó. Este documento
+fija, antes de ejecutarlo, el protocolo de un \textbf{segundo experimento} que mide
+la misma hipótesis con un instrumento capaz de detectarla.
+
+Tres propiedades hacen que esto no sea una modificación retroactiva del primero, y
+conviene enunciarlas antes que nada:
+
+\begin{enumerate}
+  \item \textbf{El experimento 1 queda intacto.} Sus números, su criterio y su
+        veredicto se reportan tal como salieron, junto a los de este. El
+        pre-registro v1.0 no se edita.
+  \item \textbf{La Sección~4.3 del anteproyecto ya está cumplida.} El experimento
+        comprometido ante el tribunal se ejecutó completo. Lo que este documento
+        establece es \textbf{adición}, nunca sustitución. Ningún entregable ni
+        criterio se retira.
+  \item \textbf{Este documento se cierra y se etiqueta antes de ejecutar}, como los
+        tres anteriores.
+\end{enumerate}
+
+A diferencia del pre-registro v1.0 ---que solo cerraba silencios de §4.3---, este
+documento \textbf{sí modifica parámetros que §4.3 fija}: el objetivo, el
+presupuesto, el tamaño del corpus y la variable primaria. Por eso es un documento
+separado y por eso el ADR-004 exige la aprobación del profesor asesor.
+
+% =========== 2. DECLARACIONES ===============================
+\section{Declaraciones obligatorias}
+\label{sec:declaraciones}
+
+Dos hechos podrían leerse como grados de libertad ocultos si no se dijeran. Se
+dicen aquí, en la primera sección de contenido, y no en una nota al pie.
+
+\aviso{%
+\textbf{Primera. El umbral del 99\,\% se eligió midiendo sobre datos ya ejecutados.}
+
+El diagnóstico del ADR-004 recalculó, sobre las curvas del experimento 1, cuántos
+ensayos necesita el arranque en frío bajo objetivos del 95, 97, 99, 99,5 y 100\,\%.
+La mediana pasa de 3 a 10 ensayos entre el 95 y el 99\,\%, y a partir de ahí no
+mejora: por eso se elige el 99\,\%.
+
+Esa medición \textbf{leyó únicamente la condición de arranque en frío}. Ninguna
+curva de ninguna condición caliente se consultó, y el guion que la produjo lo impide
+por construcción. La distinción es la que separa calibrar el instrumento de ajustar
+el resultado: el umbral se fijó por dónde satura el frío, que es una propiedad del
+espacio y del corpus, y no por dónde aparece una diferencia entre condiciones.
+}
+
+\aviso{%
+\textbf{Segunda. Diecisiete de los cuarenta y dos conjuntos se usaron antes.}
+
+El corpus del experimento 2 son 42 conjuntos (Sección~\ref{sec:corpus}), y 17 de
+ellos ---los que se incorporan--- se usaron en la semana 8 para la evaluación
+exploratoria de las cuatro estrategias del recomendador, junto con los diez que
+siguen excluidos por la regla de familia.
+
+Aquella evaluación \textbf{no seleccionó nada}: las cuatro estrategias empataron y
+ninguna decisión de diseño se tomó a partir de ella. La estrategia
+\texttt{frequent} se añadió por el argumento conceptual de aislar la contribución
+del meta-aprendizaje, no por haber ganado. Aun así, esos 17 conjuntos ya fueron
+observados, y quien lea los resultados tiene derecho a saberlo sin deducirlo.
+}
+
+% =========== 3. LO QUE SE HEREDA ============================
+\section{Lo que se hereda del pre-registro v1.0 sin cambios}
+\label{sec:herencia}
+
+Todo lo que este documento no menciona se hereda literalmente del pre-registro v1.0
+y no se repite aquí. En particular, y por ser lo que más importa:
+
+\begin{itemize}
+  \item \textbf{El modelo base congelado}: \texttt{KNeighbors\allowbreak Classifier}
+        con $k=5$, pesos uniformes, distancia de Minkowski con $p=2$ y algoritmo de
+        fuerza bruta.
+  \item \textbf{El espacio de búsqueda \texttt{tabular-v1}}, sin tocar: los mismos
+        cuatro pasos en el mismo orden, las mismas opciones, las mismas 144
+        configuraciones con la omisión de pasos. No se crea ningún
+        \texttt{tabular-v2}.
+  \item \textbf{La extracción de meta-características}: biblioteca, grupos,
+        submuestreo del grupo de complejidad, imputación previa, determinismo y
+        regla de descarte de no finitas.
+  \item \textbf{Las cuatro garantías del protocolo de evaluación} y la ausencia de
+        fuga en el nivel meta: el recomendador de cada pliegue se ajusta solo con
+        los conjuntos restantes.
+  \item \textbf{Los ensayos inyectados cuentan}, y los ensayos inevaluables consumen
+        su turno.
+  \item \textbf{El desempate canónico} entre configuraciones ganadoras empatadas.
+\end{itemize}
+
+Que el espacio no cambie no es una omisión: es lo que permite calcular el óptimo
+exacto de la Sección~\ref{sec:objetivo}, y lo que mantiene interpretable la base de
+meta-conocimiento ya construida.
+
+% =========== 4. EL OBJETIVO =================================
+\section{El objetivo: una vara externa e igual para ambas condiciones}
+\label{sec:objetivo}
+
+\subsection{Definición}
+
+Para cada pareja (conjunto de datos $d$, semilla $s$) se define el \textbf{óptimo de
+referencia} $M(d,s)$ como el mejor valor de macro-F1 que alcanza \emph{alguna} de las
+144 configuraciones de \texttt{tabular-v1}, evaluada sobre \textbf{la misma
+partición} que usarán las búsquedas de esa pareja: partición estratificada con el
+20\,\% de validación y semilla $s$.
+
+El objetivo de esa pareja es
+\[
+  \mathrm{objetivo}(d,s) \;=\; 0{,}99 \times M(d,s).
+\]
+
+$M(d,s)$ se obtiene por \textbf{rejilla exhaustiva}, no por estimación: las 144
+configuraciones se evalúan todas. Es factible precisamente porque el espacio es
+pequeño, y no lo sería en un espacio con hiperparámetros continuos.
+
+\subsection{Tres consecuencias que hay que enunciar}
+
+\textbf{La vara deja de ser autorreferencial.} En el experimento 1 el objetivo era el
+95\,\% del mejor valor que \emph{el propio arranque en frío} había logrado con su
+presupuesto. Eso hacía que la condición de control definiera el listón que la
+condición experimental debía superar. Ahora ambas se miden contra el mismo número,
+que no depende de ninguna de las dos.
+
+\textbf{El arranque en frío ya puede censurarse.} La v1.0 demostraba que el frío
+nunca podía quedar censurado, porque el objetivo era una fracción de su propio
+máximo. Esa demostración \textbf{ya no vale}, y su desaparición es intencionada: una
+condición que no puede fallar tampoco puede informar. En consecuencia, la
+comprobación activa que el arnés del experimento 1 hace ---abortar si el frío queda
+censurado--- \textbf{debe retirarse} para el experimento 2, y no puede retirarse por
+descuido: se retira aquí, por escrito.
+
+\textbf{El regret nunca es negativo.} Como $M(d,s)$ es el máximo sobre el mismo
+espacio y la misma partición, ningún ensayo puede superarlo. Es un invariante
+comprobable, y se comprobará con una prueba: si alguna curva excediera su referencia,
+indicaría que la partición de la rejilla y la de la búsqueda no coinciden.
+
+\subsection{Casos límite}
+
+Si para alguna pareja resultara $M(d,s) \leq 0$, el regret normalizado no está
+definido: esa pareja se excluye y se reporta cuántas fueron. No se espera ninguna
+---macro-F1 es positivo en todos los conjuntos del corpus--- pero la regla se fija
+ahora y no cuando aparezca el caso.
+
+% =========== 5. PRESUPUESTO Y CENSURA =======================
+\section{Presupuesto y censura}
+\label{sec:presupuesto}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{5.2cm} L{2.6cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Parámetro} & \textbf{Valor} & \textbf{Por qué} \\
+\midrule
+Ensayos por condición & \textbf{60} &
+Con el objetivo al 99\,\%, la peor corrida del experimento 1 necesitó 30 ensayos
+exactos, justo el presupuesto. Mantenerlo en 30 haría que la censura dominara el
+análisis. \\
+\midrule
+Valor de censura & \textbf{61} &
+Presupuesto más uno, la misma regla de la v1.0. Aplica solo a la variable
+secundaria: el \emph{regret} no se censura. \\
+\midrule
+Censuras de robustez & \textbf{120 y 600} &
+Castigos más severos, en la misma proporción que los 60 y 300 de la v1.0 respecto de
+su presupuesto. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========== 6. LA VARIABLE PRIMARIA ========================
+\section{La variable primaria: \textit{regret} normalizado}
+\label{sec:variable}
+
+\subsection{Definición}
+
+Sea una corrida con valores $v_1,\dots,v_T$ ($T=60$), donde los ensayos inevaluables
+valen \texttt{NaN}. Sea $b_t$ el mejor valor finito entre los primeros $t$ ensayos,
+indefinido si ninguno lo es. Se define el regret instantáneo
+\[
+  r_t \;=\;
+  \begin{cases}
+    1 & \text{si } b_t \text{ no está definido},\\[2pt]
+    \dfrac{M(d,s) - b_t}{M(d,s)} & \text{en otro caso},
+  \end{cases}
+\]
+y la variable primaria como su promedio sobre el presupuesto:
+\[
+  R \;=\; \frac{1}{T}\sum_{t=1}^{T} r_t \;\in\; [0,1].
+\]
+
+\textbf{Menor es mejor.} Es el área normalizada entre la curva de mejor-hasta-ahora y
+el óptimo de referencia.
+
+\subsection{Por qué esta variable y no la del experimento 1}
+
+Los ensayos hasta el objetivo son un entero pequeño. Sobre los 25 conjuntos del
+experimento 1 tomó \textbf{7 valores distintos} y produjo \textbf{18 colisiones}. La
+prueba de Wilcoxon descarta los pares empatados, de modo que el contraste primario
+operó sobre una fracción de la muestra. El mismo cálculo con el regret da
+\textbf{25 valores distintos y ninguna colisión}.
+
+El regret además \textbf{usa los 60 ensayos}, no solo el primero que cruza un umbral:
+distingue una búsqueda que llega tarde al objetivo pero mejora sostenidamente de otra
+que lo cruza pronto y se estanca. Y trata los ensayos inevaluables de forma coherente
+con la v1.0: consumen su turno y no reducen el regret.
+
+\subsection{Los ensayos hasta el objetivo se conservan}
+
+La variable del experimento 1 se mide igual y se reporta como \textbf{análisis
+secundario declarado}, con la definición del anteproyecto y su criterio del 30\,\%.
+Es lo que permite comparar los dos experimentos en los mismos términos y decir con
+precisión qué cambió al cambiar el instrumento.
+
+% =========== 7. CORPUS Y SEMILLAS ===========================
+\section{Corpus, semillas y condiciones}
+\label{sec:corpus}
+
+\subsection{Corpus: 42 conjuntos, no 52}
+
+El cribado de la semana 5 descargó y verificó \textbf{52} candidatos, de los que
+seleccionó 25. El experimento 2 amplía el corpus a \textbf{42}, y el número no es 52
+por una razón que conviene explicar porque es la que más podría sesgar este
+experimento.
+
+De los 27 candidatos que quedaron fuera del corpus del experimento 1, \textbf{diez lo
+hicieron por la regla de familia} ---seis de la familia «dígitos manuscritos» y
+cuatro de la familia «NASA MDP»--- y diecisiete simplemente quedaron por debajo del
+corte en el orden por sensibilidad. \textbf{Los diez excluidos por familia siguen
+excluidos.} Entran los diecisiete restantes:
+\[
+  25 + 17 = 42 .
+\]
+
+\textbf{Por qué la regla de familia es más importante aquí que en el experimento 1.}
+En una validación por exclusión de conjunto, admitir dos conjuntos de la misma
+familia significa que, en el pliegue que excluye a uno, su casi gemelo permanece en
+los datos con los que se ajusta el recomendador. El vecino más cercano de la consulta
+sería entonces un hermano suyo, y el arranque en caliente parecería acertar por una
+similitud que no es la que el método pretende explotar. El sesgo iría
+\textbf{a favor} de la hipótesis, que es la dirección en la que ningún sesgo puede
+admitirse.
+
+Los criterios de inclusión del anteproyecto ---licencia abierta, 500 a 50\,000
+instancias, hasta 100 características, hasta 10 clases, sin imagen ni texto
+embebidos--- se mantienen sin alteración: los 42 ya los cumplen. Lo único que se
+retira es el \emph{corte} por sensibilidad en el orden por IQR, que existía para
+quedarse con 25 y que el anteproyecto imponía por el límite de 25 conjuntos.
+
+Véase la Sección~\ref{sec:declaraciones}, segunda declaración.
+
+\subsection{Semillas: diez}
+
+$\{101,\,202,\,303,\,404,\,505,\,606,\,707,\,808,\,909,\,1010\}$, \textbf{idénticas en
+todas las condiciones}. Las cinco primeras son las de la v1.0. Se pasa de cinco a
+diez porque el cómputo lo permite y porque la observación que entra en la prueba es
+la mediana por conjunto: diez semillas la estabilizan.
+
+\subsection{Las cinco condiciones}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{2.3cm} L{2.7cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Condición} & \textbf{Papel} & \textbf{Qué inyecta} \\
+\midrule
+\texttt{frio} & control base & Nada. \\
+\midrule
+\texttt{nearest} & \textbf{experimental} & Las 5 configuraciones de los vecinos más
+cercanos. \textbf{Idéntica a la del experimento 1}, sin un solo cambio. \\
+\midrule
+\texttt{frequent} & control & Las 5 ganadoras más frecuentes del pliegue, sin mirar
+las meta-características del conjunto consultado. \\
+\midrule
+\texttt{random} & ablación & Las ganadoras de 5 conjuntos elegidos al azar del
+pliegue, con semilla 202. Aísla la contribución de la similitud. \\
+\midrule
+\texttt{hybrid} & propuesta & Las 2 primeras de \texttt{frequent} seguidas de las de
+\texttt{nearest} en orden de cercanía, sin repetir, hasta reunir 5 distintas
+(Sección~\ref{sec:hibrido}). \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Que \texttt{nearest} no cambie es deliberado y es lo que permite atribuir.}
+Si \texttt{nearest} contra \texttt{frio} mejora respecto del experimento 1, la causa
+es el instrumento, porque el método es literalmente el mismo. Mezclar las dos
+mejoras en una sola condición haría inatribuible cualquier resultado favorable.
+
+\textbf{Que \texttt{frequent} siga siendo un control también es deliberado.} Ganó en
+el experimento 1; retirarlo o ascenderlo ahora sería seleccionar sobre el resultado.
+
+\subsection{Definición de \texttt{hybrid}}
+\label{sec:hibrido}
+
+Construcción determinista, sin ningún parámetro ajustable y sin ajuste alguno:
+
+\begin{enumerate}
+  \item Tómense las listas que ese pliegue produce para \texttt{frequent} ---ordenada
+        por frecuencia descendente, con el desempate canónico--- y para
+        \texttt{nearest} ---ordenada por distancia creciente---.
+  \item Tómense las \textbf{2 primeras} de \texttt{frequent}.
+  \item Añádanse las de \texttt{nearest} en orden, descartando las repetidas, hasta
+        reunir 5 distintas.
+  \item Si se agotan, continúese con el resto de \texttt{frequent}; si aun así
+        faltaran, con las ganadoras restantes del pliegue en orden canónico.
+\end{enumerate}
+
+El reparto 2 y 3 se declara aquí y no se explora: la mayoría queda del lado de la
+similitud porque es el método comprometido en el anteproyecto, y las 2 por frecuencia
+son el mínimo que garantiza incluir las configuraciones más transferibles del
+pliegue. \textbf{No se probará ningún otro reparto}; hacerlo y quedarse con el mejor
+sería ajustar sobre el resultado.
+
+% =========== 8. PLAN DE ANALISIS ============================
+\section{Plan de análisis}
+\label{sec:analisis}
+
+\subsection{Unidad de observación}
+
+Por cada conjunto de datos y condición: la \textbf{mediana de las diez semillas} de la
+variable primaria. Una observación por conjunto y condición, \textbf{42 pares} por
+contraste, frente a los 25 del experimento 1.
+
+\subsection{Los dos contrastes confirmatorios}
+
+Se declaran \textbf{dos}, y solo dos, con prueba de Wilcoxon pareada de una cola:
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{1.2cm} L{3.3cm} Y}
+\toprule
+\rowcolor{tablehead} & \textbf{Contraste} & \textbf{Qué pregunta} \\
+\midrule
+C1 & \texttt{nearest} contra \texttt{frio} &
+¿Reduce el arranque en caliente meta-aprendido el costo de la búsqueda? Es la
+hipótesis del trabajo, medida ahora con resolución. \\
+\midrule
+C2 & \texttt{nearest} contra \texttt{frequent} &
+¿Aporta algo la \emph{similitud} por encima de un buen valor por defecto? Es la
+pregunta que el experimento 1 dejó planteada, y el listón exigente. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Corrección por multiplicidad:} Holm--Bonferroni sobre esa familia de dos, con
+$\alpha = 0{,}05$. Se reportan los valores $p$ crudos y los ajustados, y también los
+de dos colas, para que la lateralidad no sea un grado de libertad oculto.
+
+\textbf{Tamaño del efecto:} correlación biserial por rangos para muestras pareadas,
+reportada junto a cada contraste.
+
+\subsection{Criterio de éxito declarado}
+
+Un contraste confirmatorio se declara favorable si cumple \textbf{las dos}
+condiciones:
+
+\begin{enumerate}
+  \item valor $p$ de una cola \textbf{ajustado por Holm} menor que $0{,}05$, y
+  \item reducción de la \textbf{mediana del regret} de al menos el \textbf{30\,\%}.
+\end{enumerate}
+
+El 30\,\% se traslada del criterio del anteproyecto para que ambos experimentos se
+juzguen con la misma exigencia de magnitud. Es una \textbf{decisión declarada}, no una
+derivación: el regret y los ensayos son escalas distintas y un 30\,\% en una no
+equivale a un 30\,\% en la otra. Se fija ahora precisamente por eso.
+
+\subsection{Análisis secundarios, declarados como tales}
+
+No sustituyen a los confirmatorios y no llevan corrección por multiplicidad, porque no
+se usan para decidir sobre la hipótesis:
+
+\begin{itemize}
+  \item \textbf{Los mismos contrastes sobre los ensayos hasta el objetivo}, con la
+        definición y el criterio del anteproyecto. Es la comparación directa con el
+        experimento 1.
+  \item \texttt{hybrid} contra \texttt{frequent} y \texttt{hybrid} contra
+        \texttt{nearest}: si la propuesta aporta. Es el secundario principal.
+  \item \texttt{random} contra \texttt{frio}: la ablación que aísla la similitud.
+  \item \textbf{Desempeño a presupuesto reducido}: mejor valor alcanzado a los 5, 15 y
+        30 ensayos. El de 30 permite comparar con el experimento 1 a igual presupuesto.
+  \item \textbf{Robustez de la censura}: la variable secundaria recalculada con 120 y
+        600. El regret no se censura, de modo que el análisis primario es inmune a
+        esta regla.
+\end{itemize}
+
+\subsection{Covariables declaradas}
+
+Ambas se miden \textbf{antes} de ejecutar:
+
+\begin{itemize}
+  \item \textbf{Anchura de la meseta al 99\,\%}: cuántas de las 144 configuraciones
+        alcanzan el objetivo. Ojo: la meseta que el experimento 1 declaró estaba
+        medida \textbf{al 95\,\%}, así que hay que recalcularla; usar aquella sería
+        usar una covariable que ya no corresponde al objetivo vigente.
+  \item \textbf{Fracción de ensayos inevaluables} por corrida.
+\end{itemize}
+
+\subsection{Análisis exploratorios, no confirmatorios}
+
+Se reportarán marcados como exploratorios, y de ellos no se deriva ninguna
+afirmación sobre la hipótesis: la ponderación o selección de meta-características
+para mitigar la concentración de distancias, y la relación entre la anchura de la
+meseta y el beneficio observado.
+
+% =========== 9. RESULTADOS POSIBLES =========================
+\section{Resultados posibles, declarados de antemano}
+\label{sec:desenlaces}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{4.6cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Desenlace} & \textbf{Cómo se reporta} \\
+\midrule
+C1 y C2 favorables &
+El arranque en caliente reduce el costo \textbf{y} la similitud aporta por encima de
+un buen valor por defecto. Es el desenlace más fuerte. \\
+\midrule
+C1 favorable, C2 no &
+El arranque en caliente ayuda, pero \textbf{no por la similitud}: un valor por
+defecto obtendría lo mismo. Refuerza el hallazgo del experimento 1 y es un
+resultado sustantivo sobre los límites del meta-aprendizaje en este espacio. \\
+\midrule
+Ninguno favorable &
+\textbf{Resultado negativo}, y se reporta como tal, con la misma extensión que uno
+favorable. Con el instrumento ya corregido, pasaría a ser evidencia de que el efecto
+no está ahí, y no de que no se podía medir. \\
+\midrule
+C2 favorable, C1 no &
+Improbable y se reportaría con cautela: significaría que la similitud supera al valor
+por defecto sin que ninguno de los dos supere al arranque en frío. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Ningún desenlace autoriza a modificar este documento después de conocerlo.
+
+% =========== 10. COSTO ======================================
+\section{Costo previsto y su contingencia}
+\label{sec:costo}
+
+El experimento 2 son $42 \times 10 \times 5 \times 60 = 126\,000$ ensayos, más
+$42 \times 10 \times 144 = 60\,480$ evaluaciones de las rejillas de referencia. Con
+el rendimiento medido en el experimento 1 ---15\,000 ensayos en 13,4 minutos--- la
+estimación es de unas tres a cuatro horas.
+
+El costo se \textbf{mide antes de lanzar}, cronometrando una condición sobre los
+conjuntos más caros, como se hizo en el experimento 1.
+
+\textbf{Contingencia declarada:} si la proyección superara las \textbf{12 horas}, las
+semillas bajan de diez a cinco ---las de la v1.0--- y todo lo demás se mantiene. Esta
+decisión se toma \textbf{solo sobre el costo medido}, jamás sobre resultado alguno, y
+por eso se fija ahora.
+
+% =========== 11. FUERA DE ALCANCE ===========================
+\section{Qué queda fuera de este documento}
+\label{sec:fuera}
+
+\begin{itemize}
+  \item \textbf{El experimento 1.} Lo gobierna el pre-registro v1.0 y no se toca.
+  \item \textbf{Un espacio de búsqueda nuevo.} Se evaluó construir un
+        \texttt{tabular-v2} con hiperparámetros continuos y se descartó por las
+        razones del ADR-004. \texttt{tabular-v1} sigue vigente.
+  \item \textbf{El caso de anomalías en imágenes} de la semana 11, que verifica la
+        generalización por tarea y no es un contraste de esta hipótesis.
+  \item \textbf{Cualquier ponderación de meta-características} como condición
+        confirmatoria: no encontré un criterio de ajuste fijable \emph{a priori} sin
+        arbitrariedad, y se relega a exploratorio.
+\end{itemize}
+
+% =========== 12. HISTORIAL ==================================
+\section{Historial de versiones}
+\label{sec:historial}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{L{1.5cm} L{3.0cm} Y}
+\toprule
+\rowcolor{tablehead} \textbf{Versión} & \textbf{Cierre} & \textbf{Qué fija} \\
+\midrule
+\preregversion & \preregfecha{} (previsto) &
+Primera y única versión de este documento. Fija el protocolo del experimento 2:
+objetivo al 99\,\% del óptimo exhaustivo, presupuesto de 60 ensayos, \emph{regret}
+normalizado como variable primaria, corpus de 42, diez semillas, cinco condiciones y
+dos contrastes confirmatorios con corrección de Holm. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+{\small\color{gris} Los pre-registros v0.1, v0.2 y v1.0, que gobiernan el experimento
+1 y todo lo anterior a él, viven en \texttt{Preregistro.tex} con sus propias
+etiquetas. Este documento no los sustituye ni los enmienda.\par}
+
+\end{document}
