@@ -65,16 +65,79 @@ que cualquier otra condición, incluida la de no recomendar.
 Es el riesgo **RI1** del anteproyecto, que el spike A midió en pequeño, reproducido
 sobre 42 conjuntos y con la resolución suficiente para separarlo de las alternativas.
 
-**La explicación mecánica es la que el spike A ya había propuesto.** Cinco
-configuraciones parecidas entre sí forman, para el muestreador TPE, una región
-aparentemente prometedora, y la búsqueda se concentra ahí en lugar de explorar. Cinco
-configuraciones dispersas —que es lo que produce elegir conjuntos al azar— le dan al
-muestreador un mapa mejor del espacio. **La similitud reduce la diversidad de lo
-inyectado, y esa diversidad es justamente lo que el muestreador necesita.**
+### La explicación por diversidad queda descartada
+
+> Lo que sigue son **análisis exploratorios**, no confirmatorios, tal como el
+> pre-registro v2.0 §8.6 los admite. Se calculan sobre datos ya ejecutados y sobre las
+> rejillas exhaustivas ya cacheadas, sin ningún ensayo nuevo. No sostienen ninguna
+> afirmación sobre la hipótesis: sirven para explicar el resultado, no para decidirlo.
+> Los produce `scripts/analyze_e2_mechanism.py` y quedan en `MECANISMO-E2.md`.
+
+El spike A había propuesto una explicación que parecía natural: cinco configuraciones
+parecidas entre sí formarían, para el muestreador, una región falsamente prometedora, y
+la similitud reduciría la diversidad de lo inyectado. **Medida sobre este experimento,
+esa explicación es falsa.**
+
+| Estrategia | Hamming medio entre las 5 inyectadas | Regret logrado |
+|---|---:|---:|
+| `nearest` | **2,58** | 0,0058 |
+| `hybrid` | 2,54 | 0,0042 |
+| `random` | 2,34 | 0,0028 |
+| `frequent` | **2,10** | 0,0039 |
+
+`nearest` inyecta los conjuntos **más diversos** de las cuatro y es el que peor
+rinde; `frequent` inyecta los **menos diversos** y queda segundo. La diversidad de lo
+inyectado no ordena los resultados, y si algo hace es ordenarlos al revés.
+
+### Lo que sí los ordena: la calidad de lo inyectado
+
+La pregunta correcta no es cuán distintas son entre sí las cinco configuraciones, sino
+**qué tan buenas son sobre el conjunto excluido**. Eso se puede medir exactamente,
+porque la rejilla exhaustiva de cada pareja ya está calculada:
+
+| Estrategia | Regret medio de las 5 | Regret de la **mejor** de las 5 | Inevaluables | Regret logrado |
+|---|---:|---:|---:|---:|
+| `frequent` | 0,0885 | **0,0150** | 0,0 % | 0,0039 |
+| `random` | 0,0819 | 0,0209 | 0,0 % | **0,0028** |
+| `hybrid` | 0,0966 | 0,0231 | 2,4 % | 0,0042 |
+| `nearest` | 0,0928 | **0,0352** | **2,9 %** | 0,0058 |
+
+La columna que manda es la de la **mejor inyectada**, y su orden reproduce casi
+exactamente el del resultado final. **La similitud no identifica configuraciones
+mejores para el conjunto consultado: identifica peores.** La mejor de las cinco que
+elige `nearest` queda 2,3 veces más lejos del óptimo que la mejor de las cinco que
+elige `frequent`, sin mirar nada.
+
+Y hay un costo adicional que se ve en la última columna: **un 2,9 % de lo que `nearest`
+inyecta es inevaluable** sobre el conjunto excluido —un ensayo inyectado que se pierde
+sin producir métrica—, contra el **0 %** de `frequent` y `random`. Es el problema de
+transferibilidad que el desempate canónico ya había anticipado: una ganadora que omite
+la codificación no cuesta nada en un conjunto sin categóricas y es inejecutable en uno
+que sí las tenga. Elegir por parecido hace más probable arrastrar esas omisiones.
+
+### La lectura que los datos sostienen
+
+Hay una pista más en la misma dirección. A lo largo de los 42 pliegues, `frequent`
+inyecta en total **6 configuraciones distintas** y `random` **10**, mientras que
+`nearest` inyecta **28**: converge en un puñado de configuraciones buenas en general,
+frente a una elección específica por conjunto.
+
+Con todo eso, la explicación que los datos sostienen no es sobre diversidad sino sobre
+**generalidad**:
+
+> El arranque en caliente ayuda cuando lo inyectado es **bueno en general**
+> (`frequent`, `random`, que muestrean un fondo pequeño de configuraciones ganadoras
+> del corpus). `nearest` **no lo es**: apuesta por una señal de similitud que no
+> transfiere, y al hacerlo concentra el presupuesto en configuraciones peores para el
+> conjunto que tiene delante —y a veces inejecutables—.
 
 Eso explica también por qué `hybrid` no rescata nada: mezclar dos configuraciones por
 frecuencia con tres por cercanía queda en 0,0042, peor que `frequent` sola (−7,1 %,
-$p = 0{,}96$). El problema no se arregla dosificando la similitud.
+$p = 0{,}96$). Si las tres por cercanía son peores, dosificarlas no ayuda.
+
+**Queda confirmado el efecto de RI1 y refutada la explicación que el spike A le había
+dado.** Una recomendación plausible pero equivocada sigue saliendo más cara que no
+recomendar nada; lo que no es cierto es que la causa fuera la falta de dispersión.
 
 ## 4. La variable fue la mitad del problema, y ahora se puede demostrar
 
@@ -132,6 +195,10 @@ más pierde contra `frequent` son `wilt` (+0,0719), `balance-scale` (+0,0228) y
 - Nada a partir de los análisis secundarios como si fueran confirmatorios. `random`
   supera a `nearest` de forma llamativa, pero ese contraste no estaba declarado como
   confirmatorio y se reporta como lo que es.
+- Nada **causal** a partir de los análisis de la Sección 3. Miden que la similitud
+  elige configuraciones peores para el conjunto consultado, lo cual es coherente con
+  el resultado y descarta la explicación por diversidad, pero son exploratorios y
+  post-hoc: describen el patrón, no lo demuestran.
 
 **Y no se puede cambiar nada ahora.** Ni el criterio, ni el espacio, ni el corpus, ni
 las condiciones. Los dos pre-registros están congelados y etiquetados, y cualquier
@@ -153,8 +220,10 @@ pregunta que el primero solo pudo insinuar.
 
 **La conclusión que el trabajo sostiene no es «el meta-aprendizaje funciona» ni «no
 funciona», sino una más precisa y más útil:** el arranque en caliente ayuda, y en este
-espacio lo que aporta el beneficio es *arrancar con configuraciones plausibles y
-diversas*, no *arrancar con las de los conjuntos parecidos*.
+espacio lo que aporta el beneficio es *arrancar con configuraciones buenas en general*,
+no *arrancar con las de los conjuntos parecidos*. La similitud, medida sobre las
+rejillas exhaustivas, elige configuraciones **peores** para el conjunto que tiene
+delante.
 
 ## Dónde está cada cosa
 
@@ -162,6 +231,7 @@ diversas*, no *arrancar con las de los conjuntos parecidos*.
 |---|---|
 | Curvas completas de las 2 100 corridas | `LODO-E2-resultados.json` |
 | Tablas y veredictos generados | `LODO-E2-resultados.md` |
+| Diversidad y calidad de lo inyectado (exploratorio) | `MECANISMO-E2.md` |
 | Óptimos de referencia y meseta al 99 % | `REFERENCIA-E2.json` |
 | Protocolo que gobierna esto | `Preregistro-E2.tex` v2.0, etiqueta `prereg-v2.0` |
 | La decisión de alcance y su aprobación | `docs/decisiones/ADR-004-segundo-experimento.md` |

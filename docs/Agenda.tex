@@ -1523,18 +1523,34 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  aleatoria es la mejor de todas. La causa se ve al separar aciertos de errores: las cuatro
  ganan en unos 32 conjuntos, pero \texttt{nearest} paga \textbf{3,7 veces más caro} cada
  fallo que \texttt{frequent}, y censura 45 corridas de 420 —un 10,7\%— \emph{más que el
- propio arranque en frío}, que censura 31. Es el riesgo RI1 reproducido a escala, con la
- explicación mecánica que el spike A ya había propuesto: cinco recomendaciones parecidas
- entre sí forman para el muestreador una región falsamente prometedora, y la similitud
- \textbf{reduce la diversidad} de lo inyectado, que es justo lo que el muestreador
- necesita. El hallazgo metodológico es igual de sólido y ahora demostrable: sobre
+ propio arranque en frío}, que censura 31. Es el riesgo RI1 reproducido a escala.
+ \textbf{Y aquí me equivoqué, en la primera versión de la discusión.} Di por buena la
+ explicación que el spike A había propuesto ---que cinco recomendaciones parecidas entre
+ sí forman para el muestreador una región falsamente prometedora, de modo que la
+ similitud reduciría la diversidad de lo inyectado--- y la escribí como si fuera un
+ hecho. Al releerla antes de cerrar la semana caí en que no la había medido, y la medí:
+ \textbf{es falsa}. \texttt{nearest} inyecta los conjuntos \emph{más} diversos de las
+ cuatro estrategias ---distancia de Hamming media 2,58 contra 2,10 de
+ \texttt{frequent}--- y es el que peor rinde; la diversidad ordena los resultados al
+ revés. Lo que sí los ordena se puede medir exactamente sobre las rejillas exhaustivas ya
+ cacheadas, sin ejecutar un solo ensayo nuevo: \textbf{la calidad de lo inyectado}. La
+ mejor de las cinco que elige \texttt{nearest} queda a 0,0352 del óptimo del conjunto
+ excluido y la de \texttt{frequent} a 0,0150, y ese orden reproduce el del resultado
+ final. La similitud no identifica configuraciones mejores para el conjunto consultado:
+ \textbf{identifica peores}. Encima, un 2,9\% de lo que \texttt{nearest} inyecta resulta
+ \emph{inevaluable} allí, contra el 0\% de \texttt{frequent} y \texttt{random}, que es el
+ problema de transferibilidad que el desempate canónico ya había anticipado. La lección
+ no es sobre el recomendador sino sobre mí: escribí una explicación heredada sin
+ comprobarla, y habría viajado al informe. Queda confirmado el \emph{efecto} de RI1 y
+ refutada la \emph{explicación} que se le había dado. El hallazgo metodológico es igual
+ de sólido y ahora demostrable: sobre
  \emph{los mismos datos}, el \emph{regret} da $p = 0{,}0010$ y los ensayos hasta el
  objetivo dan $p = 0{,}3902$ pese a una reducción de la mediana \textbf{mayor}, del
  41,4\%. Con la variable del experimento 1 esto habría vuelto a dar nulo, y ninguna
  cantidad de datos adicionales lo habría arreglado. La conclusión que el trabajo sostiene
  no es «el meta-aprendizaje funciona» ni «no funciona», sino una más precisa: el arranque
- en caliente ayuda, y lo que aporta el beneficio es arrancar con configuraciones plausibles
- y \emph{diversas}, no con las de los conjuntos parecidos.}
+ en caliente ayuda, y lo que aporta el beneficio es arrancar con configuraciones
+ \textbf{buenas en general}, no con las de los conjuntos parecidos.}
 
 \cierresemana{10}{46}{22}{RE6 cerrado con \textbf{dos} experimentos en vez de uno, y con
  una conclusión que ninguno de los dos habría dado por separado. El experimento 1 se
