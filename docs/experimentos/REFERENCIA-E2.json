@@ -1,0 +1,3254 @@
+{
+  "datasets": [
+    {
+      "dataset_id": "40983",
+      "dataset_name": "wilt",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8815507906727419,
+          "optimo": 0.8904553441138807
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9043822031626909,
+          "optimo": 0.9135173769320111
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.9031956521739132,
+          "optimo": 0.9123188405797102
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.83422525504067,
+          "optimo": 0.8426517727683536
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8903756324069583,
+          "optimo": 0.8993693256635942
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9061325328619186,
+          "optimo": 0.9152853867292108
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8837678749584303,
+          "optimo": 0.8926948231903337
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.9031956521739132,
+          "optimo": 0.9123188405797102
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8587193781827929,
+          "optimo": 0.8673933112957504
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9201606094751181,
+          "optimo": 0.9294551610859779
+        }
+      }
+    },
+    {
+      "dataset_id": "38",
+      "dataset_name": "sick",
+      "meseta_mediana": 3.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 5,
+          "n_evaluables": 64,
+          "objetivo": 0.8974365325077399,
+          "optimo": 0.9065015479876161
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 1,
+          "n_evaluables": 64,
+          "objetivo": 0.911512346426927,
+          "optimo": 0.9207195418453809
+        },
+        "202": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 9,
+          "n_evaluables": 64,
+          "objetivo": 0.8776803245842516,
+          "optimo": 0.8865457824083349
+        },
+        "303": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 3,
+          "n_evaluables": 64,
+          "objetivo": 0.8850947368421053,
+          "optimo": 0.8940350877192983
+        },
+        "404": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.866549768773398,
+          "optimo": 0.875302796740806
+        },
+        "505": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.911512346426927,
+          "optimo": 0.9207195418453809
+        },
+        "606": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.8974365325077399,
+          "optimo": 0.9065015479876161
+        },
+        "707": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 3,
+          "n_evaluables": 64,
+          "objetivo": 0.8985288461538461,
+          "optimo": 0.9076048951048951
+        },
+        "808": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.8776803245842516,
+          "optimo": 0.8865457824083349
+        },
+        "909": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 1,
+          "n_evaluables": 64,
+          "objetivo": 0.9097783281733746,
+          "optimo": 0.9189680082559339
+        }
+      }
+    },
+    {
+      "dataset_id": "18",
+      "dataset_name": "mfeat-morphological",
+      "meseta_mediana": 31.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7562382090756662,
+          "optimo": 0.7638769788643093
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.7111439485168418,
+          "optimo": 0.7183272207240826
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6814378818769313,
+          "optimo": 0.6883210928049811
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.6941172433278998,
+          "optimo": 0.7011285286140402
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.6943970162748644,
+          "optimo": 0.701411127550368
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.6813637951619008,
+          "optimo": 0.6882462577392937
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.7057951022294597,
+          "optimo": 0.712924345686323
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.6965460623593462,
+          "optimo": 0.7035818811710568
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.6897294980507006,
+          "optimo": 0.6966964626774753
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.7120327661308475,
+          "optimo": 0.7192250162937854
+        }
+      }
+    },
+    {
+      "dataset_id": "40975",
+      "dataset_name": "car",
+      "meseta_mediana": 12.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.8339784457208266,
+          "optimo": 0.8424024704250773
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8733767761136713,
+          "optimo": 0.8821987637511831
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.819646712158809,
+          "optimo": 0.8279259718775849
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.843616704805492,
+          "optimo": 0.8521380856621131
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.863366568914956,
+          "optimo": 0.8720874433484405
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.7992233277990527,
+          "optimo": 0.8072962907061139
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.87691094241995,
+          "optimo": 0.8857686287070202
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.85499890281738,
+          "optimo": 0.8636352553710909
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8022567688551275,
+          "optimo": 0.810360372580937
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.8421582365003418,
+          "optimo": 0.8506648853538806
+        }
+      }
+    },
+    {
+      "dataset_id": "50",
+      "dataset_name": "tic-tac-toe",
+      "meseta_mediana": 12.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9551953125,
+          "optimo": 0.96484375
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9727945569200133,
+          "optimo": 0.9826207645656699
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9729182518048108,
+          "optimo": 0.9827457088937483
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9786519402985074,
+          "optimo": 0.9885373134328358
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9492340451606973,
+          "optimo": 0.9588222678390882
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9843060839349369,
+          "optimo": 0.9942485696312494
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9669739551786797,
+          "optimo": 0.9767413688673532
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9671428571428572,
+          "optimo": 0.976911976911977
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.9554609327680195,
+          "optimo": 0.9651120533010298
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.961108071135431,
+          "optimo": 0.9708162334701322
+        }
+      }
+    },
+    {
+      "dataset_id": "40982",
+      "dataset_name": "steel-plates-fault",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7241972203092106,
+          "optimo": 0.7315123437466774
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.7558732921548861,
+          "optimo": 0.7635083759140263
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7516899621996294,
+          "optimo": 0.7592827901006357
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7855058998847516,
+          "optimo": 0.7934403029138906
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.748045671251466,
+          "optimo": 0.7556016881327939
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7322166690411686,
+          "optimo": 0.7396127970112814
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7473219159448407,
+          "optimo": 0.7548706221665057
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7561918324320214,
+          "optimo": 0.7638301337697185
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7594986143487779,
+          "optimo": 0.7671703175240181
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7195245714616052,
+          "optimo": 0.7267924964258639
+        }
+      }
+    },
+    {
+      "dataset_id": "188",
+      "dataset_name": "eucalyptus",
+      "meseta_mediana": 2.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.5777613857262582,
+          "optimo": 0.5835973593194528
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.5963974981801347,
+          "optimo": 0.6024217153334693
+        },
+        "202": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.5786416366177782,
+          "optimo": 0.5844865016341194
+        },
+        "303": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.5938825642123992,
+          "optimo": 0.5998813779923224
+        },
+        "404": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.66353693468904,
+          "optimo": 0.6702393279687272
+        },
+        "505": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.6178025542647099,
+          "optimo": 0.6240429841057675
+        },
+        "606": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.6092703648952674,
+          "optimo": 0.6154246110053206
+        },
+        "707": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 3,
+          "n_evaluables": 64,
+          "objetivo": 0.6452544752234852,
+          "optimo": 0.6517721971954397
+        },
+        "808": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.590268672263274,
+          "optimo": 0.5962309820841151
+        },
+        "909": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.5886461538461538,
+          "optimo": 0.5945920745920745
+        }
+      }
+    },
+    {
+      "dataset_id": "29",
+      "dataset_name": "credit-approval",
+      "meseta_mediana": 4.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 6,
+          "n_evaluables": 64,
+          "objetivo": 0.8661642228739003,
+          "optimo": 0.8749133564382832
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.8959041059602649,
+          "optimo": 0.904953642384106
+        },
+        "202": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.8309714285714285,
+          "optimo": 0.8393650793650793
+        },
+        "303": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 6,
+          "n_evaluables": 64,
+          "objetivo": 0.8598857142857143,
+          "optimo": 0.8685714285714285
+        },
+        "404": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 6,
+          "n_evaluables": 64,
+          "objetivo": 0.8675225439012814,
+          "optimo": 0.8762853978800822
+        },
+        "505": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 6,
+          "n_evaluables": 64,
+          "objetivo": 0.8294423076923076,
+          "optimo": 0.8378205128205127
+        },
+        "606": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.8885207979626486,
+          "optimo": 0.8974957555178269
+        },
+        "707": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.8869461206896552,
+          "optimo": 0.8959051724137931
+        },
+        "808": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.8807331378299119,
+          "optimo": 0.8896294321514262
+        },
+        "909": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.866951523178808,
+          "optimo": 0.8757086092715232
+        }
+      }
+    },
+    {
+      "dataset_id": "11",
+      "dataset_name": "balance-scale",
+      "meseta_mediana": 27.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6040947204968945,
+          "optimo": 0.6101966873706005
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.5979305809280234,
+          "optimo": 0.6039702837656802
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5979924021040327,
+          "optimo": 0.6040327293980129
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.6097413793103448,
+          "optimo": 0.6159003831417624
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.6032827832292597,
+          "optimo": 0.6093765487164239
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.6011739130434782,
+          "optimo": 0.6072463768115942
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5974137931034482,
+          "optimo": 0.603448275862069
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.583603006189213,
+          "optimo": 0.5894979860497102
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6451614329942503,
+          "optimo": 0.6516782151457075
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.591125226860254,
+          "optimo": 0.5970961887477314
+        }
+      }
+    },
+    {
+      "dataset_id": "1068",
+      "dataset_name": "pc1",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6585781990521327,
+          "optimo": 0.6652305040930633
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7258413461538461,
+          "optimo": 0.7331730769230769
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7308254716981132,
+          "optimo": 0.7382075471698113
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6949323556748942,
+          "optimo": 0.701951874419085
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.68475,
+          "optimo": 0.6916666666666667
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6949323556748942,
+          "optimo": 0.701951874419085
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.596400330624053,
+          "optimo": 0.6024245763879322
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6585781990521327,
+          "optimo": 0.6652305040930633
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6683586626139817,
+          "optimo": 0.6751097602161431
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5493909307875894,
+          "optimo": 0.5549403341288782
+        }
+      }
+    },
+    {
+      "dataset_id": "41027",
+      "dataset_name": "jungle_chess_2pcs_raw_endgame_complete",
+      "meseta_mediana": 22.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.6972729274541456,
+          "optimo": 0.7043160883375208
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.7007330404900852,
+          "optimo": 0.7078111520101871
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7012802877221436,
+          "optimo": 0.7083639269920642
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.6972088877207684,
+          "optimo": 0.7042514017381499
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6967511261261261,
+          "optimo": 0.7037890162890162
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6995384998542883,
+          "optimo": 0.7066045453073619
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.6999088858776936,
+          "optimo": 0.7069786726037309
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7000294024573116,
+          "optimo": 0.707100406522537
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6984622585034257,
+          "optimo": 0.7055174328317432
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.697615639851835,
+          "optimo": 0.7046622624766009
+        }
+      }
+    },
+    {
+      "dataset_id": "1464",
+      "dataset_name": "blood-transfusion-service-center",
+      "meseta_mediana": 18.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5981249999999999,
+          "optimo": 0.6041666666666666
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6274911410347271,
+          "optimo": 0.6338294353886132
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6453555102327871,
+          "optimo": 0.651874252760391
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7141368265966306,
+          "optimo": 0.7213503298955865
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.6763975155279502,
+          "optimo": 0.6832298136645962
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.6147563352826511,
+          "optimo": 0.6209659952350011
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6538658344193703,
+          "optimo": 0.6604705398175458
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6742376020303177,
+          "optimo": 0.6810480828589067
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6334940668084231,
+          "optimo": 0.6398929967761849
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6662430550671636,
+          "optimo": 0.6729727828961249
+        }
+      }
+    },
+    {
+      "dataset_id": "40701",
+      "dataset_name": "churn",
+      "meseta_mediana": 4.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 6,
+          "n_evaluables": 144,
+          "objetivo": 0.7774829861365025,
+          "optimo": 0.7853363496328308
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 6,
+          "n_evaluables": 144,
+          "objetivo": 0.798313914154702,
+          "optimo": 0.8063776910653555
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.8184721397172389,
+          "optimo": 0.8267395350679181
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.7826419041514519,
+          "optimo": 0.7905473779307595
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.8018586088939567,
+          "optimo": 0.8099581908019764
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.8109848845074573,
+          "optimo": 0.8191766510176337
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7590230976902309,
+          "optimo": 0.7666899976668999
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.8122768448961555,
+          "optimo": 0.8204816615112682
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 6,
+          "n_evaluables": 144,
+          "objetivo": 0.7905895357406043,
+          "optimo": 0.798575288626873
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 12,
+          "n_evaluables": 144,
+          "objetivo": 0.7961658005420846,
+          "optimo": 0.804207879335439
+        }
+      }
+    },
+    {
+      "dataset_id": "1462",
+      "dataset_name": "banknote-authentication",
+      "meseta_mediana": 72.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        }
+      }
+    },
+    {
+      "dataset_id": "54",
+      "dataset_name": "vehicle",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6857797136417477,
+          "optimo": 0.6927067814563108
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7431079431135471,
+          "optimo": 0.7506140839530779
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6897547671099554,
+          "optimo": 0.696721986979753
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6813083049476806,
+          "optimo": 0.6881902070178592
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7191770451770452,
+          "optimo": 0.7264414597747931
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7399100547195622,
+          "optimo": 0.7473838936561235
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7059220455751706,
+          "optimo": 0.7130525712880511
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7036389439719615,
+          "optimo": 0.7107464080524863
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6864796052631578,
+          "optimo": 0.6934137426900584
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7121951219512195,
+          "optimo": 0.7193890120719388
+        }
+      }
+    },
+    {
+      "dataset_id": "46",
+      "dataset_name": "splice",
+      "meseta_mediana": 12.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8446143458923149,
+          "optimo": 0.8531458039316312
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8348434270596524,
+          "optimo": 0.8432761889491439
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8227742458706316,
+          "optimo": 0.8310850968390219
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8334074585592927,
+          "optimo": 0.8418257157164573
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8376047832066235,
+          "optimo": 0.8460654375824479
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8477087480356208,
+          "optimo": 0.8562714626622432
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8387663527075111,
+          "optimo": 0.8472387401085971
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8251576813294795,
+          "optimo": 0.8334926074035147
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8139297569402405,
+          "optimo": 0.8221512696366066
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.8171118549194905,
+          "optimo": 0.8253655100196874
+        }
+      }
+    },
+    {
+      "dataset_id": "40994",
+      "dataset_name": "climate-model-simulation-crashes",
+      "meseta_mediana": 36.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.7631541725601131,
+          "optimo": 0.7708628005657708
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.7279411764705883,
+          "optimo": 0.7352941176470589
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.789525,
+          "optimo": 0.7975
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8836119402985074,
+          "optimo": 0.8925373134328358
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.7417611940298509,
+          "optimo": 0.7492537313432837
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.7417611940298509,
+          "optimo": 0.7492537313432837
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.75,
+          "optimo": 0.7575757575757576
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.812686567164179,
+          "optimo": 0.8208955223880596
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.812686567164179,
+          "optimo": 0.8208955223880596
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.7227,
+          "optimo": 0.73
+        }
+      }
+    },
+    {
+      "dataset_id": "1489",
+      "dataset_name": "phoneme",
+      "meseta_mediana": 36.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8519131406272127,
+          "optimo": 0.8605183238658715
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.8337197559907095,
+          "optimo": 0.8421411676673833
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8335097800690064,
+          "optimo": 0.8419290707767741
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.854618595825427,
+          "optimo": 0.8632511068943707
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8571745844010775,
+          "optimo": 0.865832913536442
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8360310374149661,
+          "optimo": 0.8444757953686526
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8475672426905526,
+          "optimo": 0.8561285279702552
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8392027418594427,
+          "optimo": 0.8476795372317603
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.8526333232330884,
+          "optimo": 0.8612457810435237
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8522527835485817,
+          "optimo": 0.8608613975238198
+        }
+      }
+    },
+    {
+      "dataset_id": "6332",
+      "dataset_name": "cylinder-bands",
+      "meseta_mediana": 2.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.7242187499999999,
+          "optimo": 0.7315340909090908
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 1,
+          "n_evaluables": 64,
+          "objetivo": 0.819140625,
+          "optimo": 0.8274147727272727
+        },
+        "202": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 3,
+          "n_evaluables": 64,
+          "objetivo": 0.776066985645933,
+          "optimo": 0.7839060461070031
+        },
+        "303": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 4,
+          "n_evaluables": 64,
+          "objetivo": 0.7946698564593302,
+          "optimo": 0.8026968247063941
+        },
+        "404": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.7518283881315155,
+          "optimo": 0.7594226142742582
+        },
+        "505": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 1,
+          "n_evaluables": 64,
+          "objetivo": 0.7637142857142857,
+          "optimo": 0.7714285714285714
+        },
+        "606": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.8146153846153846,
+          "optimo": 0.8228438228438228
+        },
+        "707": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.7475933031042902,
+          "optimo": 0.7551447506103941
+        },
+        "808": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.8400420757363254,
+          "optimo": 0.8485273492286115
+        },
+        "909": {
+          "fraccion_inevaluable": 0.5556,
+          "n_en_meseta": 2,
+          "n_evaluables": 64,
+          "objetivo": 0.7872206896551724,
+          "optimo": 0.7951724137931034
+        }
+      }
+    },
+    {
+      "dataset_id": "31",
+      "dataset_name": "credit-g",
+      "meseta_mediana": 3.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6868459732571195,
+          "optimo": 0.6937838113708278
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.6956358967428031,
+          "optimo": 0.7026625219624274
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6812681912681913,
+          "optimo": 0.6881496881496881
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6941320166320166,
+          "optimo": 0.7011434511434511
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.659049397204737,
+          "optimo": 0.6657064618229667
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6556180668234047,
+          "optimo": 0.6622404715387926
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6512712198973549,
+          "optimo": 0.6578497170680353
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6760730593607307,
+          "optimo": 0.6829020801623542
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6467999999999999,
+          "optimo": 0.6533333333333333
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.6941320166320166,
+          "optimo": 0.7011434511434511
+        }
+      }
+    },
+    {
+      "dataset_id": "23381",
+      "dataset_name": "dresses-sales",
+      "meseta_mediana": 3.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 8,
+          "n_evaluables": 96,
+          "objetivo": 0.5747570332480818,
+          "optimo": 0.5805626598465473
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 2,
+          "n_evaluables": 96,
+          "objetivo": 0.6450522648083623,
+          "optimo": 0.6515679442508711
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 4,
+          "n_evaluables": 96,
+          "objetivo": 0.5632758620689655,
+          "optimo": 0.5689655172413793
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 2,
+          "n_evaluables": 96,
+          "objetivo": 0.606800920598389,
+          "optimo": 0.6129302228266555
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6039162561576354,
+          "optimo": 0.6100164203612479
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 1,
+          "n_evaluables": 96,
+          "objetivo": 0.6392559975706044,
+          "optimo": 0.6457131288591963
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.5771223680195301,
+          "optimo": 0.5829518868884143
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 4,
+          "n_evaluables": 96,
+          "objetivo": 0.5950127877237852,
+          "optimo": 0.6010230179028133
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 1,
+          "n_evaluables": 96,
+          "objetivo": 0.5992799999999999,
+          "optimo": 0.6053333333333333
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.5688982259570494,
+          "optimo": 0.5746446726838883
+        }
+      }
+    },
+    {
+      "dataset_id": "4538",
+      "dataset_name": "GesturePhaseSegmentationProcessed",
+      "meseta_mediana": 18.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5603801491715716,
+          "optimo": 0.5660405547187592
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.5713735902711312,
+          "optimo": 0.5771450406779103
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.561497193586826,
+          "optimo": 0.5671688824109354
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.5535450029896233,
+          "optimo": 0.5591363666561852
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5669902012456426,
+          "optimo": 0.5727173749955986
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.5822757319529962,
+          "optimo": 0.5881573050030264
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5686831568854892,
+          "optimo": 0.5744274311974639
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.5630246321131487,
+          "optimo": 0.5687117496092411
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.5570009684727423,
+          "optimo": 0.5626272408815579
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.5641483375271817,
+          "optimo": 0.5698468055830118
+        }
+      }
+    },
+    {
+      "dataset_id": "151",
+      "dataset_name": "electricity",
+      "meseta_mediana": 18.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8224870825070794,
+          "optimo": 0.8307950328354337
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8292616225266566,
+          "optimo": 0.8376380025521784
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8306360019299894,
+          "optimo": 0.8390262645757469
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.827806229988841,
+          "optimo": 0.8361679090796375
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8257443140376801,
+          "optimo": 0.8340851656946264
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8298068314996248,
+          "optimo": 0.8381887186864897
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8291742883956037,
+          "optimo": 0.8375497862581855
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8253641063070182,
+          "optimo": 0.8337011174818365
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8278668587063905,
+          "optimo": 0.8362291502084753
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 12,
+          "n_evaluables": 144,
+          "objetivo": 0.8314453109512461,
+          "optimo": 0.839843748435602
+        }
+      }
+    },
+    {
+      "dataset_id": "1494",
+      "dataset_name": "qsar-biodeg",
+      "meseta_mediana": 13.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8448511018463372,
+          "optimo": 0.8533849513599365
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8562504802151364,
+          "optimo": 0.8648994749647843
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.816017263572348,
+          "optimo": 0.8242598621942909
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.8611085972850678,
+          "optimo": 0.8698066639243109
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8552188802858844,
+          "optimo": 0.8638574548342267
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.7951818638352823,
+          "optimo": 0.8032140038740225
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8543300359712229,
+          "optimo": 0.8629596322941646
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.8514222290263319,
+          "optimo": 0.8600224535619514
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.853008577949162,
+          "optimo": 0.8616248262112747
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.8617611103696784,
+          "optimo": 0.8704657680501802
+        }
+      }
+    },
+    {
+      "dataset_id": "37",
+      "dataset_name": "diabetes",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7233061224489797,
+          "optimo": 0.7306122448979593
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.6939611650485437,
+          "optimo": 0.7009708737864078
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7287892632781268,
+          "optimo": 0.7361507709880069
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7439947443640219,
+          "optimo": 0.7515098427919413
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7439947443640219,
+          "optimo": 0.7515098427919413
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.718086157223213,
+          "optimo": 0.7253395527507203
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.7451935771632471,
+          "optimo": 0.7527207850133809
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6762532583344766,
+          "optimo": 0.6830840993277542
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7456730769230769,
+          "optimo": 0.7532051282051282
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.733668970670652,
+          "optimo": 0.7410797683541939
+        }
+      }
+    },
+    {
+      "dataset_id": "23",
+      "dataset_name": "cmc",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.48047799321263296,
+          "optimo": 0.48533130627538684
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 12,
+          "n_evaluables": 144,
+          "objetivo": 0.5157281599464363,
+          "optimo": 0.5209375352994305
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 6,
+          "n_evaluables": 144,
+          "objetivo": 0.5344810829573065,
+          "optimo": 0.5398798817750571
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 12,
+          "n_evaluables": 144,
+          "objetivo": 0.4886772245642019,
+          "optimo": 0.4936133581456585
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.47115606936416177,
+          "optimo": 0.4759152215799614
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.4686261836858155,
+          "optimo": 0.47335978150082375
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 15,
+          "n_evaluables": 144,
+          "objetivo": 0.5188377064441609,
+          "optimo": 0.5240784913577383
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.5151416521233276,
+          "optimo": 0.5203451031548764
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 3,
+          "n_evaluables": 144,
+          "objetivo": 0.5476618230696796,
+          "optimo": 0.553193760676444
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.476022013527016,
+          "optimo": 0.4808303166939556
+        }
+      }
+    },
+    {
+      "dataset_id": "1461",
+      "dataset_name": "bank-marketing",
+      "meseta_mediana": 6.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.705655174686882,
+          "optimo": 0.7127830047342243
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.7107023099949419,
+          "optimo": 0.717881121207012
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 9,
+          "n_evaluables": 96,
+          "objetivo": 0.6978148209618492,
+          "optimo": 0.7048634555170195
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.7062973613696713,
+          "optimo": 0.7134316781511831
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6999127465577281,
+          "optimo": 0.7069825722805334
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.7079878375923128,
+          "optimo": 0.715139229891225
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.7017143878672956,
+          "optimo": 0.7088024119871672
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 9,
+          "n_evaluables": 96,
+          "objetivo": 0.6935041301136332,
+          "optimo": 0.7005092223370033
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 18,
+          "n_evaluables": 96,
+          "objetivo": 0.6984374703764968,
+          "optimo": 0.7054923943196938
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.6986733340410434,
+          "optimo": 0.7057306404454984
+        }
+      }
+    },
+    {
+      "dataset_id": "1497",
+      "dataset_name": "wall-robot-navigation",
+      "meseta_mediana": 27.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9231736655301943,
+          "optimo": 0.9324986520507014
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9351661167561408,
+          "optimo": 0.9446122391476169
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9143939650929388,
+          "optimo": 0.9236302677706453
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9057227304569075,
+          "optimo": 0.9148714449059673
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9148830756740415,
+          "optimo": 0.9241243188626682
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.919988251496477,
+          "optimo": 0.9292810621176536
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9141096411685302,
+          "optimo": 0.9233430718874043
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.9111235224816256,
+          "optimo": 0.9203267903854805
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9013646445837383,
+          "optimo": 0.910469337963372
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9200989517356605,
+          "optimo": 0.9293928805410712
+        }
+      }
+    },
+    {
+      "dataset_id": "1590",
+      "dataset_name": "adult",
+      "meseta_mediana": 15.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 22,
+          "n_evaluables": 96,
+          "objetivo": 0.7896863589290564,
+          "optimo": 0.7976629888172286
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 21,
+          "n_evaluables": 96,
+          "objetivo": 0.7906712529822502,
+          "optimo": 0.7986578312952022
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 16,
+          "n_evaluables": 96,
+          "objetivo": 0.7862249789550654,
+          "optimo": 0.7941666454091569
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 15,
+          "n_evaluables": 96,
+          "objetivo": 0.79333762546786,
+          "optimo": 0.8013511368362223
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 9,
+          "n_evaluables": 96,
+          "objetivo": 0.7987026782653956,
+          "optimo": 0.8067703820862583
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 15,
+          "n_evaluables": 96,
+          "objetivo": 0.7891729779852711,
+          "optimo": 0.7971444222073445
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 9,
+          "n_evaluables": 96,
+          "objetivo": 0.7924166374679655,
+          "optimo": 0.800420845927238
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 15,
+          "n_evaluables": 96,
+          "objetivo": 0.7920716040750446,
+          "optimo": 0.80007232734853
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 14,
+          "n_evaluables": 96,
+          "objetivo": 0.7889876568986095,
+          "optimo": 0.7969572291905147
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 13,
+          "n_evaluables": 96,
+          "objetivo": 0.7955554719562242,
+          "optimo": 0.803591385814368
+        }
+      }
+    },
+    {
+      "dataset_id": "1480",
+      "dataset_name": "ilpd",
+      "meseta_mediana": 4.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6493235294117647,
+          "optimo": 0.6558823529411765
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.60526518804243,
+          "optimo": 0.6113789778206364
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6424231057764441,
+          "optimo": 0.6489122280570143
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6206995498874718,
+          "optimo": 0.6269692423105776
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.5905862068965517,
+          "optimo": 0.596551724137931
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 9,
+          "n_evaluables": 96,
+          "objetivo": 0.6766071428571429,
+          "optimo": 0.6834415584415584
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.635187969924812,
+          "optimo": 0.6416040100250626
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.6197927360774818,
+          "optimo": 0.6260532687651331
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 3,
+          "n_evaluables": 96,
+          "objetivo": 0.6493235294117647,
+          "optimo": 0.6558823529411765
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 6,
+          "n_evaluables": 96,
+          "objetivo": 0.6706158088235293,
+          "optimo": 0.6773897058823529
+        }
+      }
+    },
+    {
+      "dataset_id": "1510",
+      "dataset_name": "wdbc",
+      "meseta_mediana": 27.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.9334380220514534,
+          "optimo": 0.942866688940862
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9518716216216216,
+          "optimo": 0.9614864864864865
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 99,
+          "n_evaluables": 144,
+          "objetivo": 0.9621447963800905,
+          "optimo": 0.9718634306869601
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.9615646258503402,
+          "optimo": 0.9712773998488284
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.9518716216216216,
+          "optimo": 0.9614864864864865
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9420601478209158,
+          "optimo": 0.951575906889814
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.9426077097505668,
+          "optimo": 0.9521289997480473
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9526785714285714,
+          "optimo": 0.9623015873015872
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9615646258503402,
+          "optimo": 0.9712773998488284
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.9711460073504844,
+          "optimo": 0.9809555629802873
+        }
+      }
+    },
+    {
+      "dataset_id": "182",
+      "dataset_name": "satimage",
+      "meseta_mediana": 63.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 63,
+          "n_evaluables": 144,
+          "objetivo": 0.8883581268945148,
+          "optimo": 0.8973314413075907
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.8949071367917912,
+          "optimo": 0.9039466028199912
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.8899084763407209,
+          "optimo": 0.898897450849213
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.8858049070699604,
+          "optimo": 0.8947524313837983
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 63,
+          "n_evaluables": 144,
+          "objetivo": 0.8983714070036293,
+          "optimo": 0.9074458656602316
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.8797048463352525,
+          "optimo": 0.8885907538739924
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.8837930307457059,
+          "optimo": 0.8927202330764706
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.8819173560827556,
+          "optimo": 0.8908256122048036
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.8840443700362657,
+          "optimo": 0.8929741111477432
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8825289861648355,
+          "optimo": 0.8914434203685208
+        }
+      }
+    },
+    {
+      "dataset_id": "40966",
+      "dataset_name": "MiceProtein",
+      "meseta_mediana": 43.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 39,
+          "n_evaluables": 96,
+          "objetivo": 0.9703455882352942,
+          "optimo": 0.9801470588235295
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 42,
+          "n_evaluables": 96,
+          "objetivo": 0.9856364058150324,
+          "optimo": 0.9955923291060934
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 54,
+          "n_evaluables": 96,
+          "objetivo": 0.9812484491315137,
+          "optimo": 0.9911600496277916
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 48,
+          "n_evaluables": 96,
+          "objetivo": 0.9850246353961372,
+          "optimo": 0.9949743791880173
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 42,
+          "n_evaluables": 96,
+          "objetivo": 0.980423593177911,
+          "optimo": 0.9903268617958696
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 60,
+          "n_evaluables": 96,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 33,
+          "n_evaluables": 96,
+          "objetivo": 0.9856364058150324,
+          "optimo": 0.9955923291060934
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 45,
+          "n_evaluables": 96,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 33,
+          "n_evaluables": 96,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 60,
+          "n_evaluables": 96,
+          "objetivo": 0.9769009915043951,
+          "optimo": 0.9867686782872678
+        }
+      }
+    },
+    {
+      "dataset_id": "469",
+      "dataset_name": "analcatdata_dmft",
+      "meseta_mediana": 12.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.19676725309304155,
+          "optimo": 0.19875480110408236
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.2004019537624065,
+          "optimo": 0.20242621592162272
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.2252071559743306,
+          "optimo": 0.22748197573164708
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.20907812018756755,
+          "optimo": 0.21119002039148238
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.20374971594082128,
+          "optimo": 0.20580779387961745
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.2299043781385967,
+          "optimo": 0.23222664458444112
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.18324050632911393,
+          "optimo": 0.1850914205344585
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.18200866669755594,
+          "optimo": 0.18384713807833933
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.21158567774936057,
+          "optimo": 0.21372290681753595
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 12,
+          "n_evaluables": 96,
+          "objetivo": 0.21688280638954333,
+          "optimo": 0.2190735418076195
+        }
+      }
+    },
+    {
+      "dataset_id": "1475",
+      "dataset_name": "first-order-theorem-proving",
+      "meseta_mediana": 22.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.46170313237913535,
+          "optimo": 0.466366800382965
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.43469525915313306,
+          "optimo": 0.4390861203567001
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.4576354422623194,
+          "optimo": 0.46225802248719133
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.4446333139859637,
+          "optimo": 0.4491245595817815
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.45313791549786525,
+          "optimo": 0.45771506615945984
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.4514673880590798,
+          "optimo": 0.45602766470614126
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.4675456060407536,
+          "optimo": 0.4722682889300542
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.44867084484253916,
+          "optimo": 0.4532028735783224
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.43804071683233037,
+          "optimo": 0.44246537053770746
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.4681016846570443,
+          "optimo": 0.472829984502065
+        }
+      }
+    },
+    {
+      "dataset_id": "458",
+      "dataset_name": "analcatdata_authorship",
+      "meseta_mediana": 108.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 126,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 108,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 108,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 144,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 108,
+          "n_evaluables": 144,
+          "objetivo": 0.9859660107334526,
+          "optimo": 0.9959252633671238
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 90,
+          "n_evaluables": 144,
+          "objetivo": 0.9859713491695891,
+          "optimo": 0.9959306557268577
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 81,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 108,
+          "n_evaluables": 144,
+          "objetivo": 0.9859660107334526,
+          "optimo": 0.9959252633671238
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 81,
+          "n_evaluables": 144,
+          "objetivo": 0.9859660107334526,
+          "optimo": 0.9959252633671238
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 126,
+          "n_evaluables": 144,
+          "objetivo": 0.99,
+          "optimo": 1.0
+        }
+      }
+    },
+    {
+      "dataset_id": "44",
+      "dataset_name": "spambase",
+      "meseta_mediana": 36.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.899243019957199,
+          "optimo": 0.9083262827850496
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9063096986415551,
+          "optimo": 0.9154643420621769
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.8987525644233174,
+          "optimo": 0.9078308731548661
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.896974095456129,
+          "optimo": 0.9060344398546758
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.8916572384937239,
+          "optimo": 0.9006638772663877
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9125249662618083,
+          "optimo": 0.9217423901634428
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8929338235294118,
+          "optimo": 0.9019533571004159
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9112554492920144,
+          "optimo": 0.9204600497899136
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 45,
+          "n_evaluables": 144,
+          "objetivo": 0.9075654942738567,
+          "optimo": 0.9167328224988451
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 54,
+          "n_evaluables": 144,
+          "objetivo": 0.8967764483501576,
+          "optimo": 0.9058347963132904
+        }
+      }
+    },
+    {
+      "dataset_id": "1487",
+      "dataset_name": "ozone-level-8hr",
+      "meseta_mediana": 9.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6502885217958038,
+          "optimo": 0.6568570927230342
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6476419723206231,
+          "optimo": 0.6541838104248718
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6652523291925466,
+          "optimo": 0.671972049689441
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6652523291925466,
+          "optimo": 0.671972049689441
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7135075323928819,
+          "optimo": 0.7207146791847292
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.6034667429426389,
+          "optimo": 0.6095623666087262
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6502885217958038,
+          "optimo": 0.6568570927230342
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.7022291021671826,
+          "optimo": 0.7093223254213966
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6894647091226977,
+          "optimo": 0.6964289991138362
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 9,
+          "n_evaluables": 144,
+          "objetivo": 0.6173362393121452,
+          "optimo": 0.6235719589011568
+        }
+      }
+    },
+    {
+      "dataset_id": "3",
+      "dataset_name": "kr-vs-kp",
+      "meseta_mediana": 48.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 60,
+          "n_evaluables": 96,
+          "objetivo": 0.9605108137304614,
+          "optimo": 0.9702129431620823
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 60,
+          "n_evaluables": 96,
+          "objetivo": 0.9434464516634664,
+          "optimo": 0.9529762138014812
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 72,
+          "n_evaluables": 96,
+          "objetivo": 0.9480787053487193,
+          "optimo": 0.9576552579279993
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.955912492296857,
+          "optimo": 0.9655681740372294
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 48,
+          "n_evaluables": 96,
+          "objetivo": 0.9419030303030302,
+          "optimo": 0.9514172023262932
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.9449734242634392,
+          "optimo": 0.9545186103671104
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 48,
+          "n_evaluables": 96,
+          "objetivo": 0.9527932468803524,
+          "optimo": 0.962417421091265
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 24,
+          "n_evaluables": 96,
+          "objetivo": 0.9636330233457605,
+          "optimo": 0.973366690248243
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 36,
+          "n_evaluables": 96,
+          "objetivo": 0.9496804511278195,
+          "optimo": 0.9592731829573935
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 72,
+          "n_evaluables": 96,
+          "objetivo": 0.9434624085553955,
+          "optimo": 0.9529923318741369
+        }
+      }
+    },
+    {
+      "dataset_id": "40984",
+      "dataset_name": "segment",
+      "meseta_mediana": 27.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9059648800119809,
+          "optimo": 0.9151160404161424
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9184070455134028,
+          "optimo": 0.9276838843569726
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9141214611351891,
+          "optimo": 0.9233550112476657
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9075693621600005,
+          "optimo": 0.916736729454546
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 63,
+          "n_evaluables": 144,
+          "objetivo": 0.9030617014239842,
+          "optimo": 0.9121835367919032
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.8927585608443065,
+          "optimo": 0.9017763240851581
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.9059966777408637,
+          "optimo": 0.9151481593342058
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.922665592615526,
+          "optimo": 0.93198544708639
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 18,
+          "n_evaluables": 144,
+          "objetivo": 0.91230193931038,
+          "optimo": 0.9215171104145252
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 27,
+          "n_evaluables": 144,
+          "objetivo": 0.9276844215889443,
+          "optimo": 0.9370549713019639
+        }
+      }
+    },
+    {
+      "dataset_id": "15",
+      "dataset_name": "breast-w",
+      "meseta_mediana": 55.5,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 48,
+          "n_evaluables": 96,
+          "objetivo": 0.9663413940256046,
+          "optimo": 0.9761024182076814
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 66,
+          "n_evaluables": 96,
+          "objetivo": 0.974458398744113,
+          "optimo": 0.9843014128728415
+        },
+        "202": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 9,
+          "n_evaluables": 96,
+          "objetivo": 0.974458398744113,
+          "optimo": 0.9843014128728415
+        },
+        "303": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 75,
+          "n_evaluables": 96,
+          "objetivo": 0.9513259668508287,
+          "optimo": 0.9609353200513422
+        },
+        "404": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 60,
+          "n_evaluables": 96,
+          "objetivo": 0.982191989183708,
+          "optimo": 0.9921131203875838
+        },
+        "505": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 30,
+          "n_evaluables": 96,
+          "objetivo": 0.9821137980085348,
+          "optimo": 0.9920341394025605
+        },
+        "606": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 51,
+          "n_evaluables": 96,
+          "objetivo": 0.9665759675511238,
+          "optimo": 0.9763393611627513
+        },
+        "707": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 39,
+          "n_evaluables": 96,
+          "objetivo": 0.9589167974882261,
+          "optimo": 0.9686028257456829
+        },
+        "808": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 84,
+          "n_evaluables": 96,
+          "objetivo": 0.9589167974882261,
+          "optimo": 0.9686028257456829
+        },
+        "909": {
+          "fraccion_inevaluable": 0.3333,
+          "n_en_meseta": 60,
+          "n_evaluables": 96,
+          "objetivo": 0.9592,
+          "optimo": 0.9688888888888889
+        }
+      }
+    },
+    {
+      "dataset_id": "4534",
+      "dataset_name": "PhishingWebsites",
+      "meseta_mediana": 60.0,
+      "semillas": {
+        "101": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 48,
+          "n_evaluables": 144,
+          "objetivo": 0.9508137365107914,
+          "optimo": 0.960417915667466
+        },
+        "1010": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.9458897359375665,
+          "optimo": 0.9554441777147137
+        },
+        "202": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 60,
+          "n_evaluables": 144,
+          "objetivo": 0.9531402016706025,
+          "optimo": 0.9627678804753561
+        },
+        "303": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.9495991399342631,
+          "optimo": 0.9591910504386496
+        },
+        "404": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.9463395012067579,
+          "optimo": 0.9558984860674322
+        },
+        "505": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 60,
+          "n_evaluables": 144,
+          "objetivo": 0.9485603524229075,
+          "optimo": 0.958141770124149
+        },
+        "606": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 48,
+          "n_evaluables": 144,
+          "objetivo": 0.9499594402454539,
+          "optimo": 0.9595549901469231
+        },
+        "707": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 72,
+          "n_evaluables": 144,
+          "objetivo": 0.9403276610016912,
+          "optimo": 0.9498259202037285
+        },
+        "808": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 36,
+          "n_evaluables": 144,
+          "objetivo": 0.94905889115739,
+          "optimo": 0.9586453446034242
+        },
+        "909": {
+          "fraccion_inevaluable": 0.0,
+          "n_en_meseta": 60,
+          "n_evaluables": 144,
+          "objetivo": 0.9445409422065677,
+          "optimo": 0.9540817598046138
+        }
+      }
+    }
+  ],
+  "fraccion_objetivo": 0.99,
+  "minutos": 0.03,
+  "n_datasets": 42,
+  "semillas": [
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    808,
+    909,
+    1010
+  ],
+  "space_version": "tabular-v1"
+}

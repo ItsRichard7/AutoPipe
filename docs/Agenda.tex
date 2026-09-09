@@ -1319,7 +1319,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  pruebas y 99\% de cobertura. Se gastaron las 23\,h comprometidas, exactamente. La semana 10
  puede ejecutar el experimento sin escribir una línea más de código.}
 
-\semana{10}{2026-09-13 a 2026-09-16 --- E6 ejecución y E7: el experimento y sus reportes}
+\semana{10}{2026-09-13 a 2026-09-19 --- E6 ejecución y E7: los dos experimentos LODO}
 
 \entrada{2026-09-13}{5}
 {Ejecuté el experimento completo sobre el corpus. Antes medí lo que iba a costar, porque
@@ -1403,7 +1403,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
 {Documenté el reporte comparativo en la guía técnica y puse al día el estado del proyecto.
  Retiré del registro de decisiones abiertas las dos que la v1.0 cerró —las cinco semillas y
  la región inevaluable—, que seguían ahí por descuido, dejando anotado dónde viven ahora.}
-{Queda una sola tarea de la semana sin cerrar, y la dejo explícita en vez de darla por
+{Queda una tarea del experimento 1 sin cerrar, y la dejo explícita en vez de darla por
  hecha: la sección de resultados del informe. El archivo del informe tiene cambios míos sin
  confirmar en el momento de escribir esto, y escribir encima arriesgaría perderlos; el
  material está listo y ordenado en \texttt{LODO-discusion.md} para trasladarlo en cuanto
@@ -1411,29 +1411,14 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  planificada ya está hecha en lo esencial, así que esa holgura puede ir al análisis de
  causas y al caso de imágenes.}
 
-\cierresemana{10}{20}{22}{RE6 con su pieza central hecha: el \textbf{experimento ejecutado}
- sobre los 25 conjuntos del corpus —500 corridas, 15\,000 ensayos, 13,4 minutos— y sus
- reportes comparativos. \textbf{La hipótesis no se confirma}: reducción del 33,3\% de la
- mediana, que cumple el umbral, pero $p = 0{,}3115$, que no. El resultado tiene estructura y
- no es un simple «no significativo»: una asimetría medida entre acierto y error que reproduce
- el riesgo RI1 sobre el corpus entero, un control sin meta-características que supera a la
- estrategia primaria, y una covariable declarada de antemano que explica el tamaño del
- efecto. Se gastaron 20\,h de las 22 comprometidas; la ejecución costó menos de lo previsto
- porque el arnés de la semana 9 estaba escrito y probado, y lo ahorrado se fue a la
- discusión. Suite de 596 a 637 pruebas, 99\% de cobertura. Queda pendiente trasladar la
- discusión al informe.}
-
-\semana{11}{2026-09-17 en adelante --- E6 ampliado: diagnóstico y pre-registro del
- experimento 2}
-
-\entrada{2026-09-17}{3}
+\entrada{2026-09-16}{3}
 {Medí por qué el experimento 1 no pudo detectar nada, sobre los datos ya ejecutados y
  \textbf{leyendo únicamente la condición de arranque en frío}. Dos resultados. Endurecer el
  objetivo del 95\% al 99\% del propio mejor del frío lleva la mediana de \textbf{3 a 10
  ensayos} y los conjuntos con margen medible de 7 a 20, sin ejecutar un solo ensayo nuevo.
  Y la variable entera toma 7 valores distintos sobre 25 conjuntos, con \textbf{18
  colisiones}, mientras que el \emph{regret} normalizado toma 25 valores y ninguna.}
-{Esto corrige una conclusión mía de la semana 10. Al escribir la discusión supuse que la
+{Esto corrige una conclusión mía de hace un día. Al escribir la discusión supuse que la
  causa dominante del resultado nulo era que el espacio \texttt{tabular-v1} fuera demasiado
  fácil, y la recomendación que iba a hacer era construir un \texttt{tabular-v2} con
  hiperparámetros continuos: unas 26 horas y el mayor riesgo de cronograma que quedaba. La
@@ -1449,7 +1434,7 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  espacio y del corpus; elegirlo por dónde aparece una diferencia sería exactamente lo que un
  pre-registro existe para impedir.}
 
-\entrada{2026-09-18}{6}
+\entrada{2026-09-17}{6}
 {Escribí el \textbf{ADR-004}, que propone ejecutar un segundo experimento, y el
  \textbf{pre-registro v2.0} que lo gobierna, en un documento aparte
  (\texttt{Preregistro-E2.tex}, nueve páginas, sin un solo aviso de composición). Cambia el
@@ -1480,6 +1465,112 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  midiendo sobre datos ya ejecutados, y que 17 de los 42 conjuntos se observaron en la
  evaluación exploratoria de la semana 8.}
 
+\entrada{2026-09-19}{2}
+{El profesor asesor aprobó el ADR-004. Lo pasé a «aceptado» con la fecha y el nombre de
+ quien aprueba, congelé el pre-registro del experimento 2 y creé la etiqueta
+ \texttt{prereg-v2.0}, que apunta a su \emph{commit} y se creó \textbf{en el mismo
+ segundo} que él.}
+{El orden importa y lo respeté sin atajos: primero la aprobación, después el
+ congelamiento y la etiqueta, y solo entonces una línea del código que ejecuta. Es la
+ lección que la v0.2 dejó escrita en su fe de erratas al llegar su etiqueta con siete días
+ de retraso, y aquí la separación entre \emph{commit} y etiqueta es de cero segundos.
+ Escribir el arnés antes del documento habría sido igual de defendible en abstracto
+ —la v1.0 se hizo así— pero con el documento ya aprobado no había ninguna razón para
+ invertir el orden.}
+
+\entrada{2026-09-19}{10}
+{Construí todo lo que el experimento 2 necesita. La estrategia \texttt{hybrid} en el
+ recomendador; \texttt{build\_corpus\_e2.py}, que compone los 42 conjuntos y
+ \textbf{aborta} si alguno excluido por familia se cuela; la base de meta-conocimiento
+ sobre esos 42, que tardó 1,3 minutos porque los 25 del experimento 1 salieron de caché;
+ \texttt{reference\_optima.py}, que calculó las 420 rejillas exhaustivas en 62 minutos; el
+ arnés \texttt{run\_lodo\_e2.py} y su reporte. Suite de 637 a 710 pruebas, 99\% de
+ cobertura.}
+{\textbf{Dos errores míos que las pruebas cazaron, y los dos habrían pasado
+ inadvertidos.} El primero: \texttt{resumir} redondeaba el óptimo de referencia a seis
+ decimales, lo que lo dejaba \emph{por debajo} del valor alcanzable —0,8333333 pasaba a
+ 0,833333— de modo que una búsqueda que encontraba el óptimo lo superaba y el
+ \emph{regret} salía negativo. Rompía el invariante que el propio pre-registro declara, y
+ lo destapó la prueba escrita para eso, que compara una búsqueda real contra la rejilla de
+ su misma partición. El segundo: \texttt{regret\_normalizado} tomaba el presupuesto de su
+ valor por defecto, que se enlaza al importar el módulo, así que promediar sobre una
+ corrida más corta habría dividido por 60 en silencio. Ahora entra explícito, y de paso el
+ arnés recibe semillas y presupuesto por parámetro en vez de leer globales, que es lo que
+ permite probarlo sin parchear el módulo. Añadir \texttt{hybrid} a \texttt{ESTRATEGIAS}
+ rompió además dos pruebas de la evaluación de la semana 8, y \textbf{no las reescribí
+ para que pasaran}: la causa correcta era otra. Esa evaluación es un artefacto fechado
+ sobre los 27 conjuntos de fuera del corpus y su informe está comprometido con cuatro
+ estrategias; si leyera la lista viva, reejecutarla mezclaría en un documento ya reportado
+ una estrategia que entonces no existía. Le puse su propia constante y una prueba que
+ comprueba que sigue siendo un subconjunto válido.}
+
+\entrada{2026-09-19}{5}
+{Ejecuté el experimento 2: 42 conjuntos, 10 semillas, 5 condiciones, 60 ensayos, 126\,000
+ ensayos en \textbf{133 minutos}. Antes medí el costo como el pre-registro obliga —la
+ proyección desde las rejillas dio 2,15\,h y la contingencia de bajar a cinco semillas no
+ llegó a aplicar— y pasé una corrida de humo de tres pliegues. Escribí después la
+ discusión en \texttt{LODO-E2-discusion.md}.}
+{\textbf{Los dos contrastes confirmatorios se resolvieron en direcciones opuestas, y hay
+ que leerlos juntos porque cada uno sin el otro engaña.} La hipótesis del anteproyecto
+ \textbf{se confirma}: \texttt{nearest} contra el frío reduce el \emph{regret} mediano un
+ 35,8\% —el criterio exige 30\%— con $p$ ajustado por Holm de 0,0019 y un efecto de
+ $-0{,}537$, ganando en 32 de 42 conjuntos. Y el mecanismo que el trabajo postulaba
+ \textbf{no es el que produce ese beneficio}: \texttt{frequent}, que ni mira las
+ meta-características del conjunto consultado, queda en 0,0039 contra los 0,0058 de
+ \texttt{nearest}. Es más, la estrategia primaria resultó \textbf{la peor de las cuatro
+ calientes}: por \emph{regret} mediano van \texttt{random} 0,0028, \texttt{frequent}
+ 0,0039, \texttt{hybrid} 0,0042, \texttt{nearest} 0,0058 y el frío 0,0090. La ablación
+ aleatoria es la mejor de todas. La causa se ve al separar aciertos de errores: las cuatro
+ ganan en unos 32 conjuntos, pero \texttt{nearest} paga \textbf{3,7 veces más caro} cada
+ fallo que \texttt{frequent}, y censura 45 corridas de 420 —un 10,7\%— \emph{más que el
+ propio arranque en frío}, que censura 31. Es el riesgo RI1 reproducido a escala.
+ \textbf{Y aquí me equivoqué, en la primera versión de la discusión.} Di por buena la
+ explicación que el spike A había propuesto ---que cinco recomendaciones parecidas entre
+ sí forman para el muestreador una región falsamente prometedora, de modo que la
+ similitud reduciría la diversidad de lo inyectado--- y la escribí como si fuera un
+ hecho. Al releerla antes de cerrar la semana caí en que no la había medido, y la medí:
+ \textbf{es falsa}. \texttt{nearest} inyecta los conjuntos \emph{más} diversos de las
+ cuatro estrategias ---distancia de Hamming media 2,58 contra 2,10 de
+ \texttt{frequent}--- y es el que peor rinde; la diversidad ordena los resultados al
+ revés. Lo que sí los ordena se puede medir exactamente sobre las rejillas exhaustivas ya
+ cacheadas, sin ejecutar un solo ensayo nuevo: \textbf{la calidad de lo inyectado}. La
+ mejor de las cinco que elige \texttt{nearest} queda a 0,0352 del óptimo del conjunto
+ excluido y la de \texttt{frequent} a 0,0150, y ese orden reproduce el del resultado
+ final. La similitud no identifica configuraciones mejores para el conjunto consultado:
+ \textbf{identifica peores}. Encima, un 2,9\% de lo que \texttt{nearest} inyecta resulta
+ \emph{inevaluable} allí, contra el 0\% de \texttt{frequent} y \texttt{random}, que es el
+ problema de transferibilidad que el desempate canónico ya había anticipado. La lección
+ no es sobre el recomendador sino sobre mí: escribí una explicación heredada sin
+ comprobarla, y habría viajado al informe. Queda confirmado el \emph{efecto} de RI1 y
+ refutada la \emph{explicación} que se le había dado. El hallazgo metodológico es igual
+ de sólido y ahora demostrable: sobre
+ \emph{los mismos datos}, el \emph{regret} da $p = 0{,}0010$ y los ensayos hasta el
+ objetivo dan $p = 0{,}3902$ pese a una reducción de la mediana \textbf{mayor}, del
+ 41,4\%. Con la variable del experimento 1 esto habría vuelto a dar nulo, y ninguna
+ cantidad de datos adicionales lo habría arreglado. La conclusión que el trabajo sostiene
+ no es «el meta-aprendizaje funciona» ni «no funciona», sino una más precisa: el arranque
+ en caliente ayuda, y lo que aporta el beneficio es arrancar con configuraciones
+ \textbf{buenas en general}, no con las de los conjuntos parecidos.}
+
+\cierresemana{10}{46}{22}{RE6 cerrado con \textbf{dos} experimentos en vez de uno, y con
+ una conclusión que ninguno de los dos habría dado por separado. El experimento 1 se
+ ejecutó sobre los 25 conjuntos ---500 corridas, 13,4 minutos--- y \textbf{no confirmó la
+ hipótesis} ($p = 0{,}3115$). Su diagnóstico, medido sobre los datos ya ejecutados y
+ leyendo solo la condición fría, mostró que el instrumento carecía de resolución: el
+ umbral del 95\% saturaba y la variable entera producía 18 empates sobre 25 conjuntos, que
+ Wilcoxon descarta. Con eso se pre-registró un segundo experimento ---ADR-004 aprobado por
+ el profesor asesor, pre-registro v2.0 congelado y etiquetado el mismo día--- y se ejecutó:
+ 42 conjuntos, 10 semillas, 5 condiciones, 126\,000 ensayos en 133 minutos. \textbf{La
+ hipótesis se confirma} en el contraste primario ---35,8\% de reducción del \emph{regret},
+ $p_{\mathrm{Holm}} = 0{,}0019$--- y a la vez \textbf{la similitud no aporta}: hasta la
+ ablación aleatoria supera a la estrategia primaria. El experimento 1 y su pre-registro
+ quedan intactos y se reportan igual; lo nuevo es adición y §4.3 ya estaba cumplido. Suite
+ de 596 a 710 pruebas, 99\% de cobertura. \textbf{Se gastaron 46\,h contra 22
+ comprometidas}, y el exceso es real: el segundo experimento no estaba planificado y sale
+ de la reserva de contingencia, que para eso existe. La semana 11 conserva sus puntos
+ ---el caso de anomalías en imágenes, los reportes finales y la redacción--- sin
+ modificación.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1505,7 +1596,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 7  & E4, E5, E8        & 25 & 30 & Hito: base y control de alcance; RE5 funcional \\
 8  & E5, E8            & 24 & 18 & RE5 completo; 4 estrategias con controles \\
 9  & E5, E6, E8        & 23 & 23 & Hito: recomendador funcional; v1.0 congelada \\
-10 & E6, E7, E8        & 22 & 20 & LODO ejecutado; hipótesis no confirmada \\
+10 & E6, E7, E8        & 22 & 46 & Dos experimentos; hipótesis confirmada \\
 11 & E6, E7, E8        & 23 & --- & \\
 12 & E8                & 21 & --- & Hito: cierre del proyecto \\
 \midrule
@@ -1525,11 +1616,6 @@ viven en \texttt{docs/experimentos/Preregistro.tex}, no aquí.
 \textbf{Del proyecto}
 
 \begin{itemize}[leftmargin=1.4em]
-  \item \textbf{Aprobación del ADR-004 por el profesor asesor.} Propone un segundo
-        experimento con su propio pre-registro. Solo amplía lo comprometido y no retira
-        nada ---la Sección 4.3 ya está cumplida con el experimento 1--- pero modifica
-        parámetros que esa sección fija, así que requiere visto bueno. \textbf{Hasta que
-        llegue no se etiqueta el pre-registro v2.0 ni se ejecuta un solo ensayo.}
   \item Corregir \texttt{\_normalize\_predictions} en la tarea de anomalías: las
         predicciones todas \texttt{+1} se interpretan como «todo anómalo». Cambia métricas
         ya reportadas, así que requiere decisión explícita.

@@ -31,6 +31,8 @@ import evaluate_recommender as evaluacion  # noqa: E402
 
 from autopipe.meta_knowledge import MetaKnowledgeBase, MetaKnowledgeEntry  # noqa: E402
 from autopipe.meta_recommender import ESTRATEGIAS  # noqa: E402
+
+EVALUADAS = evaluacion.ESTRATEGIAS_EVALUADAS
 from autopipe.search_space import TABULAR_SPACE_VERSION  # noqa: E402
 
 CONFIG_A = {"imputation": 0, "scaling": 0, "encoding": 0, "selection": 0}
@@ -209,14 +211,14 @@ def test_every_strategy_is_evaluated(monkeypatch, base) -> None:
         extractor,
     )
 
-    assert set(resultado["estrategias"]) == set(ESTRATEGIAS)
+    assert set(resultado["estrategias"]) == set(EVALUADAS)
 
 
 def test_the_recommenders_are_fitted_on_the_whole_base(base) -> None:
     """No se excluye nada: los datasets consultados están fuera del corpus."""
     recomendadores = evaluacion._recomendadores(base)
 
-    assert set(recomendadores) == set(ESTRATEGIAS)
+    assert set(recomendadores) == set(EVALUADAS)
     for recomendador in recomendadores.values():
         assert recomendador.n_configurations == evaluacion.N_CONFIGURACIONES
         assert len(recomendador._base) == len(base)
@@ -251,8 +253,8 @@ def _dataset(motivo: str, distancias: dict[str, float]) -> dict:
 def test_the_summary_filters_by_reason() -> None:
     """Cada grupo se agrega por separado, porque sesgan en direcciones opuestas."""
     datasets = [
-        _dataset("orden", dict.fromkeys(ESTRATEGIAS, 0.10)),
-        _dataset("familia", dict.fromkeys(ESTRATEGIAS, 0.02)),
+        _dataset("orden", dict.fromkeys(EVALUADAS, 0.10)),
+        _dataset("familia", dict.fromkeys(EVALUADAS, 0.02)),
     ]
 
     assert evaluacion.resumir(datasets)["n_datasets"] == 2
@@ -266,7 +268,7 @@ def test_the_summary_filters_by_reason() -> None:
 
 
 def test_an_exact_optimum_is_counted() -> None:
-    datasets = [_dataset("orden", dict.fromkeys(ESTRATEGIAS, 0.0))]
+    datasets = [_dataset("orden", dict.fromkeys(EVALUADAS, 0.0))]
 
     assert evaluacion.resumir(datasets)["nearest"]["n_optimo_exacto"] == 1
 
@@ -311,7 +313,7 @@ def test_the_report_states_where_it_measures_and_what_it_does_not() -> None:
     Sin eso, un lector podría tomarlo por el experimento, que es exactamente la
     confusión que este punto del plan estuvo a punto de causar.
     """
-    distancias = dict.fromkeys(ESTRATEGIAS, 0.01)
+    distancias = dict.fromkeys(EVALUADAS, 0.01)
     datasets = [_dataset("orden", distancias), _dataset("familia", distancias)]
 
     texto = evaluacion._informe(
@@ -348,3 +350,16 @@ def test_the_grid_is_read_with_the_mapping_it_was_built_with() -> None:
 
     valores = np.arange(144, dtype=float)
     assert valores[evaluacion.indice_desde_configuracion(CONFIG_A)] == 0.0
+
+
+def test_the_evaluated_strategies_are_pinned_to_the_week_eight_state() -> None:
+    """Esta evaluación es un artefacto fechado y su lista no puede crecer sola.
+
+    Si leyera ``ESTRATEGIAS``, añadir una estrategia al recomendador cambiaría en
+    silencio un informe ya reportado, mezclando en una evaluación exploratoria de la
+    semana 8 una estrategia que entonces no existía. La lista se fija en el guion, y
+    esta prueba comprueba además que sigue siendo un subconjunto válido.
+    """
+    assert EVALUADAS == ("nearest", "diverse", "frequent", "random")
+    assert set(EVALUADAS) < set(ESTRATEGIAS)
+    assert "hybrid" not in EVALUADAS

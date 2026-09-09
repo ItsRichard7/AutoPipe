@@ -534,6 +534,82 @@ Las condiciones de la tabla **se deducen** de las columnas, así que añadir una
 estrategia al arnés la hace aparecer en el reporte sin tocarlo. Las covariables
 (`*_inevaluable`, `*_a_15`) acompañan a cada condición y no se confunden con una.
 
+## El experimento 2 y en qué se diferencia del primero
+
+Los gobiernan documentos distintos: el experimento 1 el pre-registro v1.0
+(`prereg-v1.0`) y el 2 el suyo propio (`Preregistro-E2.tex`, `prereg-v2.0`). **Los dos
+arneses conviven** —`run_lodo.py` y `run_lodo_e2.py`— y ninguno sustituye al otro,
+porque cada uno sigue siendo el que produjo sus resultados.
+
+| Pieza | Experimento 1 | Experimento 2 |
+|---|---|---|
+| Vara | 95 % del propio mejor del frío | 99 % del óptimo exhaustivo por (dataset, semilla) |
+| Presupuesto | 30 ensayos | 60 |
+| Variable primaria | Ensayos hasta el objetivo | *Regret* normalizado |
+| Corpus | 25 | 42 |
+| Semillas | 5 | 10 |
+| Condiciones | 4 | 5 (`+hybrid`) |
+| Contrastes | 1 | 2, con Holm |
+
+### La vara externa cambia una propiedad del protocolo
+
+En el experimento 1 el arranque en frío **no podía censurarse**: el objetivo era una
+fracción de su propio máximo. El arnés lo comprobaba activamente y abortaba si ocurría.
+
+Con vara externa esa demostración ya no vale, y su desaparición es intencionada: una
+condición que no puede fallar tampoco puede informar. Por eso `run_lodo_e2.py`
+**no lleva esa guarda**, y hay una prueba escrita para fallar si alguien la
+reintroduce (`test_the_cold_start_is_no_longer_guarded_against_censoring`).
+
+### El invariante que sostiene la vara
+
+`reference_optima.py` evalúa las 144 configuraciones con el **mismo `val_size` y el
+mismo `random_state`** que la búsqueda, de modo que su máximo acota por arriba
+cualquier valor alcanzable en esa pareja. Es comprobable, y se comprueba.
+
+Ese invariante ya cazó un error real: `resumir` redondeaba el óptimo a seis
+decimales, lo que lo dejaba **por debajo** del valor alcanzable —0,8333333 pasaba a
+0,833333— y una búsqueda que encontraba el óptimo lo superaba, con regret negativo.
+El óptimo y el objetivo se guardan sin redondear.
+
+### El regret, en una línea
+
+Media sobre el presupuesto de `(óptimo − mejor_hasta_ahora) / óptimo`, con regret
+pleno mientras no haya ningún ensayo evaluable. Menor es mejor, vive en `[0, 1]`, usa
+los 60 ensayos y **no produce empates**: sobre los 25 conjuntos del experimento 1 la
+variable entera daba 7 valores distintos y 18 colisiones, que Wilcoxon descarta.
+
+El presupuesto se pasa explícito y no por omisión: los valores por defecto se enlazan
+al importar el módulo, y promediar sobre un presupuesto distinto del ejecutado daría
+un número silenciosamente equivocado.
+
+### `hybrid`
+
+Las dos primeras de `frequent` seguidas de las de `nearest` por cercanía, sin
+repetir, hasta reunir cinco. El reparto lo fija el pre-registro y **no se explora**:
+probar varios y quedarse con el mejor sería ajustar sobre el resultado.
+
+Viaja en una condición **aparte** en vez de reemplazar a `nearest`, y esa es la
+decisión que permite atribuir: si `nearest` mejora respecto del experimento 1, la
+causa es el instrumento, porque el método es literalmente el mismo.
+
+### Orden de ejecución
+
+```powershell
+.\.venv\Scripts\python.exe scripts\build_corpus_e2.py        # 42 conjuntos
+.\.venv\Scripts\python.exe scripts\build_meta_knowledge.py `
+    --corpus docs\experimentos\CORPUS-E2.md `
+    --base docs\experimentos\BASE-E2.json `
+    --informe docs\experimentos\BASE-E2.md
+.\.venv\Scripts\python.exe scripts\reference_optima.py        # ~62 min, cacheado
+.\.venv\Scripts\python.exe scripts\run_lodo_e2.py            # ~2 h
+.\.venv\Scripts\python.exe scripts\report_lodo_e2.py
+```
+
+Las rejillas de referencia se cachean por pareja, así que reejecutar el resumen es
+instantáneo. Las entradas de la base se cachean por dataset, de modo que los 25 del
+experimento 1 se reutilizan sin recalcularse.
+
 ### Las tres capas de validación de una configuración
 
 Una configuración recorre tres comprobaciones antes de llegar a `enqueue_trial`, y

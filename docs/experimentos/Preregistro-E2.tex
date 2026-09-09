@@ -67,7 +67,7 @@
 % --- Identidad de la version --------------------------------
 \newcommand{\preregversion}{v2.0}
 \newcommand{\preregtag}{prereg-v2.0}
-\newcommand{\preregfecha}{17 de septiembre de 2026}
+\newcommand{\preregfecha}{19 de septiembre de 2026}
 
 % Caja de aviso, para lo que no se puede pasar por alto.
 % Se define como comando y no como entorno a propósito: tabularx lee su cuerpo
@@ -92,14 +92,17 @@
 \rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Identificación de esta versión}} \\
 \midrule
 Versión & \preregversion \\
-Fecha de cierre prevista & \preregfecha \\
-Estado & \textbf{Borrador. NO congelado.} Se congela con el \emph{commit} que lo
-cierre y con su etiqueta anotada, creada \textbf{el mismo día}, y solo después de
-dos condiciones: la aprobación del profesor asesor registrada en el ADR-004, y
-antes de ejecutar un solo ensayo del experimento~2. \\
-Etiqueta de git & \texttt{\preregtag} (aún no creada). El fechado verificable será
-la fecha del \emph{commit} que cierre esta versión, no la de creación de la
-etiqueta. \\
+Fecha de cierre & \preregfecha \\
+Estado & \textbf{Versión congelada previa a la ejecución del experimento~2.} Se
+cierra después de la aprobación del profesor asesor registrada en el ADR-004
+(2026-09-19) y \textbf{antes} de ejecutar un solo ensayo: ningún resultado del
+experimento~2 existía cuando se escribió, y el arnés que lo ejecuta se escribe
+después de este documento. \\
+Etiqueta de git & \texttt{\preregtag}, etiqueta anotada que apunta al \emph{commit}
+que cierra esta versión y creada el mismo día que él. El fechado verificable es la
+fecha de \textbf{ese commit}, y se obtiene con \texttt{git log -1 \preregtag}. \\
+Forma de cita en el informe & «Pre-registro del experimento 2, \preregversion,
+etiqueta \texttt{\preregtag}, \preregfecha» \\
 Gobierna & El \textbf{experimento 2} únicamente. El experimento 1 lo gobierna el
 pre-registro v1.0, etiqueta \texttt{prereg-v1.0}, que \textbf{no se modifica}. \\
 \bottomrule
@@ -586,7 +589,7 @@ por eso se fija ahora.
 \toprule
 \rowcolor{tablehead} \textbf{Versión} & \textbf{Cierre} & \textbf{Qué fija} \\
 \midrule
-\preregversion & \preregfecha{} (previsto) &
+\preregversion & \preregfecha &
 Primera y única versión de este documento. Fija el protocolo del experimento 2:
 objetivo al 99\,\% del óptimo exhaustivo, presupuesto de 60 ensayos, \emph{regret}
 normalizado como variable primaria, corpus de 42, diez semillas, cinco condiciones y
