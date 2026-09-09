@@ -2,7 +2,7 @@
 
 > Documento **escrito a mano**. Los números vienen todos de `LODO-E2-resultados.md`,
 > que sí se genera; aquí se interpretan.
-> Fecha: 2026-09-21. Ejecución analizada: `LODO-E2-resultados.json`, 133,1 min,
+> Fecha: 2026-09-19. Ejecución analizada: `LODO-E2-resultados.json`, 133,1 min,
 > 42 conjuntos × 10 semillas × 5 condiciones × 60 ensayos = 126 000 ensayos.
 
 ## 1. Las dos respuestas, que van en direcciones opuestas
