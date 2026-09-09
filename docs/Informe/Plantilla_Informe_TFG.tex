@@ -303,11 +303,10 @@ organizada en una arquitectura modular de seis componentes desacoplados y fue pr
 sobre conjuntos de datos de referencia como MVTec AD \cite{bergmann2019mvtec} y
 CIFAR-10 \cite{krizhevsky2009cifar} con anomalías sintéticas.
 
-El presente Trabajo Final de Graduación, cuyo alcance quedó fijado en el anteproyecto
-aprobado \cite{borbon2026anteproyecto}, evoluciona esa librería hacia
+El presente trabajo final de graduación, evoluciona esa librería hacia
 \textit{AutoPipe}: un framework agnóstico a la tarea de aprendizaje, con una capa de
 meta-aprendizaje que recomienda configuraciones iniciales de búsqueda a partir de las
-características descriptivas del conjunto de datos.
+características descriptivas del conjunto de datos utilizado.
 
 \subsubsection{Descripción de la organización}
 
@@ -476,10 +475,10 @@ de datos previos?
 
 \subsubsection{Objetivo general}
 
-Generalizar el framework \textit{AutoPipeAD} de selección automática de pipelines de
-preprocesamiento a múltiples tareas de aprendizaje automático e incorporar una capa de
+Generalizar el framework AutoPipeAD de selección automática de pipelines de
+preprocesamiento a múltiples tareas de aprendizaje automático incorporando una capa de
 meta-aprendizaje que recomiende configuraciones iniciales de búsqueda a partir de las
-meta-características del conjunto de datos, con el fin de reducir el costo de exploración
+meta-características del conjunto de datos, reduciendo así el costo de exploración
 en conjuntos de datos nuevos manteniendo la reproducibilidad de los resultados.
 
 \subsubsection{Objetivos específicos}
@@ -487,7 +486,7 @@ en conjuntos de datos nuevos manteniendo la reproducibilidad de los resultados.
 \begin{enumerate}
   \item Disponer de un núcleo agnóstico a la tarea que resuelva detección de anomalías y
         clasificación tabular sobre una misma arquitectura, verificado por la suite de
-        pruebas de regresión de la librería base en verde y por pruebas que demuestren la
+        pruebas de regresión de la librería base y por pruebas que demuestren la
         ausencia de fuga de información entre los subconjuntos de entrenamiento y
         validación.
 
@@ -503,11 +502,6 @@ en conjuntos de datos nuevos manteniendo la reproducibilidad de los resultados.
         reduce el costo de la búsqueda frente al arranque en frío, mediante validación
         cruzada por exclusión de conjunto de datos y reportes reproducibles.
 \end{enumerate}
-
-Los cuatro objetivos están redactados como logros verificables y no como actividades: en
-cada uno, el criterio que permite declararlo alcanzado está enunciado dentro del propio
-objetivo. La correspondencia entre estos objetivos, sus actividades y sus entregables se
-detalla en el marco metodológico (Sección~\ref{sec:marco-metodologico}).
 
 \subsection{Alcances, entregables y limitaciones del proyecto}
 \label{sec:alcances}
