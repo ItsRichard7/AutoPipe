@@ -1,8 +1,9 @@
 # ADR-004 — Un segundo experimento, con su propio pre-registro
 
-- **Estado:** propuesto — **requiere la aprobación del profesor asesor antes de ejecutar**
-- **Fecha:** 2026-09-17
+- **Estado:** **aceptado**
+- **Fecha:** 2026-09-17 (propuesto), 2026-09-19 (aprobado)
 - **Propuesto por:** Ricardo Antonio Borbón Mena
+- **Aprobado por:** Prof. Luis Alberto Chavarría Zamora, profesor asesor, 2026-09-19
 - **Etapa:** después de ejecutar el experimento 1 (semana 10), antes de la semana 11
 - **Afecta a:** el alcance del TFG. Amplía lo comprometido; no retira nada
 - **Insumo:** `docs/experimentos/LODO-resultados.md`, `LODO-discusion.md`, anteproyecto
@@ -134,10 +135,13 @@ más criterio que un resultado favorable a la primera. Y la comparación `neares
 
 ## Aprobación
 
-**Esta decisión modifica parámetros que el anteproyecto §4.3 fijó y que están
-comprometidos ante el tribunal.** Aunque solo los amplía y no retira nada, requiere el
-visto bueno del profesor asesor antes de ejecutar el experimento 2. Hasta entonces el
-estado de este ADR es «propuesto».
+Esta decisión modifica parámetros que el anteproyecto §4.3 fijó y que están comprometidos
+ante el tribunal. Aunque solo los amplía y no retira nada, requería el visto bueno del
+profesor asesor antes de ejecutar el experimento 2.
+
+**Concedido el 2026-09-19.** Con eso el ADR pasa a «aceptado» y se habilita la secuencia
+que el pre-registro v2.0 impone, en este orden y no en otro: congelar el documento,
+etiquetarlo el mismo día de su *commit*, y solo entonces escribir el arnés y ejecutar.
 
 ## Referencias
 
