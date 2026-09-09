@@ -316,6 +316,14 @@ def main() -> int:
     parser.add_argument(
         "--rehacer", action="store_true", help="Ignorar la caché y recalcular todo."
     )
+    # El experimento 2 usa un corpus de 42 conjuntos y necesita su propia base. Las
+    # rutas entran por parámetro en lugar de duplicar este guion: la construcción es
+    # idéntica —misma semilla, mismos 50 ensayos, mismo desempate— y lo único que
+    # cambia es sobre qué lista se aplica. La caché va por dataset, así que los 25 del
+    # experimento 1 se reutilizan sin recalcularse.
+    parser.add_argument("--corpus", type=Path, default=CORPUS, help="Lista de entrada.")
+    parser.add_argument("--base", type=Path, default=BASE, help="Base de salida.")
+    parser.add_argument("--informe", type=Path, default=INFORME, help="Informe de salida.")
     args = parser.parse_args()
 
     openml.config.set_console_log_level(logging.WARNING)
@@ -324,7 +332,7 @@ def main() -> int:
     warnings.filterwarnings("ignore", category=UserWarning)
     warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-    corpus = leer_corpus(CORPUS)[: args.limit]
+    corpus = leer_corpus(args.corpus)[: args.limit]
     extractor = MetaFeatureExtractor(random_state=SEMILLA, cache_dir=CACHE_META)
     entradas: list[MetaKnowledgeEntry] = []
     inicio = time.perf_counter()
@@ -350,8 +358,8 @@ def main() -> int:
         )
 
     base = MetaKnowledgeBase(entradas)
-    base.save(BASE)
-    INFORME.write_text(_informe(base), encoding="utf-8")
+    base.save(args.base)
+    args.informe.write_text(_informe(base), encoding="utf-8")
     total = len(base.feature_names())
     sobreviven = len(base.surviving_features())
     logger.info(
@@ -362,7 +370,7 @@ def main() -> int:
         total,
         sobreviven,
         total - sobreviven,
-        BASE,
+        args.base,
     )
     return 0
 

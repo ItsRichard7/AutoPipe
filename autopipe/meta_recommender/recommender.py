@@ -80,7 +80,7 @@ alternativa anunciada antes de ver los resultados.
 METRICAS = ("manhattan", "euclidean")
 """Distancias admitidas. ``manhattan`` (L1) es la primaria."""
 
-ESTRATEGIAS = ("nearest", "diverse", "frequent", "random")
+ESTRATEGIAS = ("nearest", "diverse", "frequent", "random", "hybrid")
 """Cómo se eligen las configuraciones a recomendar.
 
 Las cuatro devuelven configuraciones ganadoras de datasets reales de la base, de
@@ -102,6 +102,24 @@ de lo inyectado: lo único que cambia es **de qué datasets** se toman.
 * ``random`` --- las ganadoras de datasets elegidos al azar. Es la ablación que
   el pre-registro prevé: aísla si lo que aporta es la **similitud**, y no el
   mero hecho de arrancar en caliente con configuraciones plausibles.
+* ``hybrid`` --- las dos primeras de ``frequent`` seguidas de las de ``nearest``.
+  Nace del resultado del experimento 1, donde ``frequent`` superó a la estrategia
+  primaria: si un buen valor por defecto vale más que la similitud, conviene
+  probar si reservar parte del presupuesto a cada cosa vale más que cualquiera de
+  las dos por separado. La define el pre-registro del experimento 2, y **no es la
+  estrategia primaria de ningún contraste confirmatorio**: viaja en una condición
+  aparte precisamente para que ``nearest`` siga siendo comparable con el
+  experimento 1.
+"""
+
+N_HIBRIDO_FRECUENTES = 2
+"""Cuántas configuraciones aporta ``frequent`` al arranque de ``hybrid``.
+
+El reparto ---dos por frecuencia y el resto por cercanía--- lo fija el pre-registro
+del experimento 2 y **no se explora**: probar varios repartos y quedarse con el
+mejor sería ajustar sobre el resultado. La mayoría queda del lado de la similitud
+porque es el método que el anteproyecto compromete, y las dos por frecuencia son el
+mínimo que garantiza incluir las configuraciones más transferibles del pliegue.
 """
 
 FACTOR_DIVERSIDAD = 2
@@ -480,11 +498,6 @@ class MetaRecommender:
     def _candidatos(self, base: MetaKnowledgeBase, distancias: np.ndarray) -> list[int]:
         """Entradas con configuración distinta, en el orden que fija la estrategia.
 
-        El desempate se resuelve siempre por la posición en la base, que es fija:
-        sin un criterio determinista, dos ejecuciones con la misma semilla podrían
-        inyectar configuraciones distintas y se rompería el criterio de
-        reproducibilidad del anteproyecto.
-
         Args:
             base: Base del pliegue.
             distancias: Distancia de la consulta a cada entrada.
@@ -492,11 +505,45 @@ class MetaRecommender:
         Returns:
             Posiciones en la base, una por configuración distinta.
         """
+        if self.strategy == "hybrid":
+            frecuentes = self._candidatos_de("frequent", base, distancias)
+            cercanos = self._candidatos_de("nearest", base, distancias)
+            return self._sin_repetir(
+                base,
+                [
+                    *frecuentes[:N_HIBRIDO_FRECUENTES],
+                    *cercanos,
+                    *frecuentes[N_HIBRIDO_FRECUENTES:],
+                ],
+            )
+        return self._candidatos_de(self.strategy, base, distancias)
+
+    def _candidatos_de(
+        self, estrategia: str, base: MetaKnowledgeBase, distancias: np.ndarray
+    ) -> list[int]:
+        """Ordena las entradas según una estrategia concreta y quita las repetidas.
+
+        Recibe la estrategia por parámetro y no la lee de :attr:`strategy` porque
+        ``hybrid`` necesita las listas de otras dos para combinarlas.
+
+        El desempate se resuelve siempre por la posición en la base, que es fija:
+        sin un criterio determinista, dos ejecuciones con la misma semilla podrían
+        inyectar configuraciones distintas y se rompería el criterio de
+        reproducibilidad del anteproyecto.
+
+        Args:
+            estrategia: Estrategia con la que ordenar.
+            base: Base del pliegue.
+            distancias: Distancia de la consulta a cada entrada.
+
+        Returns:
+            Posiciones en la base, una por configuración distinta.
+        """
         posiciones = range(len(base))
-        if self.strategy == "random":
+        if estrategia == "random":
             generador = np.random.default_rng(self.random_state)
             orden = [int(i) for i in generador.permutation(len(base))]
-        elif self.strategy == "frequent":
+        elif estrategia == "frequent":
             conteo: dict[tuple, int] = {}
             for entrada in base:
                 clave = self._clave(entrada.configuration)
@@ -511,7 +558,19 @@ class MetaRecommender:
             )
         else:
             orden = sorted(posiciones, key=lambda i: (float(distancias[i]), i))
+        return self._sin_repetir(base, orden)
 
+    @staticmethod
+    def _sin_repetir(base: MetaKnowledgeBase, orden: list[int]) -> list[int]:
+        """Quita de un orden las entradas cuya configuración ya apareció.
+
+        Args:
+            base: Base del pliegue.
+            orden: Posiciones en el orden que fija la estrategia.
+
+        Returns:
+            Las posiciones que aportan una configuración nueva, en ese mismo orden.
+        """
         vistas: list[dict[str, int]] = []
         candidatos: list[int] = []
         for posicion in orden:

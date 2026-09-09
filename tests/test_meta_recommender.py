@@ -805,3 +805,90 @@ def test_every_strategy_records_its_neighbours(base_con_frecuencias) -> None:
         for vecino, configuracion in zip(recomendador.neighbours_, configuraciones):
             assert vecino["configuration"] == configuracion
             assert vecino["dataset_id"] in base_con_frecuencias.dataset_ids
+
+
+# --------------------------------------------------------------------------- #
+# La estrategia híbrida (pre-registro del experimento 2)
+# --------------------------------------------------------------------------- #
+def _corpus_hibrido() -> MetaKnowledgeBase:
+    """Corpus donde la ganadora frecuente y la cercana no coinciden.
+
+    ``CONFIG_A`` gana en tres datasets lejanos, de modo que es la más frecuente.
+    Los dos datasets más cercanos al origen traen ``CONFIG_B`` y ``CONFIG_C``. Sin
+    esa separación, la prueba no distinguiría una estrategia de la otra.
+    """
+    filas = [
+        ("0", {"a": 0.0, "b": 0.0}, CONFIG_B),
+        ("1", {"a": 1.0, "b": 1.0}, CONFIG_C),
+        ("2", {"a": 8.0, "b": 8.0}, CONFIG_A),
+        ("3", {"a": 9.0, "b": 9.0}, CONFIG_A),
+        ("4", {"a": 10.0, "b": 10.0}, CONFIG_A),
+        ("5", {"a": 11.0, "b": 11.0}, CONFIG_D),
+    ]
+    return MetaKnowledgeBase([entrada(i, mf, c) for i, mf, c in filas])
+
+
+def test_the_hybrid_strategy_is_supported() -> None:
+    assert "hybrid" in ESTRATEGIAS
+    assert MetaRecommender(strategy="hybrid").strategy == "hybrid"
+
+
+def test_the_hybrid_starts_with_the_most_frequent_winner() -> None:
+    """Las dos primeras salen de `frequent`, que es lo que el pre-registro fija."""
+    base = _corpus_hibrido()
+    consulta = {"a": 0.0, "b": 0.0}
+
+    frecuentes = MetaRecommender(strategy="frequent").fit(base).recommend(consulta)
+    hibridas = MetaRecommender(strategy="hybrid").fit(base).recommend(consulta)
+
+    assert hibridas[:2] == frecuentes[:2]
+
+
+def test_the_hybrid_continues_with_the_nearest_neighbours() -> None:
+    base = _corpus_hibrido()
+    consulta = {"a": 0.0, "b": 0.0}
+
+    cercanas = MetaRecommender(strategy="nearest").fit(base).recommend(consulta)
+    hibridas = MetaRecommender(strategy="hybrid").fit(base).recommend(consulta)
+
+    resto = [c for c in hibridas[2:]]
+    assert resto == [c for c in cercanas if c not in hibridas[:2]][: len(resto)]
+
+
+def test_the_hybrid_differs_from_both_of_its_parents() -> None:
+    """Si coincidiera con una de las dos, no aportaría una condición nueva."""
+    base = _corpus_hibrido()
+    consulta = {"a": 0.0, "b": 0.0}
+
+    hibridas = MetaRecommender(strategy="hybrid").fit(base).recommend(consulta)
+    cercanas = MetaRecommender(strategy="nearest").fit(base).recommend(consulta)
+    frecuentes = MetaRecommender(strategy="frequent").fit(base).recommend(consulta)
+
+    assert hibridas != cercanas
+    assert hibridas != frecuentes
+
+
+def test_the_hybrid_never_repeats_a_configuration() -> None:
+    """Inyectar duplicados sería pérdida pura de presupuesto."""
+    base = _corpus_hibrido()
+
+    hibridas = MetaRecommender(strategy="hybrid").fit(base).recommend({"a": 0.0, "b": 0.0})
+
+    assert len(hibridas) == len({tuple(sorted(c.items())) for c in hibridas})
+
+
+def test_the_hybrid_is_deterministic() -> None:
+    base = _corpus_hibrido()
+    consulta = {"a": 0.5, "b": 0.5}
+
+    una = MetaRecommender(strategy="hybrid").fit(base).recommend(consulta)
+    otra = MetaRecommender(strategy="hybrid").fit(base).recommend(consulta)
+
+    assert una == otra
+
+
+def test_the_hybrid_split_is_the_one_the_pre_registration_fixes() -> None:
+    """El reparto 2 y 3 se declara y no se explora."""
+    from autopipe.meta_recommender.recommender import N_HIBRIDO_FRECUENTES
+
+    assert N_HIBRIDO_FRECUENTES == 2

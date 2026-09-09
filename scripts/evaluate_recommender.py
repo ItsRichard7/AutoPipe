@@ -59,11 +59,22 @@ from download_corpus import descargar
 
 from autopipe.meta_features import MetaFeatureExtractor
 from autopipe.meta_knowledge import MetaKnowledgeBase
-from autopipe.meta_recommender import ESTRATEGIAS, MetaRecommender
+from autopipe.meta_recommender import MetaRecommender
 from autopipe.search_space import TABULAR_SPACE_VERSION
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
+
+ESTRATEGIAS_EVALUADAS = ("nearest", "diverse", "frequent", "random")
+"""Estrategias que esta evaluación recorre.
+
+Se fijan aquí en lugar de leerse de ``ESTRATEGIAS`` a propósito. Esta evaluación es
+un artefacto **fechado**: se ejecutó en la semana 8 sobre los 27 conjuntos de fuera
+del corpus, y su informe está comprometido con esas cuatro estrategias. La quinta,
+``hybrid``, nació después con el pre-registro del experimento 2, y arrastrarla aquí
+mezclaría en una evaluación exploratoria ya reportada una estrategia que no existía
+cuando se hizo. Reejecutar este guion tiene que reproducir lo que dice su informe.
+"""
 
 BASE = Path("docs/experimentos/BASE-meta-conocimiento.json")
 CORPUS = Path("docs/experimentos/CORPUS-seleccionado.md")
@@ -142,7 +153,7 @@ def _recomendadores(base: MetaKnowledgeBase) -> dict[str, MetaRecommender]:
             strategy=estrategia,
             random_state=SEMILLA_ALEATORIA,
         ).fit(base)
-        for estrategia in ESTRATEGIAS
+        for estrategia in ESTRATEGIAS_EVALUADAS
     }
 
 
@@ -215,7 +226,7 @@ def resumir(datasets: list[dict], motivo: str | None = None) -> dict:
     """
     grupo = [d for d in datasets if motivo is None or d["motivo"] == motivo]
     resumen = {"n_datasets": len(grupo)}
-    for estrategia in ESTRATEGIAS:
+    for estrategia in ESTRATEGIAS_EVALUADAS:
         distancias = [
             d["estrategias"][estrategia]["distancia_al_optimo"]
             for d in grupo
@@ -240,7 +251,7 @@ def resumir(datasets: list[dict], motivo: str | None = None) -> dict:
 def _tabla_resumen(resumen: dict) -> str:
     """Redacta la tabla comparativa de estrategias de un grupo."""
     filas = []
-    for estrategia in ESTRATEGIAS:
+    for estrategia in ESTRATEGIAS_EVALUADAS:
         datos = resumen[estrategia]
         n = resumen["n_datasets"]
         mediana = "—" if datos["distancia_mediana"] is None else f"{datos['distancia_mediana']:.4f}"
@@ -258,7 +269,7 @@ def _tabla_datasets(datasets: list[dict]) -> str:
     filas = []
     for d in sorted(datasets, key=lambda x: -x["iqr"]):
         celdas = []
-        for estrategia in ESTRATEGIAS:
+        for estrategia in ESTRATEGIAS_EVALUADAS:
             valor = d["estrategias"][estrategia]["distancia_al_optimo"]
             marca = "**" if d["estrategias"][estrategia]["alcanza_el_objetivo"] else ""
             celdas.append("—" if valor is None else f"{marca}{valor:.4f}{marca}")
@@ -284,11 +295,11 @@ def _veredicto(total: dict, orden: dict, familia: dict) -> str:
         El texto de la sección, en markdown.
     """
     n = total["n_datasets"]
-    medianas = {e: total[e]["distancia_mediana"] for e in ESTRATEGIAS}
+    medianas = {e: total[e]["distancia_mediana"] for e in ESTRATEGIAS_EVALUADAS}
     mejor = min(medianas, key=lambda e: medianas[e])
     peor = max(medianas, key=lambda e: medianas[e])
     separacion = medianas[peor] - medianas[mejor]
-    objetivo = {e: total[e]["n_alcanza_el_objetivo"] for e in ESTRATEGIAS}
+    objetivo = {e: total[e]["n_alcanza_el_objetivo"] for e in ESTRATEGIAS_EVALUADAS}
     primaria_gana_por_familia = (
         familia["nearest"]["distancia_mediana"] < familia["random"]["distancia_mediana"]
     )
@@ -348,8 +359,8 @@ def _informe(datasets: list[dict], total: dict, orden: dict, familia: dict) -> s
     Returns:
         El documento markdown completo.
     """
-    columnas = " | ".join(f"`{e}`" for e in ESTRATEGIAS)
-    alineacion = "|".join(["---:"] * len(ESTRATEGIAS))
+    columnas = " | ".join(f"`{e}`" for e in ESTRATEGIAS_EVALUADAS)
+    alineacion = "|".join(["---:"] * len(ESTRATEGIAS_EVALUADAS))
     return f"""# Evaluación preliminar del recomendador (RE5)
 
 > **Archivo generado.** No editar a mano: se regenera con
@@ -495,7 +506,7 @@ def main() -> int:
         resultado = evaluar_dataset(retenido, recomendadores, extractor, args.rehacer)
         datasets.append(resultado)
         logger.info(
-            "[%2d/%d] %-42s optimo %.4f  " + "  ".join(f"{e}=%s" for e in ESTRATEGIAS),
+            "[%2d/%d] %-42s optimo %.4f  " + "  ".join(f"{e}=%s" for e in ESTRATEGIAS_EVALUADAS),
             numero,
             len(retenidos),
             retenido["dataset_name"][:42],
@@ -504,7 +515,7 @@ def main() -> int:
                 f"{resultado['estrategias'][e]['distancia_al_optimo']:.4f}"
                 if resultado["estrategias"][e]["distancia_al_optimo"] is not None
                 else "n/d"
-                for e in ESTRATEGIAS
+                for e in ESTRATEGIAS_EVALUADAS
             ),
         )
 
