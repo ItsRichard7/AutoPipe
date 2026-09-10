@@ -1055,7 +1055,8 @@ absoluto no significa lo mismo en dos conjuntos distintos y puede ser inválido 
 receptor. \\
 \addlinespace
 Número de semillas por condición &
-Tres semillas, idénticas en ambas condiciones, agregadas por mediana &
+Cinco semillas en el primer experimento y diez en el segundo, idénticas en todas las
+condiciones y agregadas por mediana &
 Una sola corrida produce una observación pareada ruidosa, y una conclusión que dependa de
 la semilla obtenida no es defendible. No altera el presupuesto de ensayos ni el
 emparejamiento. \\
@@ -1063,9 +1064,9 @@ emparejamiento. \\
 Casos en que una condición no alcanza el objetivo &
 Se asigna el presupuesto más uno, de forma simétrica, y se reporta el recuento; se
 recalcula el análisis con castigos más severos &
-El arranque en frío no puede quedar censurado, porque el objetivo se define a partir de su
-propio mejor valor. La regla solo puede afectar al arranque en caliente, y por eso
-requiere una garantía explícita de robustez. \\
+En el primer experimento el arranque en frío no puede quedar censurado, porque el objetivo
+se define a partir de su propio mejor valor, y la regla solo afecta al arranque en caliente;
+en el segundo, con una vara externa, afecta a todas las condiciones. \\
 \addlinespace
 Lateralidad de la prueba estadística &
 Una cola en la dirección de la hipótesis, reportando también el valor de dos colas &
@@ -1074,6 +1075,53 @@ impide que la elección se convierta en un grado de libertad oculto. \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\subsection{Segundo experimento pre-registrado}
+\label{sec:segundo-experimento}
+
+La ejecución del primer experimento no confirmó la hipótesis, y su propio análisis mostró que
+la medición carecía de resolución (Sección~\ref{sec:resultados-e1}). En lugar de reinterpretar
+aquel resultado, se diseñó un segundo experimento con un pre-registro propio. La decisión se
+registró en un documento de decisión de arquitectura aprobado por el profesor asesor, y el
+pre-registro se congeló y etiquetó antes de ejecutar un solo ensayo. El segundo experimento
+no sustituye al primero, cuyos criterios comprometidos ya se habían evaluado: lo complementa,
+y ambos se reportan. La Tabla~\ref{tab:parametros-experimentos} resume en qué difieren.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Parámetros de los dos experimentos}
+\label{tab:parametros-experimentos}
+\begin{tabularx}{\textwidth}{>{\ancho{0.9}}L>{\ancho{1.05}}L>{\ancho{1.05}}L}
+\toprule
+\textbf{Parámetro} & \textbf{Experimento 1} & \textbf{Experimento 2} \\
+\midrule
+Objetivo & 95\,\% del mejor valor del propio arranque en frío &
+99\,\% del óptimo exhaustivo de cada pareja de conjunto y semilla \\
+\addlinespace
+Presupuesto & 30 ensayos por condición & 60 ensayos por condición \\
+\addlinespace
+Variable primaria & Ensayos hasta el objetivo &
+\textit{Regret} normalizado sobre la curva de búsqueda \\
+\addlinespace
+Corpus & 25 conjuntos de datos & 42 conjuntos de datos, uno por familia de origen \\
+\addlinespace
+Semillas & Cinco & Diez \\
+\addlinespace
+Condiciones & Frío y tres estrategias de arranque en caliente &
+Frío y cuatro estrategias, incluida una híbrida \\
+\addlinespace
+Contrastes confirmatorios & Uno & Dos, con corrección de Holm--Bonferroni \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Dos hechos se declararon en el propio pre-registro para que no operaran como grados de
+libertad ocultos. El umbral del 99\,\% se eligió midiendo la saturación del arranque en frío
+sobre los datos del primer experimento, sin consultar ninguna condición caliente: es una
+propiedad del espacio y del corpus, no de la diferencia entre condiciones. Y 17 de los 42
+conjuntos se habían observado en una evaluación exploratoria previa del recomendador, que no
+seleccionó ninguna opción de diseño.
 
 \clearpage
 %------------------------------------------------------------------------------
@@ -1360,30 +1408,292 @@ RE1 & Núcleo agnóstico a la tarea & Completo &
 Interfaz de tarea con dos tareas implementadas; protocolo de evaluación con ajuste solo
 sobre entrenamiento y aislamiento entre candidatos; suite de regresión en verde. \\
 \addlinespace
-RE2 & Soporte de datos tabulares & Parcial &
-Cargador y tres transformaciones con estado, con flujo completo verificado. Pendiente la
-selección de características y el espacio de búsqueda canónico. \\
+RE2 & Soporte de datos tabulares & Completo &
+Cargador, cuatro transformaciones con estado y espacio de búsqueda canónico versionado. \\
 \addlinespace
-RE3 & Extractor de meta-características & No iniciado &
-Viabilidad y costo medidos en el spike B; decisiones de configuración registradas. \\
+RE3 & Extractor de meta-características & Completo &
+107 meta-características sobre \textit{pymfe}, con submuestreo del grupo de complejidad y
+caché de resultados. \\
 \addlinespace
-RE4 & Base de meta-conocimiento & Parcial &
-Criterios de inclusión definidos y lista de 52 candidatos generada de forma reproducible. \\
+RE4 & Base de meta-conocimiento & Completo &
+Corpus de 25 conjuntos para el primer experimento y de 42 para el segundo; bases construidas
+y validadas. \\
 \addlinespace
-RE5 & Recomendador meta-aprendido & No iniciado &
-Mecanismo de inyección verificado en el spike A. \\
+RE5 & Recomendador meta-aprendido & Completo &
+Recomendador por vecinos más cercanos con estrategias de control e inyección validada contra
+el espacio vigente. \\
 \addlinespace
-RE6 & Experimentos y reportes & No iniciado &
-Protocolo pre-registrado; decisiones de medición fijadas. \\
+RE6 & Experimentos y reportes & Completo &
+Dos experimentos pre-registrados, análisis estratificado, caso de anomalías en imágenes y
+reportes generados desde los datos. \\
 \addlinespace
 RE7 & Documentación y código & Parcial &
-Guía técnica, documentos de decisión de arquitectura, informes de spikes y ejemplo
-ejecutable del flujo tabular. \\
+Guía técnica, documentos de decisión, informes de spikes, discusiones de resultados y
+ejemplos ejecutables; informe en redacción. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Análisis de los resultados obtenidos}
+
+Esta sección presenta los resultados en el orden en que se obtuvieron: el primer
+experimento y su diagnóstico, el segundo experimento, el análisis del mecanismo que
+explica sus resultados, el análisis estratificado y el caso de detección de anomalías en
+imágenes. Todas las cifras provienen de los documentos de resultados que generan los
+guiones del proyecto; ninguna se transcribió a mano.
+
+\subsubsection{Experimento 1: un resultado nulo y su diagnóstico}
+\label{sec:resultados-e1}
+
+El primer experimento se ejecutó según su pre-registro sobre los 25 conjuntos de datos del
+corpus, con cinco semillas y cuatro condiciones de 30 ensayos cada una: 15\,000 ensayos en
+13,4 minutos. La Tabla~\ref{tab:resultados-e1} resume el contraste primario y sus dos
+controles.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Experimento 1: mediana de ensayos hasta el objetivo sobre los 25 conjuntos}
+\label{tab:resultados-e1}
+\begin{tabularx}{\textwidth}{>{\ancho{1.2}}L>{\ancho{0.9}}C>{\ancho{0.9}}C>{\ancho{1.0}}C>{\ancho{0.9}}C>{\ancho{1.1}}C}
+\toprule
+\textbf{Estrategia} & \textbf{Papel} & \textbf{Frío} & \textbf{Caliente} & \textbf{Reducción} &
+\textbf{$p$ (una cola)} \\
+\midrule
+\texttt{nearest} & Primario & 3,0 & 2,0 & 33,3\,\% & 0,3115 \\
+\texttt{random} & Control & 3,0 & 2,0 & 33,3\,\% & 0,2693 \\
+\texttt{frequent} & Control & 3,0 & 2,0 & 33,3\,\% & 0,0239 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La hipótesis no se confirmó. De las dos condiciones que el criterio exige a la vez, se
+cumplió la magnitud ---una reducción del 33,3\,\% de la mediana frente al 30\,\% exigido---
+pero no la significancia: la prueba de rangos con signo de Wilcoxon
+\cite{wilcoxon1945individual} dio $p = 0{,}3115$. Conviene precisar que esa reducción
+corresponde a pasar de 3 a 2 ensayos, un solo ensayo, una escala en la que el umbral
+relativo del 30\,\% casi no discrimina. Que el control \texttt{frequent} sí cumpla el
+criterio no confirma la hipótesis, que se juega únicamente en el contraste primario: indica
+que una configuración por defecto bien elegida compite con la similitud entre conjuntos.
+
+El resultado tenía una causa medible. Con el objetivo en el 95\,\% del mejor valor del
+propio arranque en frío, este lo alcanzaba en una mediana de 3 ensayos, y en 12 de los 25
+conjuntos en dos o menos: no quedaba costo que ahorrar. Medido sobre los mismos datos y
+leyendo solo la condición fría, endurecer el objetivo al 99\,\% elevaba esa mediana a 10
+ensayos y dejaba solo 2 conjuntos saturados. La variable, además, tomaba apenas 7 valores
+distintos sobre los 25 conjuntos y producía 18 empates, que la prueba de Wilcoxon descarta.
+Ese diagnóstico motivó el segundo experimento descrito en la
+Sección~\ref{sec:segundo-experimento}.
+
+\subsubsection{Experimento 2: la hipótesis se confirma}
+\label{sec:resultados-e2}
+
+El segundo experimento se ejecutó sobre 42 conjuntos, con diez semillas y cinco condiciones
+de 60 ensayos: 126\,000 ensayos en 133 minutos. Su pre-registro declaró dos contrastes
+confirmatorios con corrección de Holm--Bonferroni \cite{holm1979simple} sobre la familia. La
+Tabla~\ref{tab:resultados-e2} presenta ambos; las columnas de referencia y condición dan el
+\textit{regret} normalizado mediano, donde un valor menor es mejor.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Experimento 2: contrastes confirmatorios sobre el \textit{regret} normalizado}
+\label{tab:resultados-e2}
+\begin{tabularx}{\textwidth}{>{\ancho{1.35}}L>{\ancho{0.85}}C>{\ancho{0.85}}C>{\ancho{1.15}}C>{\ancho{0.9}}C>{\ancho{0.9}}C>{\ancho{1.0}}C}
+\toprule
+\textbf{Contraste} & \textbf{Ref.} & \textbf{Cond.} & \textbf{Reducción} & \textbf{$p$ Holm} &
+\textbf{Efecto} & \textbf{Cumple} \\
+\midrule
+\texttt{nearest} frente a \texttt{frio} & 0,0090 & 0,0058 & 35,8\,\% & 0,0019 &
+$-0{,}537$ & Sí \\
+\texttt{nearest} frente a \texttt{frequent} & 0,0039 & 0,0058 & $-49{,}1$\,\% & 0,9690 &
+$0{,}329$ & No \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El primer contraste cumple las dos condiciones del criterio: el arranque en caliente
+meta-aprendido reduce el \textit{regret} mediano un 35,8\,\% respecto del arranque en frío,
+con un valor $p$ ajustado de 0,0019 y un tamaño del efecto de $-0{,}537$, y gana en 32 de
+los 42 conjuntos. \textbf{La hipótesis del trabajo se confirma.} El segundo contraste no se
+cumple, y en la dirección contraria: la estrategia \texttt{frequent}, que no consulta las
+meta-características del conjunto, obtiene un \textit{regret} menor que la estrategia por
+similitud. Los dos resultados deben leerse juntos: el arranque en caliente reduce el costo
+de la búsqueda, pero el mecanismo postulado ---la similitud entre conjuntos--- no es el que
+produce el beneficio. La Tabla~\ref{tab:ranking-e2} lo muestra con las cinco condiciones.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Experimento 2: las cinco condiciones ordenadas por \textit{regret} mediano}
+\label{tab:ranking-e2}
+\begin{tabularx}{\textwidth}{>{\ancho{0.9}}L>{\ancho{0.75}}C>{\ancho{0.85}}C>{\ancho{1.5}}L}
+\toprule
+\textbf{Condición} & \textbf{\textit{Regret}} & \textbf{Censuradas} & \textbf{Qué inyecta} \\
+\midrule
+\texttt{random} & 0,0028 & 32 de 420 & Ganadoras de conjuntos elegidos al azar \\
+\texttt{frequent} & 0,0039 & 29 de 420 & Las ganadoras más frecuentes del pliegue \\
+\texttt{hybrid} & 0,0042 & 32 de 420 & Dos por frecuencia y tres por cercanía \\
+\texttt{nearest} & 0,0058 & 45 de 420 & Las de los conjuntos más parecidos \\
+Frío & 0,0090 & 31 de 420 & Ninguna configuración \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Las cuatro condiciones con arranque en caliente superan al arranque en frío, y la estrategia
+que el anteproyecto compromete como método es la última de las cuatro. Además,
+\texttt{nearest} deja sin alcanzar el objetivo 45 de sus 420 corridas, más que el propio
+arranque en frío: cuando la recomendación por similitud se equivoca, la búsqueda queda peor
+que sin recomendación, que es el riesgo que el análisis de viabilidad inicial había
+anticipado, ahora reproducido a escala.
+
+El experimento conservó como variable secundaria la del primer experimento, y eso permite
+aislar el efecto del cambio de instrumento. Sobre exactamente los mismos datos, la reducción
+de la mediana de ensayos hasta el objetivo es incluso mayor ---41,4\,\%--- y sin embargo no
+resulta significativa ($p = 0{,}3902$), frente al $p = 0{,}0010$ del \textit{regret}. Con la
+variable del primer experimento, este habría vuelto a dar un resultado nulo: una variable de
+baja resolución puede ocultar un efecto real de magnitud considerable.
+
+\subsubsection{Mecanismo: la calidad de lo inyectado, no su diversidad}
+\label{sec:resultados-mecanismo}
+
+Para explicar por qué la similitud rinde peor se midieron dos propiedades de las
+configuraciones que cada estrategia inyecta. Es un análisis exploratorio, declarado como tal
+en el pre-registro: explica el resultado, no lo decide. No requiere ensayos nuevos, porque la
+calidad de cada configuración sobre el conjunto excluido se lee de las rejillas exhaustivas
+ya calculadas. La Tabla~\ref{tab:mecanismo} da la diversidad, como distancia de Hamming media
+entre las cinco configuraciones, y la mejor inyectada, como el \textit{regret} de la mejor de
+las cinco respecto del óptimo del conjunto excluido.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Diversidad y calidad de las configuraciones inyectadas en el experimento 2}
+\label{tab:mecanismo}
+\begin{tabularx}{\textwidth}{>{\ancho{0.9}}L>{\ancho{0.95}}C>{\ancho{1.15}}C>{\ancho{1.0}}C>{\ancho{1.0}}C}
+\toprule
+\textbf{Estrategia} & \textbf{Diversidad} & \textbf{Mejor inyectada} & \textbf{Inevaluables} &
+\textbf{\textit{Regret} logrado} \\
+\midrule
+\texttt{frequent} & 2,10 & 0,0150 & 0,0\,\% & 0,0039 \\
+\texttt{random} & 2,34 & 0,0209 & 0,0\,\% & 0,0028 \\
+\texttt{hybrid} & 2,54 & 0,0231 & 2,4\,\% & 0,0042 \\
+\texttt{nearest} & 2,58 & 0,0352 & 2,9\,\% & 0,0058 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La columna de diversidad descarta una explicación que parecía natural, la de que la similitud
+fallara por inyectar configuraciones parecidas entre sí: \texttt{nearest} inyecta los
+conjuntos más diversos de las cuatro estrategias y es la que peor rinde. La columna de la
+mejor inyectada, en cambio, reproduce el orden del resultado final. \textbf{La similitud no
+identifica configuraciones mejores para el conjunto consultado, sino peores}: la mejor de
+las cinco que elige \texttt{nearest} queda más del doble de lejos del óptimo que la de
+\texttt{frequent}. Además, un 2,9\,\% de lo que \texttt{nearest} inyecta resulta inevaluable
+sobre el conjunto excluido, frente a ninguna configuración de \texttt{frequent} o
+\texttt{random}. La lectura que sostienen los datos es que el arranque en caliente ayuda
+cuando lo inyectado es bueno en general, y que la similitud, al apostar por una señal que no
+se transfiere, concentra el presupuesto en configuraciones peores.
+
+\subsubsection{Análisis estratificado por sensibilidad al preprocesamiento}
+\label{sec:resultados-estratificado}
+
+El pre-registro fijó, antes de observar ningún dato, que un conjunto es sensible al
+preprocesamiento si el rango intercuartílico de su macro-F1 entre los pipelines evaluados en
+el cribado alcanza 0,02, y declaró una estratificación por ese umbral. En el primer
+experimento quedó vacía, porque los 25 conjuntos lo superaban; al ampliar el corpus, 8 de los
+42 quedan por debajo y la estratificación pasa a ser calculable sin haber modificado el
+umbral. La Tabla~\ref{tab:estratificado} la presenta.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Contrastes confirmatorios del experimento 2 por estrato de sensibilidad}
+\label{tab:estratificado}
+\begin{tabularx}{\textwidth}{>{\ancho{0.9}}L>{\ancho{1.5}}L>{\ancho{0.85}}C>{\ancho{0.85}}C>{\ancho{0.9}}C}
+\toprule
+\textbf{Estrato} & \textbf{Contraste} & \textbf{Ref.} & \textbf{Cond.} & \textbf{$p$ (una cola)} \\
+\midrule
+Sensibles (34) & \texttt{nearest} frente a \texttt{frio} & 0,0131 & 0,0070 & 0,0026 \\
+Sensibles (34) & \texttt{nearest} frente a \texttt{frequent} & 0,0047 & 0,0070 & 0,9923 \\
+Insensibles (8) & \texttt{nearest} frente a \texttt{frio} & 0,0018 & 0,0010 & 0,0742 \\
+Insensibles (8) & \texttt{nearest} frente a \texttt{frequent} & 0,0012 & 0,0010 & 0,0391 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El estrato insensible tiene un orden de magnitud menos margen: el arranque en frío deja un
+\textit{regret} de 0,0131 en los sensibles y de 0,0018 en los insensibles, como anticipaba la
+elección de un modelo base sensible al preprocesamiento. En el estrato insensible
+\texttt{nearest} supera a \texttt{frequent} con $p = 0{,}0391$, invirtiendo el resultado
+global, pero no conviene apoyarse en ello: son 8 pares, el análisis es secundario y no lleva
+corrección por multiplicidad, y la diferencia es de dos diezmilésimas de \textit{regret}, sin
+consecuencia práctica. Lo que sí sostienen los datos es que la desventaja de la similitud se
+concentra donde el preprocesamiento importa.
+
+\subsubsection{Generalización por tarea: detección de anomalías en imágenes}
+\label{sec:resultados-imagenes}
+
+El último resultado no contrasta la hipótesis: verifica que el mismo núcleo resuelve la otra
+tarea comprometida. Se usaron tres categorías de MVTec AD \cite{bergmann2019mvtec}
+---\texttt{bottle}, \texttt{cable} y \texttt{capsule}--- a una resolución de trabajo de
+$64 \times 64$ fijada en la preparación de los datos, el espacio de búsqueda del proyecto base
+con 18 candidatos, el modelo \textit{Isolation Forest} \cite{liu2008isolation} por continuidad
+con la librería base, y cinco semillas de partición. Cada semilla se resolvió con la rejilla
+exhaustiva y con Optuna \cite{akiba2019optuna} sobre la misma partición.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Detección de anomalías en imágenes: AUC-ROC óptimo del espacio por categoría}
+\label{tab:imagenes}
+\begin{tabularx}{\textwidth}{>{\ancho{0.9}}L>{\ancho{0.9}}C>{\ancho{0.9}}C>{\ancho{1.0}}C>{\ancho{1.2}}C>{\ancho{1.1}}C}
+\toprule
+\textbf{Categoría} & \textbf{Normales} & \textbf{Anómalas} & \textbf{Mediana} &
+\textbf{Rango entre semillas} & \textbf{Óptimo en Optuna} \\
+\midrule
+\texttt{bottle} & 20 & 63 & 0,860 & 0,772 -- 0,904 & 5 de 5 \\
+\texttt{cable} & 58 & 92 & 0,677 & 0,628 -- 0,775 & 4 de 5 \\
+\texttt{capsule} & 23 & 109 & 0,528 & 0,368 -- 0,632 & 5 de 5 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El caso verifica la generalización que se buscaba: el mismo cargador, el mismo registro de
+tareas, los mismos dos motores, el mismo evaluador y el mismo generador de reportes que
+sostienen los experimentos tabulares resuelven la detección de anomalías con su métrica
+propia. En ninguna de las 15 corridas Optuna superó el óptimo de la rejilla, y lo alcanzó en
+14; y los puntajes reproducidos para la galería del reporte dieron el mismo AUC-ROC que
+informó el motor.
+
+La calidad de la detección, en cambio, varía mucho entre categorías, y se reporta sin
+suavizar. En \texttt{bottle} el mejor pipeline alcanza un AUC-ROC mediano de 0,86; en
+\texttt{cable}, de 0,68; y en \texttt{capsule} queda próximo al azar, con dos semillas por
+debajo de 0,5. Dos factores lo explican. El modelo opera sobre píxeles aplanados, que no
+capturan defectos pequeños sobre un objeto con textura. Y el protocolo heredado entrena
+\textit{Isolation Forest} sobre una partición donde las anomalías son mayoría ---109 de 132
+imágenes en \texttt{capsule}---, en contra del supuesto del método de que las anomalías son
+escasas. El caso no pretende un detector competitivo, sino demostrar que el framework resuelve
+la tarea de punta a punta; mejorar la detección exigiría otro modelo o características
+aprendidas, fuera del alcance. Tampoco hay arranque en caliente sobre imágenes, que requeriría
+un corpus de conjuntos de imágenes y su propia base de meta-conocimiento.
+
+\subsubsection{Reproducibilidad de los resultados reportados}
+\label{sec:resultados-reproducibilidad}
+
+Las cifras de esta sección se sometieron a una verificación de reproducibilidad de punta a
+punta en tres niveles. Primero, cada documento de resultados se regeneró desde sus datos
+versionados y se comparó línea por línea con el publicado, ignorando solo su fecha de
+generación: los cinco coincidieron. Segundo, para dos pliegues de cada experimento se volvió a
+ajustar el recomendador con la base sin el conjunto excluido, y sus recomendaciones
+coincidieron con las guardadas; en el primer experimento esto prueba además que la
+refactorización posterior del recomendador no alteró lo que recomienda. Tercero, se
+reejecutaron dos parejas de conjunto y semilla de cada experimento en todas sus condiciones y
+una pareja del caso de imágenes, y cada ensayo se comparó con el guardado sin tolerancia.
+
+Las 14 verificaciones se reprodujeron exactamente. Se reejecutaron muestras y no los
+experimentos completos porque, si una pareja se reproduce valor por valor, el procedimiento es
+determinista; repetirlos enteros costaría más de dos horas sin aportar evidencia adicional.
 
 \subsubsection{Criterios de éxito de ingeniería: estado verificado}
 
@@ -1407,17 +1717,18 @@ Es la evidencia central de que la refactorización no alteró el caso de uso ori
 pruebas afirman valores numéricos concretos de las métricas. \\
 \addlinespace
 Los módulos nuevos alcanzan al menos un 70\,\% de cobertura &
-Cobertura global de 99\,\% sobre 993 instrucciones; los módulos de tarea, cargador tabular
-y transformaciones tabulares al 100\,\% &
+Cobertura global de 99\,\% sobre 1\,642 instrucciones; los módulos de tarea, cargador
+tabular y transformaciones tabulares al 100\,\% &
 Cumplido &
-La suite pasó de 134 a 287 pruebas y la cobertura global de 97\,\% a 99\,\%. \\
+La suite pasó de 134 a 782 pruebas y la cobertura global de 97\,\% a 99\,\%. \\
 \addlinespace
 Los resultados son reproducibles: la misma semilla produce el mismo pipeline ganador &
-Verificado por las pruebas de reproducibilidad de la librería base y por la fijación
-explícita de los parámetros del muestreador &
-Parcial &
-Verificado a nivel de componente. La verificación de punta a punta sobre el experimento
-completo queda pendiente de su ejecución. \\
+Catorce verificaciones de punta a punta sobre los resultados reportados, todas con
+coincidencia exacta &
+Cumplido &
+Documentos regenerados, recomendaciones reajustadas y corridas reejecutadas ensayo por
+ensayo en ambos experimentos y en el caso de imágenes
+(Sección~\ref{sec:resultados-reproducibilidad}). \\
 \addlinespace
 El flujo completo se mantiene expresable en no más de 20 líneas de código &
 El flujo tabular completo usa 13 instrucciones &
@@ -1433,18 +1744,6 @@ Sobre el último criterio conviene precisar el método de conteo, porque admite 
 lectura. Se cuentan \emph{instrucciones} y no líneas físicas: el límite de longitud de línea
 que impone el estilo del proyecto obliga a repartir una sola instrucción en varias líneas,
 de modo que contar líneas mediría el estilo de formato en lugar de la complejidad del flujo.
-
-\guia{Analice los resultados obtenidos.}
-
-\guia{Incluya:}
-\begin{itemize}
-  \item \guia{Evaluaciones}
-  \item \guia{Métricas}
-  \item \guia{Comparaciones}
-  \item \guia{Validación de objetivos}
-\end{itemize}
-
-\guia{Apóyese con tablas y gráficos.}
 
 \clearpage
 %------------------------------------------------------------------------------

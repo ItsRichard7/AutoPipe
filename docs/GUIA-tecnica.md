@@ -395,9 +395,11 @@ esos 25 datasets *son* los pliegues del experimento:
 | Consulta fuera de rango | Se recorta al rango del pliegue | Sin recorte, en 2 de 25 pliegues una sola meta-característica aportaba más de la mitad de la distancia |
 
 **Por qué se saltan las repetidas.** Inyectar dos veces la misma configuración
-gasta dos de los treinta ensayos para devolver el mismo valor. La diversidad entre
-las cinco importa además por el modo de fallo del spike A: cinco recomendaciones
-parecidas entre sí y equivocadas resultaron peores que no recomendar nada.
+gasta dos de los treinta ensayos para devolver el mismo valor. **No** se exigen
+distintas por diversidad: el spike A atribuyó el fallo del arranque en caliente a
+recomendaciones parecidas entre sí, y el experimento 2 lo refutó midiéndolo —la
+estrategia por similitud inyectaba los conjuntos más diversos y fue la peor—. Véase
+`docs/experimentos/MECANISMO-E2.md`.
 
 **Por qué se recorta la consulta.** El escalado robusto controla los valores
 extremos *dentro* del conjunto de ajuste, pero el dataset excluido puede caer muy
@@ -405,9 +407,9 @@ fuera. El recorte no necesita ninguna constante arbitraria: el recomendador no p
 medir *cuánto* fuera del corpus cae un dataset, solo que cae fuera. `clipped_features_`
 dice en qué columnas ocurrió.
 
-### Las cuatro estrategias
+### Las estrategias
 
-`strategy=` decide **de qué datasets** se toman las configuraciones. Las cuatro
+`strategy=` decide **de qué datasets** se toman las configuraciones. Todas
 devuelven ganadoras de datasets reales de la base y saltan las repetidas, de modo
 que una comparación entre ellas no se contamina con la calidad intrínseca de lo
 inyectado: es lo único que las hace comparables entre sí.
@@ -415,9 +417,10 @@ inyectado: es lo único que las hace comparables entre sí.
 | Estrategia | De dónde toma | Para qué existe |
 |---|---|---|
 | `nearest` | Vecinos más cercanos | Primaria; la línea base del anteproyecto |
-| `diverse` | El subconjunto más separado entre las cercanas | El modo de fallo del spike A |
+| `diverse` | El subconjunto más separado entre las cercanas | Diseñada contra un modo de fallo que el experimento 2 refutó; no se evaluó |
 | `frequent` | Las que más ganan, **ignorando** meta-características | Aísla el meta-aprendizaje |
 | `random` | Ganadoras de datasets al azar | Ablación: aísla la similitud |
+| `hybrid` | 2 de `frequent` y el resto de `nearest` | Condición del experimento 2; no primaria |
 
 **`frequent` es el control que más importa.** Si la primaria no le gana, las
 meta-características no están aportando nada y bastaría recomendar siempre lo
@@ -660,6 +663,53 @@ sin que nada lo dijera.
 Una configuración inyectada que resulta **inevaluable** en el dataset receptor es
 otra cosa: es legítima, simplemente no corre sobre esos datos. Queda con métrica
 `NaN`, nunca gana, y la búsqueda continúa.
+
+## El caso de anomalías en imágenes
+
+`scripts/run_image_case.py` verifica la **generalización por tarea** sobre tres categorías
+de MVTec AD (`bottle`, `cable`, `capsule`): el mismo cargador, registro de tareas, motores,
+evaluador y reporter que usan los experimentos tabulares resuelven la detección de
+anomalías con AUC-ROC. **No es un contraste de la hipótesis**, y no hay arranque en
+caliente sobre imágenes.
+
+| Decisión | Valor | Por qué |
+|---|---|---|
+| Resolución | 64 × 64, fijada en la preparación | Con `Resize` dentro del espacio, el motor añadiría su omisión y la mitad de los pipelines aplanaría imágenes de hasta 1024 × 1024 × 3 |
+| Espacio | CLAHE, suavizado y normalización: 18 candidatos | Es la mitad «con redimensionado» del espacio del proyecto base |
+| Modelo | `IsolationForest(random_state=0)` | Continuidad con la librería base; semilla fija para que solo varíe la partición |
+| Semillas | 101, 202, 303, 404, 505 | Con pocas normales el AUC-ROC es inestable: se reporta la dispersión, no un valor único |
+
+Dos comprobaciones activas: Optuna **nunca puede superar** el óptimo de la rejilla sobre la
+misma partición —el guion aborta si ocurre—, y los puntajes reproducidos para la galería
+tienen que dar **el mismo AUC-ROC** que informó el motor.
+
+**Limitación que conviene conocer.** La partición `test/` de MVTec AD tiene mayoría de
+anomalías —109 de 132 en `capsule`— y *Isolation Forest* supone que son escasas. Es
+herencia del protocolo base y explica en buena parte que `capsule` quede al azar.
+
+**Los HTML no se versionan**: embeben miniaturas de MVTec AD, cuya licencia prohíbe
+redistribuir las imágenes. `tests/test_image_case.py` falla si alguien quita la regla de
+`.gitignore`.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_image_case.py --datos C:\datasets
+```
+
+## Verificar que los resultados se reproducen
+
+`scripts/verify_reproducibility.py` comprueba **los resultados que el informe cita**, en
+tres niveles: los documentos se regeneran desde sus JSON y se comparan ignorando solo la
+fecha; las recomendaciones se reajustan por pliegue y se comparan con las guardadas; y las
+corridas se reejecutan y se comparan ensayo por ensayo, **sin tolerancia** —dos parejas de
+cada experimento y una del caso de imágenes—. Escribe `docs/experimentos/REPRODUCIBILIDAD.md`
+y termina con código 1 si algo difiere.
+
+Una verificación **omitida** —por ejemplo, sin los datos de MVTec AD— no es un fallo, pero
+tampoco una evidencia: el documento las cuenta aparte.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\verify_reproducibility.py --datos C:\datasets
+```
 
 ## Reproducibilidad
 

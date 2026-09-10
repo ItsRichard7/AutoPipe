@@ -1571,6 +1571,101 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  ---el caso de anomalías en imágenes, los reportes finales y la redacción--- sin
  modificación.}
 
+\semana{11}{2026-09-20 a 2026-09-26 --- E6 y E7 cierre: validación y análisis}
+
+\entrada{2026-09-20}{1}
+{Ejecuté el análisis estratificado por sensibilidad al preprocesamiento, con
+ \texttt{scripts/\allowbreak analyze\_\allowbreak stratified.py} y 16 pruebas. Con el corpus de 42
+ conjuntos, el umbral de 0,02 que fijó el pre-registro v1.0 los parte en 34 sensibles y 8
+ insensibles.}
+{En el experimento 1 este análisis quedó vacío por construcción, porque los 25 conjuntos
+ superaban el umbral; ampliar el corpus lo volvió calculable \textbf{sin tocar el umbral},
+ que es lo que el pre-registro exige. Es un análisis \textbf{declarado}, no exploratorio, y
+ sus contrastes salen de la misma función del arnés. Dos lecturas. El estrato insensible
+ tiene un orden de magnitud menos margen ---0,0018 de \emph{regret} en frío contra 0,0131---.
+ Y en él \texttt{nearest} supera a \texttt{frequent} con $p = 0{,}0391$, que no sostengo:
+ son 8 pares, sin corrección por multiplicidad, y la diferencia es de dos diezmilésimas. Lo
+ que sí sostienen los datos es que la desventaja de la similitud se concentra donde el
+ preprocesamiento importa.}
+
+\entrada{2026-09-21}{7}
+{Escribí \texttt{scripts/\allowbreak run\_image\_case.py} y lo ejecuté sobre tres
+ categorías de MVTec AD ---\texttt{bottle}, \texttt{cable} y \texttt{capsule}, 365
+ imágenes---, con rejilla exhaustiva y Optuna sobre la misma partición y cinco semillas.
+ AUC-ROC mediano: 0,86, 0,68 y 0,53. Añadí 19 pruebas sobre una categoría sintética con la
+ estructura de MVTec AD.}
+{Tres decisiones declaradas antes de ejecutar. La resolución de $64 \times 64$ va en la
+ \textbf{preparación} y no en el espacio, porque el motor añade la omisión a todo paso y un
+ \texttt{Resize} buscado haría que la mitad de los pipelines aplanara imágenes de
+ $1024 \times 1024 \times 3$. El espacio es la mitad «con redimensionado» del proyecto base,
+ 18 candidatos, e \emph{Isolation Forest} se mantiene por continuidad. Y los reportes HTML
+ \textbf{no se versionan}: embeben miniaturas de MVTec AD, cuya licencia prohíbe redistribuir
+ las imágenes, y una prueba falla si alguien quita la regla de \texttt{.gitignore}. El
+ resultado de \texttt{capsule}, próximo al azar y con dos semillas bajo 0,5, lo reporto sin
+ suavizar, y lo entendí gracias a una prueba mía que falló: exigía un AUC alto sobre datos
+ separables con \textbf{mayoría de anómalas}, e \emph{Isolation Forest} supone que las
+ anomalías son escasas. La partición \texttt{test/} de MVTec tiene justo esa mayoría ---109
+ de 132 en \texttt{capsule}---, herencia del protocolo base. Corregí la prueba y no el código,
+ y añadí otra que exige un AUC alto cuando la anomalía sí es escasa. El caso verifica lo que
+ debía: el mismo núcleo resuelve la tarea de punta a punta, Optuna nunca superó a la rejilla
+ y los puntajes reproducidos para la galería dieron el AUC que informó el motor.}
+
+\entrada{2026-09-22}{3}
+{Consolidé el análisis de causas. La ablación con recomendador aleatorio ya estaba hecha por
+ partida doble ---los controles de ambos pre-registros la contenían--- y el mecanismo quedó
+ medido la semana anterior, así que el trabajo fue retirar la explicación refutada de donde
+ se seguía presentando como cierta: los docstrings del recomendador y de su prueba, y la guía
+ técnica. Al spike A le añadí una nota posterior en lugar de reescribirlo.}
+{Distinguí dos clases de documento y las traté distinto. La documentación \textbf{viva}
+ ---código y guía técnica--- describe el sistema como es hoy, así que se corrige. Los
+ documentos \textbf{fechados} ---la bitácora, el spike A y los informes generados de las
+ semanas 7 y 8--- registran lo que se sabía cuando se escribieron, y reescribirlos borraría
+ precisamente el error que vale la pena conservar. La nota del spike precisa algo que casi se
+ me pasa: en su paisaje sintético la explicación por dispersión puede seguir siendo válida,
+ porque sus vecinas incorrectas eran parecidas por construcción; lo refutado es que sea la
+ causa del fallo del recomendador real. Costó menos de lo comprometido porque la ablación,
+ que era la mitad del punto, ya estaba hecha.}
+
+\entrada{2026-09-23}{5}
+{Escribí \texttt{scripts/\allowbreak verify\_\allowbreak reproducibility.py}, que verifica los
+ resultados que el informe cita en tres niveles: regenera cada documento desde su JSON,
+ reajusta el recomendador de dos pliegues por experimento y reejecuta parejas de conjunto y
+ semilla de ambos experimentos y del caso de imágenes, comparando ensayo por ensayo.
+ \textbf{Las 14 verificaciones coinciden exactamente.} Añadí 20 pruebas.}
+{La comparación de corridas es \textbf{sin tolerancia}, y una prueba por sabotaje falla si
+ alguien la introduce: una diferencia en la séptima cifra tiene que contarse. Una
+ verificación omitida por falta de datos se cuenta aparte y nunca como éxito. El resultado
+ que más me importa es uno que no buscaba: reajustar el recomendador del experimento 1 y
+ obtener sus mismas recomendaciones demuestra que la refactorización de la semana 10, al
+ añadir \texttt{hybrid}, no cambió lo que recomienda. Reejecuté muestras y no los
+ experimentos enteros porque, si una pareja se reproduce bit a bit, el procedimiento es
+ determinista, y repetirlo todo costaría más de dos horas sin evidencia adicional.}
+
+\entrada{2026-09-24}{5}
+{Redacté el análisis de resultados del informe ---los dos experimentos, el mecanismo, el
+ análisis estratificado, el caso de imágenes y la reproducibilidad---, con siete tablas. En el
+ capítulo 3 añadí el segundo experimento y corregí dos filas desactualizadas; puse al día la
+ tabla de entregables y la fila de reproducibilidad de los criterios, y añadí tres
+ referencias. El informe compila en 52 páginas \textbf{sin un solo aviso}.}
+{La regla del informe es cero avisos, y la primera compilación dio cuatro. Dos eran cabeceras
+ en negrita más anchas que su columna. Los otros dos no tenían causa visible, y lo único que
+ compartían esas tablas y ninguna otra era una primera columna con factor 0,8: al moverlo
+ desaparecieron. Una decisión de redacción que conviene dejar escrita: el capítulo 3 no
+ mencionaba el segundo experimento, y unos resultados que lo describen junto a un marco
+ metodológico que lo ignora romperían la narrativa, así que lo añadí allí con los dos hechos
+ que su pre-registro declara. Quedan para la semana 12 las conclusiones, las recomendaciones,
+ el Apéndice 1 y la verificación con evidencia del resto de criterios de ingeniería.}
+
+\cierresemana{11}{21}{23}{RE6 cerrado del todo: el análisis estratificado, que en el
+ experimento 1 estaba vacío, ahora tiene contenido sin haber tocado su umbral; el caso de
+ anomalías en imágenes verifica la generalización por tarea sobre tres categorías de MVTec AD,
+ con la calidad de detección reportada sin suavizar; y la reproducibilidad de punta a punta
+ queda demostrada, con \textbf{14 de 14 verificaciones idénticas}. La explicación refutada del
+ spike A se retiró de la documentación viva y se conservó, con nota, en la fechada. El informe
+ tiene redactado su análisis de resultados y compila sin avisos. Suite de 743 a 782 pruebas,
+ 99\% de cobertura. Se gastaron 21\,h de las 23 comprometidas: la ablación aleatoria ya estaba
+ hecha dentro de los dos experimentos. Quedan 68\,h para la semana 12.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1597,7 +1692,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 8  & E5, E8            & 24 & 18 & RE5 completo; 4 estrategias con controles \\
 9  & E5, E6, E8        & 23 & 23 & Hito: recomendador funcional; v1.0 congelada \\
 10 & E6, E7, E8        & 22 & 46 & Dos experimentos; hipótesis confirmada \\
-11 & E6, E7, E8        & 23 & --- & \\
+11 & E6, E7, E8        & 23 & 21 & Imágenes, reproducibilidad y resultados \\
 12 & E8                & 21 & --- & Hito: cierre del proyecto \\
 \midrule
 \multicolumn{2}{@{}l}{\textbf{Total comprometido}} & \textbf{290} & --- & \\

@@ -1,0 +1,528 @@
+{
+  "categorias": [
+    {
+      "categoria": "bottle",
+      "recuento": {
+        "anomaly": 63,
+        "defectos": {
+          "broken_large": 20,
+          "broken_small": 22,
+          "contamination": 21
+        },
+        "normal": 20
+      },
+      "reporte_local": "docs/experimentos/reportes/imagenes/bottle/report.html",
+      "resumen": {
+        "auc_maximo": 0.9035087719298246,
+        "auc_mediana": 0.8596491228070176,
+        "auc_minimo": 0.7719298245614035,
+        "ganadores_distintos": 2,
+        "n_semillas": 5,
+        "optuna_alcanza_el_optimo": 5
+      },
+      "semillas": [
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.7719298245614035,
+            "f1": 0.1,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.05263157894736842
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.7719298245614035,
+          "optuna_ensayo_del_optimo": 4,
+          "optuna_mejor": 0.7719298245614035,
+          "segundos": 5.77,
+          "semilla": 101
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.894736842105263,
+            "f1": 0.4166666666666667,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.2631578947368421
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.894736842105263,
+          "optuna_ensayo_del_optimo": 6,
+          "optuna_mejor": 0.894736842105263,
+          "segundos": 5.86,
+          "semilla": 202
+        },
+        {
+          "ganador": {
+            "0_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.8596491228070176,
+            "f1": 0.1,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.05263157894736842
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.8596491228070176,
+          "optuna_ensayo_del_optimo": 7,
+          "optuna_mejor": 0.8596491228070176,
+          "segundos": 5.83,
+          "semilla": 303
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.9035087719298246,
+            "f1": 0.19047619047619047,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.10526315789473684
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.9035087719298246,
+          "optuna_ensayo_del_optimo": 4,
+          "optuna_mejor": 0.9035087719298246,
+          "segundos": 5.47,
+          "semilla": 404
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.850877192982456,
+            "f1": 0.2727272727272727,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.15789473684210525
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.850877192982456,
+          "optuna_ensayo_del_optimo": 1,
+          "optuna_mejor": 0.850877192982456,
+          "segundos": 5.41,
+          "semilla": 505
+        }
+      ]
+    },
+    {
+      "categoria": "cable",
+      "recuento": {
+        "anomaly": 92,
+        "defectos": {
+          "bent_wire": 13,
+          "cable_swap": 12,
+          "combined": 11,
+          "cut_inner_insulation": 14,
+          "cut_outer_insulation": 10,
+          "missing_cable": 12,
+          "missing_wire": 10,
+          "poke_insulation": 10
+        },
+        "normal": 58
+      },
+      "reporte_local": "docs/experimentos/reportes/imagenes/cable/report.html",
+      "resumen": {
+        "auc_maximo": 0.7752100840336135,
+        "auc_mediana": 0.6764705882352942,
+        "auc_minimo": 0.6281512605042017,
+        "ganadores_distintos": 3,
+        "n_semillas": 5,
+        "optuna_alcanza_el_optimo": 4
+      },
+      "semillas": [
+        {
+          "ganador": {
+            "0_GaussianBlur": {
+              "kernel_size": 3
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.7752100840336135,
+            "f1": 0.06896551724137931,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.03571428571428571
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.7752100840336135,
+          "optuna_ensayo_del_optimo": 6,
+          "optuna_mejor": 0.7752100840336135,
+          "segundos": 5.8,
+          "semilla": 101
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.6281512605042017,
+            "f1": 0.13333333333333333,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.07142857142857142
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.6281512605042017,
+          "optuna_ensayo_del_optimo": 6,
+          "optuna_mejor": 0.6281512605042017,
+          "segundos": 6.0,
+          "semilla": 202
+        },
+        {
+          "ganador": {
+            "0_GaussianBlur": {
+              "kernel_size": 3
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.7373949579831933,
+            "f1": 0.12903225806451613,
+            "false_positive_rate": 0.058823529411764705,
+            "precision": 0.6666666666666666,
+            "recall": 0.07142857142857142
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.7373949579831933,
+          "optuna_ensayo_del_optimo": null,
+          "optuna_mejor": 0.7163865546218487,
+          "segundos": 5.82,
+          "semilla": 303
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 5
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.6386554621848739,
+            "f1": 0.06896551724137931,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.03571428571428571
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.6386554621848739,
+          "optuna_ensayo_del_optimo": 4,
+          "optuna_mejor": 0.6386554621848739,
+          "segundos": 5.83,
+          "semilla": 404
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_GaussianBlur": {
+              "kernel_size": 3
+            },
+            "2_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.6764705882352942,
+            "f1": 0.06896551724137931,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.03571428571428571
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.6764705882352942,
+          "optuna_ensayo_del_optimo": 2,
+          "optuna_mejor": 0.6764705882352942,
+          "segundos": 5.74,
+          "semilla": 505
+        }
+      ]
+    },
+    {
+      "categoria": "capsule",
+      "recuento": {
+        "anomaly": 109,
+        "defectos": {
+          "crack": 23,
+          "faulty_imprint": 22,
+          "poke": 21,
+          "scratch": 23,
+          "squeeze": 20
+        },
+        "normal": 23
+      },
+      "reporte_local": "docs/experimentos/reportes/imagenes/capsule/report.html",
+      "resumen": {
+        "auc_maximo": 0.6320346320346321,
+        "auc_mediana": 0.5281385281385282,
+        "auc_minimo": 0.36796536796536794,
+        "ganadores_distintos": 1,
+        "n_semillas": 5,
+        "optuna_alcanza_el_optimo": 5
+      },
+      "semillas": [
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.5887445887445888,
+            "f1": 0.9041095890410958,
+            "false_positive_rate": 1.0,
+            "precision": 0.825,
+            "recall": 1.0
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.5887445887445888,
+          "optuna_ensayo_del_optimo": 1,
+          "optuna_mejor": 0.5887445887445888,
+          "segundos": 5.54,
+          "semilla": 101
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.4415584415584416,
+            "f1": 0.058823529411764705,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.030303030303030304
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.4415584415584416,
+          "optuna_ensayo_del_optimo": 5,
+          "optuna_mejor": 0.4415584415584416,
+          "segundos": 5.52,
+          "semilla": 202
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.5281385281385282,
+            "f1": 0.11428571428571428,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.06060606060606061
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.5281385281385282,
+          "optuna_ensayo_del_optimo": 4,
+          "optuna_mejor": 0.5281385281385282,
+          "segundos": 5.51,
+          "semilla": 303
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.6320346320346321,
+            "f1": 0.11428571428571428,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.06060606060606061
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.6320346320346321,
+          "optuna_ensayo_del_optimo": 2,
+          "optuna_mejor": 0.6320346320346321,
+          "segundos": 5.54,
+          "semilla": 404
+        },
+        {
+          "ganador": {
+            "0_CLAHETransform": {
+              "clip_limit": 2.0,
+              "tile_grid_size": [
+                8,
+                8
+              ]
+            },
+            "1_Normalize": {
+              "mean": 0.5,
+              "std": 0.5
+            }
+          },
+          "metricas": {
+            "auc_roc": 0.36796536796536794,
+            "f1": 0.16666666666666666,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 0.09090909090909091
+          },
+          "n_candidatos": 18,
+          "n_inevaluables": 0,
+          "optimo": 0.36796536796536794,
+          "optuna_ensayo_del_optimo": 5,
+          "optuna_mejor": 0.36796536796536794,
+          "segundos": 5.63,
+          "semilla": 505
+        }
+      ]
+    }
+  ],
+  "minutos": 1.62,
+  "presupuesto_optuna": 20,
+  "resolucion": 64,
+  "val_size": 0.3
+}

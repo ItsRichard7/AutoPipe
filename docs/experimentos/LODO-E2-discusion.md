@@ -172,6 +172,44 @@ Los conjuntos donde el arranque en caliente más ayuda son los de meseta estrech
 más pierde contra `frequent` son `wilt` (+0,0719), `balance-scale` (+0,0228) y
 `dresses-sales` (+0,0209).
 
+## 5 bis. El análisis estratificado, que en el experimento 1 estaba vacío
+
+El pre-registro v1.0 fijó **antes de ver ningún dato** que un conjunto es sensible al
+preprocesamiento si su IQR de macro-F1 alcanza 0,02, y declaró una estratificación por
+ese umbral. En el experimento 1 quedó **vacía por construcción**: los 25 seleccionados
+lo superaban todos. Al ampliar el corpus a 42, **ocho conjuntos caen por debajo** y la
+estratificación pasa a ser calculable **sin haber tocado el umbral**.
+
+| Estrato | Contraste | Regret ref. | Regret cond. | Reducción | p (1 cola) |
+|---|---|---:|---:|---:|---:|
+| Sensibles (34) | `nearest` vs `frio` | 0,0131 | 0,0070 | 46,6 % | **0,0026** |
+| Sensibles (34) | `nearest` vs `frequent` | 0,0047 | 0,0070 | −48,9 % | 0,9923 |
+| Insensibles (8) | `nearest` vs `frio` | 0,0018 | 0,0010 | 44,4 % | 0,0742 |
+| Insensibles (8) | `nearest` vs `frequent` | 0,0012 | 0,0010 | 16,7 % | 0,0391 |
+
+Dos lecturas, y la segunda hay que darla con cuidado.
+
+**La primera es clara: el estrato insensible tiene un orden de magnitud menos margen.**
+El arranque en frío deja un regret de 0,0131 en los sensibles y de 0,0018 en los
+insensibles. Es exactamente lo que el pre-registro anticipaba al exigir un modelo base
+sensible al preprocesamiento: donde el preprocesamiento no cambia la métrica, no hay
+costo que ahorrar y la comparación tiende a vaciarse.
+
+**La segunda es que en el estrato insensible `nearest` sí supera a `frequent`**
+($p = 0{,}0391$), invirtiendo el resultado global. **No conviene apoyarse en eso**, por
+tres razones que se ven en la propia tabla: son **8 pares**, es un análisis secundario
+**sin corrección por multiplicidad**, y sobre todo la diferencia es de 0,0012 contra
+0,0010 —**dos diezmilésimas de regret**—, una magnitud sin consecuencia práctica. Un
+valor $p$ pequeño sobre una diferencia irrelevante es justo lo que una muestra chica
+puede producir por azar.
+
+Lo que sí se puede decir es que **la desventaja de la similitud se concentra donde el
+preprocesamiento importa**, que es donde el método tendría que servir: en los 34
+sensibles, `frequent` le saca a `nearest` un 48,9 % de regret con $p = 0{,}9923$ en la
+dirección contraria a la hipótesis.
+
+El detalle está en `ESTRATIFICADO-E2.md`, generado por `scripts/analyze_stratified.py`.
+
 ## 6. Qué se puede afirmar y qué no
 
 **Se puede afirmar:**
@@ -232,6 +270,7 @@ delante.
 | Curvas completas de las 2 100 corridas | `LODO-E2-resultados.json` |
 | Tablas y veredictos generados | `LODO-E2-resultados.md` |
 | Diversidad y calidad de lo inyectado (exploratorio) | `MECANISMO-E2.md` |
+| Estratificación por sensibilidad (secundario declarado) | `ESTRATIFICADO-E2.md` |
 | Óptimos de referencia y meseta al 99 % | `REFERENCIA-E2.json` |
 | Protocolo que gobierna esto | `Preregistro-E2.tex` v2.0, etiqueta `prereg-v2.0` |
 | La decisión de alcance y su aprobación | `docs/decisiones/ADR-004-segundo-experimento.md` |

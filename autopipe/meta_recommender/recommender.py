@@ -50,9 +50,9 @@ Las tres decisiones de diseño, y por qué son las que son:
   camina hacia afuera desde el vecino más cercano hasta reunir cinco
   configuraciones **distintas**. Inyectar duplicados sería pérdida pura de
   presupuesto: dos ensayos idénticos gastan dos de los treinta y devuelven el
-  mismo valor. La diversidad entre las cinco importa además por el modo de fallo
-  que midió el spike A, donde cinco recomendaciones parecidas entre sí y
-  equivocadas resultaron peores que no recomendar nada.
+  mismo valor. Se exigen distintas por presupuesto y no por diversidad: el
+  experimento 2 midió que la diversidad de lo inyectado no explica el rendimiento
+  (véase ``docs/experimentos/MECANISMO-E2.md``).
 """
 
 from __future__ import annotations
@@ -90,10 +90,11 @@ de lo inyectado: lo único que cambia es **de qué datasets** se toman.
 * ``nearest`` --- los vecinos más cercanos en el espacio de meta-características.
   Es la estrategia primaria y la que el anteproyecto fija como línea base.
 * ``diverse`` --- también por cercanía, pero eligiendo entre las candidatas
-  próximas el subconjunto más separado entre sí. El spike A midió que el modo de
-  fallo del arranque en caliente son cinco recomendaciones parecidas entre sí y
-  todas equivocadas, que TPE interpreta como una región buena; esta estrategia
-  ataca ese modo de fallo directamente.
+  próximas el subconjunto más separado entre sí. Se diseñó contra el modo de fallo
+  que el spike A atribuyó a cinco recomendaciones parecidas entre sí. **Esa
+  explicación quedó refutada** en el experimento 2: la estrategia por similitud
+  inyectaba los conjuntos más diversos de todas y fue la que peor rindió. Se
+  conserva por compatibilidad; ningún experimento la evaluó.
 * ``frequent`` --- las configuraciones que más veces ganan en la base,
   **ignorando por completo las meta-características**. Es el control que aísla
   la contribución del meta-aprendizaje: si la estrategia primaria no le gana a
@@ -584,11 +585,11 @@ class MetaRecommender:
     def _diversificar(self, base: MetaKnowledgeBase, candidatos: list[int]) -> list[int]:
         """Elige, entre las candidatas más cercanas, el subconjunto más separado.
 
-        Ataca el modo de fallo que midió el spike A: cinco configuraciones
-        parecidas entre sí y todas equivocadas forman, para el muestreador, una
-        región aparentemente buena, y la búsqueda se concentra ahí en lugar de
-        explorar. Un recomendador aleatorio no caía en la trampa precisamente
-        porque sus puntos estaban dispersos.
+        Se diseñó contra el modo de fallo que el spike A atribuyó a cinco
+        configuraciones parecidas entre sí. El experimento 2 refutó esa
+        explicación sobre datos reales: la diversidad de lo inyectado no ordena
+        los resultados. El procedimiento se documenta por lo que hace, no por
+        aquella justificación.
 
         El procedimiento es voraz: se parte del vecino más cercano y se añade
         cada vez la candidata cuya distancia de Hamming mínima a las ya elegidas

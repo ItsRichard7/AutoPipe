@@ -77,6 +77,10 @@ docs/experimentos/Preregistro-E2.pdf
 # El reporte del LODO se versiona en HTML, que es la fuente que produce el
 # generador; el PDF se deriva de él con wkhtmltopdf al regenerarlo.
 docs/experimentos/reportes/*.pdf
+
+# Los reportes del caso de imágenes embeben miniaturas de MVTec AD, cuya licencia
+# prohíbe redistribuir las imágenes (véase datasets/README.md). Se regeneran en local.
+docs/experimentos/reportes/imagenes/
 # Los informes de avance se entregan en PDF, pero el PDF se regenera desde su
 # .tex: lo que se versiona es la fuente.
 docs/Avances/*.pdf
