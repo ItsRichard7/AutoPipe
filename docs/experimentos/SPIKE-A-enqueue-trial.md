@@ -6,6 +6,18 @@
 - **Script:** `spikes/spike_a_enqueue_trial.py` (determinista, sin datos externos)
 - **Reproducir:** `.\.venv\Scripts\python.exe spikes\spike_a_enqueue_trial.py`
 
+> **Nota posterior (2026-09-19).** El cuerpo de este documento se conserva tal como se
+> escribió. La **explicación del mecanismo** que da la sección 7 —cinco puntos agrupados
+> que TPE interpreta como una región buena, frente a los puntos dispersos del
+> recomendador aleatorio— **no es la causa del fallo del recomendador real**: en el
+> experimento 2, sobre 42 conjuntos, la estrategia por similitud inyectaba los conjuntos
+> *más* diversos de todas y fue la que peor rindió; lo que ordena los resultados es la
+> calidad de lo inyectado sobre el conjunto consultado. En el paisaje sintético de este
+> spike la explicación puede seguir siendo válida, porque sus «vecinas incorrectas» eran
+> parecidas entre sí por construcción. El **efecto** que este spike midió —recomendaciones
+> plausibles pero equivocadas peores que no recomendar— sí se reprodujo a escala. Véanse
+> `LODO-E2-discusion.md` §3 y `MECANISMO-E2.md`.
+
 ## Por qué se hizo
 
 El pre-registro v0.1 y el diseño del espacio de búsqueda canónico se apoyan en

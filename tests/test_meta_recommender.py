@@ -719,9 +719,9 @@ def test_the_random_strategy_ignores_distance(base_con_frecuencias) -> None:
 def test_the_diverse_strategy_spreads_the_recommendations() -> None:
     """Prefiere separarse aunque haya candidatas más cercanas y parecidas.
 
-    Ataca el modo de fallo del spike A: cinco recomendaciones parecidas entre sí
-    y equivocadas forman una región que el muestreador lee como buena y deja de
-    explorar. Se construyen dos vecinos próximos con configuraciones casi
+    Fija el comportamiento de la estrategia, no su justificación: la explicación
+    del spike A por la que se diseñó quedó refutada en el experimento 2. Se
+    construyen dos vecinos próximos con configuraciones casi
     idénticas y uno más lejano que difiere en todo; la primaria toma los dos más
     cercanos y la diversa cambia el segundo por el lejano.
     """
