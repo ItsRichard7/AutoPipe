@@ -244,6 +244,12 @@ def test_the_datasets_of_each_pair_are_in_its_corpus() -> None:
 
     assert {n for n, _ in verificador.PARES_E1} <= base_e1
     assert {n for n, _ in verificador.PARES_E2} <= base_e2
+    assert verificador.PAR_SENSIBILIDAD[0] in base_e2
+
+
+def test_the_sensitivity_pair_is_one_of_experiment_two() -> None:
+    """La sensibilidad reutiliza las semillas y las inyecciones del experimento 2."""
+    assert verificador.PAR_SENSIBILIDAD in verificador.PARES_E2
 
 
 def test_nan_is_not_silently_equal_to_itself_by_identity_only() -> None:

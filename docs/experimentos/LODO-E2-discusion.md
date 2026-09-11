@@ -4,6 +4,9 @@
 > que sí se genera; aquí se interpretan.
 > Fecha: 2026-09-19. Ejecución analizada: `LODO-E2-resultados.json`, 133,1 min,
 > 42 conjuntos × 10 semillas × 5 condiciones × 60 ensayos = 126 000 ensayos.
+> Actualizado el 2026-09-26 con las secciones 4 bis, 5 ter y 5 quater: la segunda variable
+> del anteproyecto, la relación entre meseta y beneficio y la sensibilidad a
+> `n_startup_trials`.
 
 ## 1. Las dos respuestas, que van en direcciones opuestas
 
@@ -160,10 +163,39 @@ Es la confirmación directa del diagnóstico del ADR-004, y una lección metodol
 que vale para el informe: **una variable de baja resolución puede ocultar un efecto
 real de magnitud considerable**, y ninguna cantidad de datos adicionales lo arregla.
 
+## 4 bis. La otra variable del anteproyecto tampoco discrimina
+
+El anteproyecto define una segunda variable —el mejor valor alcanzado con un presupuesto
+reducido— y el pre-registro v2.0 la declaró secundaria a 5, 15 y 30 ensayos. Estaba guardada
+en cada corrida; `PRESUPUESTO-REDUCIDO.md` la reporta sobre los mismos dos pares que los
+confirmatorios. Mayor es mejor:
+
+| Ensayos | `nearest` vs `frio` | `nearest` vs `frequent` |
+|---:|---|---|
+| 5 | gana 26, pierde 14, p = 0,1106 | gana 13, pierde 23, p = 0,9849 |
+| 15 | gana 19, pierde 14, p = 0,0945 | gana 21, pierde 12, p = 0,2133 |
+| 30 | gana 13, pierde 13, p = 0,3563 | gana 13, pierde 15, p = 0,5272 |
+
+Ninguno es significativo, y no contradice al regret: lo complementa. El mejor valor a un
+presupuesto fijo mira **un punto** de la curva, y a esa altura las condiciones están a
+milésimas de macro-F1; el regret integra la distancia al óptimo **a lo largo de toda la
+curva**, que es donde está el costo. Los datos son compatibles con que el beneficio del
+arranque en caliente consista en llegar antes a valores buenos más que en terminar con uno
+mejor.
+
+Una advertencia de lectura: a 5 ensayos la mediana de `nearest` (0,7568) queda por debajo de
+la del frío (0,7692) y aun así gana en 26 de 42 conjuntos. Las medianas por condición no
+describen las diferencias dentro de cada conjunto; el contraste pareado sí.
+
+A igual presupuesto que el experimento 1 —30 ensayos, sobre los 25 conjuntos y las 5 semillas
+compartidos— el frío coincide en las **125 de 125** parejas, lo que confirma que los dos
+experimentos son comparables. Con la base de 41 conjuntos, `random` sube en 10 conjuntos y baja
+en 4; `nearest` sube en 3 y baja en 6.
+
 ## 5. La covariable declarada sigue explicando el terreno
 
-La correlación entre la anchura de la meseta al 99 % y el regret del arranque en frío
-es de **−0,533**: cuanto más estrecha la meseta, más le cuesta al frío. La meseta
+La correlación de Pearson entre la anchura de la meseta al 99 % y el regret del arranque en
+frío es de **−0,533** (Spearman, −0,791): cuanto más estrecha la meseta, más le cuesta al frío. La meseta
 mediana bajó de 36 configuraciones de 144 al 95 % a **14 de 144** al 99 %, con un
 mínimo de 2.
 
@@ -210,12 +242,61 @@ dirección contraria a la hipótesis.
 
 El detalle está en `ESTRATIFICADO-E2.md`, generado por `scripts/analyze_stratified.py`.
 
+## 5 ter. La meseta y el beneficio
+
+> **Exploratorio**, declarado así en el pre-registro v2.0. Lo produce
+> `scripts/tabulate_by_dataset.py` y queda en `LODO-E2-por-dataset.md`. Valores p de dos
+> colas y sin corrección.
+
+La sección 5 relaciona la meseta con lo que le cuesta al frío. El pre-registro pedía además
+su relación con el **beneficio**: el regret mediano del frío menos el de cada condición.
+
+| Condición | Spearman | p | Pearson | p |
+|---|---:|---:|---:|---:|
+| `nearest` | −0,400 | 0,0086 | −0,229 | 0,1442 |
+| `frequent` | −0,466 | 0,0019 | −0,412 | 0,0067 |
+| `random` | −0,546 | 0,0002 | −0,458 | 0,0023 |
+| `hybrid` | −0,386 | 0,0116 | −0,359 | 0,0195 |
+
+En las cuatro condiciones **el beneficio crece donde la meseta es estrecha**. Con Pearson, la
+de `nearest` deja de ser significativa: la relación se sostiene en rangos, pero no
+linealmente. Es la lectura del efecto piso del experimento 1, ahora sobre el beneficio y no
+solo sobre la dificultad del frío.
+
+## 5 quater. La conclusión no depende de `n_startup_trials`
+
+El spike A fijó `n_startup_trials` en 10 —el valor por defecto de TPE— y declaró una
+sensibilidad a 5, advirtiendo que había que medirla también en el frío.
+`scripts/run_sensitivity_startup.py` la ejecutó sobre `frio`, `nearest` y `frequent`: 75 600
+ensayos en 90 minutos, con las mismas semillas, óptimos y configuraciones inyectadas. Como
+control, los contrastes con 10 recalculados sobre las corridas pareadas coinciden **cifra por
+cifra** con los de la sección 1.
+
+| Contraste | Con 10 | Con 5 |
+|---|---|---|
+| `nearest` vs `frio` | 35,8 %, p Holm 0,0019 — **cumple** | 46,8 %, p Holm 0,0002 — **cumple** |
+| `nearest` vs `frequent` | −49,1 %, p 0,9690 — no | −10,2 %, p 0,8761 — no |
+
+- **Los dos veredictos se mantienen.** Con 5 la reducción frente al frío es mayor, y
+  `frequent` sigue siendo mejor que `nearest`, aunque por menos.
+- **El frío no se mueve** (0,0090 → 0,0094, p = 0,39 de dos colas), ni `nearest` (0,0058 →
+  0,0050, p = 0,82). Solo `frequent` empeora (0,0039 → 0,0045, p = 0,029), un valor sin
+  corregir que no resistiría Holm sobre los tres brazos (0,086). No se midió por qué y no se le
+  atribuye causa.
+- **El beneficio frente al frío no cambia de forma significativa**: `nearest` +0,0021 →
+  +0,0025 (p = 0,47), `frequent` +0,0034 → +0,0030 (p = 0,18).
+- El frío censura más con 5: 47 corridas contra 31.
+
+El temor del spike A —que el beneficio del arranque en caliente dependiera del parámetro— no
+se confirma a escala. Detalle en `SENSIBILIDAD-startup.md`.
+
 ## 6. Qué se puede afirmar y qué no
 
 **Se puede afirmar:**
 
 - Que el arranque en caliente reduce significativamente el costo de la búsqueda frente
   al arranque en frío en este espacio y este corpus, con el criterio pre-registrado.
+- Que esa conclusión no depende de `n_startup_trials`: se sostiene con 10 y con 5.
 - Que el beneficio **no proviene de la similitud entre conjuntos de datos**, y que la
   selección por vecinos más cercanos es la peor de las cuatro formas ensayadas de
   arrancar en caliente.
@@ -271,6 +352,9 @@ delante.
 | Tablas y veredictos generados | `LODO-E2-resultados.md` |
 | Diversidad y calidad de lo inyectado (exploratorio) | `MECANISMO-E2.md` |
 | Estratificación por sensibilidad (secundario declarado) | `ESTRATIFICADO-E2.md` |
+| Mejor valor a 5, 15 y 30 ensayos (secundario declarado) | `PRESUPUESTO-REDUCIDO.md` |
+| Tabla por conjunto completa y meseta-beneficio (exploratorio) | `LODO-E2-por-dataset.md` |
+| Sensibilidad a `n_startup_trials` | `SENSIBILIDAD-startup.md` y `SENSIBILIDAD-startup.json` |
 | Óptimos de referencia y meseta al 99 % | `REFERENCIA-E2.json` |
 | Protocolo que gobierna esto | `Preregistro-E2.tex` v2.0, etiqueta `prereg-v2.0` |
 | La decisión de alcance y su aprobación | `docs/decisiones/ADR-004-segundo-experimento.md` |

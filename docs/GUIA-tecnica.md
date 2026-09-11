@@ -695,14 +695,45 @@ redistribuir las imágenes. `tests/test_image_case.py` falla si alguien quita la
 .\.venv\Scripts\python.exe scripts\run_image_case.py --datos C:\datasets
 ```
 
+## Análisis sobre los resultados ya ejecutados
+
+Tres guiones completan lo que los pre-registros declaran. Los dos primeros **no ejecutan
+ningún ensayo**: leen lo que los arneses guardaron.
+
+| Guion | Qué produce | Tipo de análisis |
+|---|---|---|
+| `scripts/analyze_reduced_budget.py` | `PRESUPUESTO-REDUCIDO.md`: mejor macro-F1 a 15 ensayos (exp. 1), a 5, 15 y 30 (exp. 2) y los dos experimentos a 30 | Segunda variable del anteproyecto: descriptiva en el 1, secundaria en el 2 |
+| `scripts/tabulate_by_dataset.py` | `LODO-por-dataset.md` y `LODO-E2-por-dataset.md`: sensibilidad, margen sobre el pipeline vacío, ensayos por semilla y censurados; en el 2, la relación entre meseta y beneficio | Secundario declarado; la relación, exploratoria |
+| `scripts/run_sensitivity_startup.py` | `SENSIBILIDAD-startup.{json,md}`: el experimento 2 con `n_startup_trials=5` en `frio`, `nearest` y `frequent` | Sensibilidad declarada en el spike A |
+
+Tres cosas que no son evidentes:
+
+- **En el mejor valor a k ensayos, mayor es mejor**, al revés que en el regret y en los
+  ensayos. La prueba de una cola va en la otra dirección, y una prueba por sabotaje falla si
+  alguien copia la del arnés.
+- **La sensibilidad no recalcula las recomendaciones**: inyecta las que guardó el experimento
+  2, para que lo único que cambie sea el parámetro. Con 10, su función de ejecución reproduce
+  las curvas del arnés ensayo por ensayo, y una prueba lo exige.
+- Su JSON se guarda con las claves ordenadas, así que el resumen recorre las condiciones en su
+  orden declarado. Si recorriera el diccionario, el resumen regenerado con `--solo-reporte` no
+  coincidiría con el escrito durante la ejecución; una prueba lo detectó así.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\analyze_reduced_budget.py
+.\.venv\Scripts\python.exe scripts\tabulate_by_dataset.py
+.\.venv\Scripts\python.exe scripts\run_sensitivity_startup.py                  # ~90 min
+.\.venv\Scripts\python.exe scripts\run_sensitivity_startup.py --solo-reporte   # instantáneo
+```
+
 ## Verificar que los resultados se reproducen
 
 `scripts/verify_reproducibility.py` comprueba **los resultados que el informe cita**, en
 tres niveles: los documentos se regeneran desde sus JSON y se comparan ignorando solo la
-fecha; las recomendaciones se reajustan por pliegue y se comparan con las guardadas; y las
-corridas se reejecutan y se comparan ensayo por ensayo, **sin tolerancia** —dos parejas de
-cada experimento y una del caso de imágenes—. Escribe `docs/experimentos/REPRODUCIBILIDAD.md`
-y termina con código 1 si algo difiere.
+fecha —el de la sensibilidad, recalculando además su análisis desde las curvas—; las
+recomendaciones se reajustan por pliegue y se comparan con las guardadas; y las corridas se
+reejecutan y se comparan ensayo por ensayo, **sin tolerancia** —dos parejas de cada
+experimento, una de la sensibilidad a `n_startup_trials` y una del caso de imágenes—. Escribe
+`docs/experimentos/REPRODUCIBILIDAD.md` y termina con código 1 si algo difiere.
 
 Una verificación **omitida** —por ejemplo, sin los datos de MVTec AD— no es un fallo, pero
 tampoco una evidencia: el documento las cuenta aparte.
@@ -716,7 +747,8 @@ tampoco una evidencia: el documento las cuenta aparte.
 - `random_state` gobierna la partición y el muestreador de Optuna. La misma semilla produce
   el mismo pipeline ganador. **Dos semillas distintas evalúan sobre particiones distintas**,
   así que sus métricas no son comparables entre sí: es la razón por la que el protocolo del
-  TFG repite cada condición con tres semillas y toma la mediana.
+  TFG repite cada condición con varias semillas —cinco en el experimento 1 y diez en el 2— y
+  toma la mediana.
 - `scripts/check_image_regression.py` compara el camino de imágenes contra un commit de
   referencia y sale con código 1 si algo cambió. Conviene correrlo antes de cada hito.
 - El multihilo de OpenCV puede alterar bits; `cv2.setNumThreads(1)` hace la comparación

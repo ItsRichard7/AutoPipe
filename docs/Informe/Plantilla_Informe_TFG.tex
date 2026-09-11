@@ -1424,8 +1424,8 @@ Recomendador por vecinos más cercanos con estrategias de control e inyección v
 el espacio vigente. \\
 \addlinespace
 RE6 & Experimentos y reportes & Completo &
-Dos experimentos pre-registrados, análisis estratificado, caso de anomalías en imágenes y
-reportes generados desde los datos. \\
+Dos experimentos pre-registrados con su sensibilidad al muestreador, análisis estratificado,
+caso de anomalías en imágenes y reportes generados desde los datos. \\
 \addlinespace
 RE7 & Documentación y código & Parcial &
 Guía técnica, documentos de decisión, informes de spikes, discusiones de resultados y
@@ -1436,11 +1436,15 @@ ejemplos ejecutables; informe en redacción. \\
 
 \subsection{Análisis de los resultados obtenidos}
 
-Esta sección presenta los resultados en el orden en que se obtuvieron: el primer
-experimento y su diagnóstico, el segundo experimento, el análisis del mecanismo que
-explica sus resultados, el análisis estratificado y el caso de detección de anomalías en
-imágenes. Todas las cifras provienen de los documentos de resultados que generan los
-guiones del proyecto; ninguna se transcribió a mano.
+Esta sección presenta primero los dos experimentos ---el primero con su diagnóstico, el
+segundo con el mecanismo que explica sus resultados--- y después los análisis que los
+completan: el estratificado, la segunda variable del anteproyecto, la sensibilidad del
+segundo experimento a un parámetro del muestreador y los análisis declarados que no se
+ejercieron. Cierra con el caso de detección de anomalías en imágenes, la reproducibilidad y
+los criterios de ingeniería. Todas las cifras provienen de los documentos de resultados que
+generan los guiones del proyecto; ninguna se transcribió a mano. Las tablas por conjunto de
+datos que declaran los pre-registros, con la sensibilidad, el margen sobre el pipeline vacío
+y el detalle por semilla, se publican completas junto a esos documentos.
 
 \subsubsection{Experimento 1: un resultado nulo y su diagnóstico}
 \label{sec:resultados-e1}
@@ -1631,6 +1635,141 @@ corrección por multiplicidad, y la diferencia es de dos diezmilésimas de \text
 consecuencia práctica. Lo que sí sostienen los datos es que la desventaja de la similitud se
 concentra donde el preprocesamiento importa.
 
+La otra covariable declarada, la anchura de la meseta ---cuántas de las 144 configuraciones
+alcanzan el objetivo---, permite una lectura complementaria que el pre-registro del segundo
+experimento declaró como exploratoria: su relación con el beneficio del arranque en caliente,
+medido como el \textit{regret} del arranque en frío menos el de cada condición. En las cuatro
+condiciones calientes el beneficio crece donde la meseta es estrecha, con correlaciones de
+Spearman entre $-0{,}39$ y $-0{,}55$ y valores $p$ menores que 0,05 sin corrección. Con la
+correlación de Pearson, la de \texttt{nearest} deja de ser significativa ($-0{,}23$,
+$p = 0{,}14$): la relación se sostiene en rangos, pero no linealmente. Es coherente con el
+diagnóstico del primer experimento: el arranque en caliente tiene margen donde encontrar una
+configuración suficientemente buena es difícil, y apenas lo tiene donde casi cualquiera sirve.
+
+\subsubsection{Desempeño a presupuesto reducido: la segunda variable del anteproyecto}
+\label{sec:resultados-presupuesto}
+
+El anteproyecto define dos variables por condición: los ensayos hasta el objetivo y el
+desempeño a presupuesto reducido, es decir, el mejor valor de la métrica alcanzado con menos
+ensayos que el presupuesto completo. Los dos arneses midieron la segunda en cada corrida. El
+pre-registro del primer experimento la declaró descriptiva, a quince ensayos y sin contraste;
+el del segundo, secundaria, a 5, 15 y 30 ensayos, y se contrastó sobre los mismos dos pares
+que los contrastes confirmatorios. La Tabla~\ref{tab:presupuesto-reducido} resume ambas. Aquí
+un valor mayor es mejor, cada observación es la mediana de las semillas de un conjunto, y la
+columna G\,/\,E\,/\,P cuenta los conjuntos en que la condición gana, empata y pierde frente a
+la referencia.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Mejor macro-F1 a presupuesto reducido en los dos experimentos}
+\label{tab:presupuesto-reducido}
+\begin{tabularx}{\textwidth}{>{\ancho{0.55}}C>{\ancho{0.9}}C>{\ancho{1.65}}L>{\ancho{0.8}}C>{\ancho{0.8}}C>{\ancho{1.0}}C>{\ancho{1.3}}C}
+\toprule
+\textbf{Exp.} & \textbf{Ensayos} & \textbf{Contraste} & \textbf{Ref.} & \textbf{Cond.} &
+\textbf{G\,/\,E\,/\,P} & \textbf{$p$ (una cola)} \\
+\midrule
+1 & 15 & \texttt{nearest} frente a \texttt{frio} & 0,7471 & 0,7556 & 9\,/\,7\,/\,9 & --- \\
+1 & 15 & \texttt{random} frente a \texttt{frio} & 0,7471 & 0,7468 & 11\,/\,6\,/\,8 & --- \\
+1 & 15 & \texttt{frequent} frente a \texttt{frio} & 0,7471 & 0,7402 & 8\,/\,8\,/\,9 & --- \\
+\addlinespace
+2 & 5 & \texttt{nearest} frente a \texttt{frio} & 0,7692 & 0,7568 & 26\,/\,2\,/\,14 & 0,1106 \\
+2 & 5 & \texttt{nearest} frente a \texttt{frequent} & 0,7843 & 0,7568 & 13\,/\,6\,/\,23 &
+0,9849 \\
+2 & 15 & \texttt{nearest} frente a \texttt{frio} & 0,7908 & 0,7826 & 19\,/\,9\,/\,14 & 0,0945 \\
+2 & 15 & \texttt{nearest} frente a \texttt{frequent} & 0,7920 & 0,7826 & 21\,/\,9\,/\,12 &
+0,2133 \\
+2 & 30 & \texttt{nearest} frente a \texttt{frio} & 0,7932 & 0,7918 & 13\,/\,16\,/\,13 &
+0,3563 \\
+2 & 30 & \texttt{nearest} frente a \texttt{frequent} & 0,7937 & 0,7918 & 13\,/\,14\,/\,15 &
+0,5272 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Con esta variable ningún contraste distingue a las condiciones. En el primer experimento, a
+quince ensayos, la diferencia mediana por conjunto entre cada estrategia caliente y el
+arranque en frío es nula, y ganan y pierden en un número parecido de conjuntos. En el segundo,
+ninguno de los seis contrastes es significativo, y a cinco ensayos \texttt{frequent} supera a
+\texttt{nearest} en 23 de los 42 conjuntos, en la misma dirección que el \textit{regret}. La
+tabla muestra además por qué la comparación tiene que ser pareada: a cinco ensayos la mediana
+de \texttt{nearest} queda por debajo de la del frío y, sin embargo, \texttt{nearest} gana en 26
+conjuntos y pierde en 14. Las medianas de cada condición no describen la diferencia dentro de
+cada conjunto.
+
+La lectura conjunta con el \textit{regret} es consistente. El mejor valor a un presupuesto fijo
+mira un único punto de la curva de búsqueda, y a esa altura las condiciones quedan a milésimas
+de macro-F1 unas de otras; el \textit{regret} acumula la distancia al óptimo a lo largo de toda
+la curva, que es donde está el costo que el arranque en caliente reduce. Los datos son
+compatibles con que su beneficio consista en llegar antes a valores buenos más que en terminar
+con uno mejor.
+
+Los dos experimentos pueden compararse además a igual presupuesto, sobre los 25 conjuntos y
+las cinco semillas que comparten. El arranque en frío coincide en las 125 parejas de conjunto
+y semilla, lo que confirma que la comparación es legítima. Con la base de 41 conjuntos,
+\texttt{random} alcanza a los treinta ensayos un valor mayor que con la de 24 en 10 conjuntos y
+menor en 4, mientras que \texttt{nearest} mejora en 3 y empeora en 6.
+
+\subsubsection{Sensibilidad del segundo experimento al muestreador}
+\label{sec:resultados-sensibilidad}
+
+El número de ensayos al azar con que TPE inicia la búsqueda antes de construir su modelo
+(\texttt{n\_startup\_trials}) interactúa con el arranque en caliente, porque decide cuándo
+empiezan a pesar en el muestreador las configuraciones inyectadas. El análisis de viabilidad lo
+fijó en 10, el valor por defecto de Optuna \cite{akiba2019optuna}, precisamente para que no
+pudiera atribuirse a una elección favorable al resultado, y declaró a la vez un análisis de
+sensibilidad a 5 que debía medirse también en el arranque en frío. Se ejecutó sobre las tres
+condiciones que intervienen en los contrastes confirmatorios ---75\,600 ensayos en 90
+minutos--- con las mismas semillas, particiones, óptimos y configuraciones inyectadas que el
+segundo experimento. Como control, los contrastes con 10 recalculados sobre las corridas
+pareadas coincidieron cifra por cifra con los publicados. La Tabla~\ref{tab:sensibilidad} pone
+ambos valores lado a lado.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Contrastes confirmatorios del experimento 2 con 10 y con 5 ensayos al azar iniciales}
+\label{tab:sensibilidad}
+\begin{tabularx}{\textwidth}{>{\ancho{1.35}}L>{\ancho{0.9}}C>{\ancho{0.85}}C>{\ancho{0.85}}C>{\ancho{1.15}}C>{\ancho{0.9}}C>{\ancho{1.0}}C}
+\toprule
+\textbf{Contraste} & \textbf{Al azar} & \textbf{Ref.} & \textbf{Cond.} & \textbf{Reducción} &
+\textbf{$p$ Holm} & \textbf{Cumple} \\
+\midrule
+\texttt{nearest} frente a \texttt{frio} & 10 & 0,0090 & 0,0058 & 35,8\,\% & 0,0019 & Sí \\
+\texttt{nearest} frente a \texttt{frio} & 5 & 0,0094 & 0,0050 & 46,8\,\% & 0,0002 & Sí \\
+\addlinespace
+\texttt{nearest} frente a \texttt{frequent} & 10 & 0,0039 & 0,0058 & $-49{,}1$\,\% & 0,9690 &
+No \\
+\texttt{nearest} frente a \texttt{frequent} & 5 & 0,0045 & 0,0050 & $-10{,}2$\,\% & 0,8761 &
+No \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La conclusión del segundo experimento no depende de ese valor. Con 5 ensayos al azar el primer
+contraste se sigue cumpliendo, con una reducción mayor, y el segundo sigue sin cumplirse,
+aunque la distancia entre \texttt{frequent} y \texttt{nearest} se acorta. Medido en cada brazo,
+el parámetro no altera el arranque en frío ($p = 0{,}39$, dos colas) ni a \texttt{nearest}
+($p = 0{,}82$); solo \texttt{frequent} empeora, con $p = 0{,}029$ sin corrección, un valor que
+no resistiría la corrección de Holm sobre los tres brazos. El beneficio frente al frío tampoco
+cambia de forma significativa: pasa de 0,0021 a 0,0025 en \texttt{nearest} ($p = 0{,}47$) y de
+0,0034 a 0,0030 en \texttt{frequent} ($p = 0{,}18$). El temor que motivó la sensibilidad ---que
+el beneficio del arranque en caliente dependiera de un parámetro del muestreador--- no se
+confirma a escala.
+
+\subsubsection{Análisis declarados que no se ejercieron}
+\label{sec:resultados-no-ejercidos}
+
+Dos análisis mencionados en los pre-registros no se ejecutaron, y conviene dejarlo explícito.
+El primero es la repetición del recomendador con escalado por media y desviación típica y
+distancia euclídea: el pre-registro la \emph{admite} como sensibilidad sin comprometerla, y no
+se ejerció. El segundo es la ponderación o selección de meta-características para mitigar la
+concentración de distancias, declarada como exploratoria en el pre-registro del segundo
+experimento. No se ejecutó porque diseñar una ponderación después de conocer los resultados
+abriría precisamente el grado de libertad que un pre-registro existe para cerrar: cualquier
+esquema elegido a la vista de los datos podría ajustarse a ellos. Queda como trabajo futuro,
+con un protocolo propio declarado de antemano.
+
 \subsubsection{Generalización por tarea: detección de anomalías en imágenes}
 \label{sec:resultados-imagenes}
 
@@ -1684,14 +1823,16 @@ un corpus de conjuntos de imágenes y su propia base de meta-conocimiento.
 Las cifras de esta sección se sometieron a una verificación de reproducibilidad de punta a
 punta en tres niveles. Primero, cada documento de resultados se regeneró desde sus datos
 versionados y se comparó línea por línea con el publicado, ignorando solo su fecha de
-generación: los cinco coincidieron. Segundo, para dos pliegues de cada experimento se volvió a
+generación; el de la sensibilidad, recalculando además su análisis desde las curvas guardadas.
+Los nueve coincidieron. Segundo, para dos pliegues de cada experimento se volvió a
 ajustar el recomendador con la base sin el conjunto excluido, y sus recomendaciones
 coincidieron con las guardadas; en el primer experimento esto prueba además que la
 refactorización posterior del recomendador no alteró lo que recomienda. Tercero, se
-reejecutaron dos parejas de conjunto y semilla de cada experimento en todas sus condiciones y
-una pareja del caso de imágenes, y cada ensayo se comparó con el guardado sin tolerancia.
+reejecutaron en todas sus condiciones dos parejas de conjunto y semilla de cada experimento,
+una de la sensibilidad y una del caso de imágenes, y cada ensayo se comparó con el guardado
+sin tolerancia.
 
-Las 14 verificaciones se reprodujeron exactamente. Se reejecutaron muestras y no los
+Las 19 verificaciones se reprodujeron exactamente. Se reejecutaron muestras y no los
 experimentos completos porque, si una pareja se reproduce valor por valor, el procedimiento es
 determinista; repetirlos enteros costaría más de dos horas sin aportar evidencia adicional.
 
@@ -1720,14 +1861,14 @@ Los módulos nuevos alcanzan al menos un 70\,\% de cobertura &
 Cobertura global de 99\,\% sobre 1\,642 instrucciones; los módulos de tarea, cargador
 tabular y transformaciones tabulares al 100\,\% &
 Cumplido &
-La suite pasó de 134 a 782 pruebas y la cobertura global de 97\,\% a 99\,\%. \\
+La suite pasó de 134 a 837 pruebas y la cobertura global de 97\,\% a 99\,\%. \\
 \addlinespace
 Los resultados son reproducibles: la misma semilla produce el mismo pipeline ganador &
-Catorce verificaciones de punta a punta sobre los resultados reportados, todas con
+Diecinueve verificaciones de punta a punta sobre los resultados reportados, todas con
 coincidencia exacta &
 Cumplido &
 Documentos regenerados, recomendaciones reajustadas y corridas reejecutadas ensayo por
-ensayo en ambos experimentos y en el caso de imágenes
+ensayo en ambos experimentos, en la sensibilidad y en el caso de imágenes
 (Sección~\ref{sec:resultados-reproducibilidad}). \\
 \addlinespace
 El flujo completo se mantiene expresable en no más de 20 líneas de código &

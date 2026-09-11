@@ -122,12 +122,38 @@ sobre las condiciones en las que el método puede ayudar, no una excusa.
    el tamaño del efecto. Medir con rigor que un método no ayuda **y poder decir por
    qué** es un resultado.
 
+## 7. Añadido posterior: la segunda variable del anteproyecto
+
+> Añadido el 2026-09-25. Las secciones anteriores quedan como se escribieron.
+
+El anteproyecto mide **dos** variables por condición, y el pre-registro v1.0 declaró la
+segunda —el mejor macro-F1 tras quince ensayos— como medida descriptiva. Estaba guardada en
+cada corrida y no se había reportado. `PRESUPUESTO-REDUCIDO.md` la reporta ahora:
+
+| Condición | Mejor a 15 (mediana) | Gana | Empata | Pierde |
+|---|---:|---:|---:|---:|
+| `frio` | 0,7471 | — | — | — |
+| `nearest` | 0,7556 | 9 | 7 | 9 |
+| `random` | 0,7468 | 11 | 6 | 8 |
+| `frequent` | 0,7402 | 8 | 8 | 9 |
+
+A quince ensayos **ninguna condición se separa del frío**: la diferencia mediana por conjunto
+es nula en las tres, y ganan y pierden en un número parecido de conjuntos. No cambia nada de lo
+anterior, y es coherente con el efecto piso de la sección 4: si el frío alcanza el objetivo en
+una mediana de tres ensayos, a los quince ya queda poca diferencia que medir.
+
+La tabla por conjunto completa que el pre-registro declara —sensibilidad, margen sobre el
+pipeline vacío, ensayos por semilla, censurados y desempeño a quince ensayos— está en
+`LODO-por-dataset.md`.
+
 ## Dónde está cada cosa
 
 | Qué | Dónde |
 |---|---|
 | Curvas completas de las 500 corridas | `LODO-resultados.json` |
 | Tablas y veredicto generados | `LODO-resultados.md` |
+| Mejor valor a quince ensayos | `PRESUPUESTO-REDUCIDO.md` |
+| Tabla por conjunto completa | `LODO-por-dataset.md` |
 | Reporte con gráficas | `reportes/lodo.html`, `reportes/lodo.pdf` |
 | Protocolo que gobierna todo esto | `Preregistro.tex` v1.0, etiqueta `prereg-v1.0` |
 | Anchura de la meseta por conjunto | `DIVERSIDAD-valores.json` |
