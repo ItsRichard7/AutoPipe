@@ -39,6 +39,7 @@ from datetime import date
 from pathlib import Path
 
 import analyze_e2_mechanism
+import analyze_reduced_budget
 import analyze_stratified
 import cv2
 import openml
@@ -48,6 +49,8 @@ import report_lodo_e2
 import run_image_case
 import run_lodo
 import run_lodo_e2
+import run_sensitivity_startup
+import tabulate_by_dataset
 
 from autopipe import ImageDataLoader
 from autopipe.meta_knowledge import MetaKnowledgeBase
@@ -67,6 +70,10 @@ PARES_E2 = (("balance-scale", 101), ("blood-transfusion-service-center", 606))
 
 PAR_IMAGENES = ("bottle", 101)
 """Categoría y semilla del caso de imágenes."""
+
+PAR_SENSIBILIDAD = ("balance-scale", 101)
+"""Pareja de la sensibilidad a ``n_startup_trials``: la misma que la del experimento 2,
+de modo que las dos versiones de sus corridas se verifican sobre el mismo conjunto."""
 
 IDENTICO, DIFIERE, OMITIDO = "idéntico", "difiere", "omitido"
 
@@ -130,17 +137,25 @@ def verificar_documento(nombre: str, generado: str, ruta: Path) -> dict:
     return _verificacion(nombre, ruta.as_posix(), estado, f"{distintas} líneas distintas")
 
 
-def verificar_documentos(e1: dict, e2: dict, imagenes: dict | None) -> list[dict]:
+def verificar_documentos(
+    e1: dict, e2: dict, imagenes: dict | None, sensibilidad: dict | None = None
+) -> list[dict]:
     """Regenera cada documento desde su JSON y lo compara con el versionado.
+
+    El de la sensibilidad se regenera **recalculando su análisis** desde las curvas, no
+    solo transcribiendo el que quedó guardado: así se verifica también que el análisis
+    guardado es el que producen los datos.
 
     Args:
         e1: Resultados del experimento 1.
         e2: Resultados del experimento 2.
         imagenes: Resultados del caso de imágenes, o ``None`` si no existen.
+        sensibilidad: Resultados de la sensibilidad a ``n_startup_trials``, o ``None``.
 
     Returns:
         Un registro por documento.
     """
+    cribado = tabulate_by_dataset.leer_cribado(tabulate_by_dataset.CRIBADO)
     registros = [
         verificar_documento(
             "Resumen del experimento 1",
@@ -168,7 +183,43 @@ def verificar_documentos(e1: dict, e2: dict, imagenes: dict | None) -> list[dict
             ),
             EXPERIMENTOS / "ESTRATIFICADO-E2.md",
         ),
+        verificar_documento(
+            "Desempeño a presupuesto reducido",
+            analyze_reduced_budget.redactar(
+                analyze_reduced_budget.analizar_e1(e1),
+                analyze_reduced_budget.analizar_e2(e2),
+                analyze_reduced_budget.comparar_experimentos(e1, e2),
+            ),
+            analyze_reduced_budget.SALIDA,
+        ),
     ]
+    for experimento, resultado in (
+        (tabulate_by_dataset.EXPERIMENTO_1, e1),
+        (tabulate_by_dataset.EXPERIMENTO_2, e2),
+    ):
+        filas = tabulate_by_dataset.tabular(resultado, experimento, cribado)
+        relacion = (
+            tabulate_by_dataset.meseta_y_beneficio(filas) if experimento.explorar_meseta else None
+        )
+        registros.append(
+            verificar_documento(
+                f"Tabla por conjunto, {experimento.nombre}",
+                tabulate_by_dataset.redactar(experimento, filas, relacion),
+                experimento.salida,
+            )
+        )
+    if sensibilidad is not None:
+        recalculado = {
+            **sensibilidad,
+            "analisis": run_sensitivity_startup.analizar(sensibilidad["pliegues"], e2),
+        }
+        registros.append(
+            verificar_documento(
+                "Sensibilidad a n_startup_trials",
+                run_sensitivity_startup.redactar(recalculado),
+                run_sensitivity_startup.RESUMEN,
+            )
+        )
     if imagenes is not None:
         registros.append(
             verificar_documento(
@@ -387,10 +438,11 @@ def main() -> int:
     e1 = json.loads((EXPERIMENTOS / "LODO-resultados.json").read_text(encoding="utf-8"))
     e2 = json.loads((EXPERIMENTOS / "LODO-E2-resultados.json").read_text(encoding="utf-8"))
     imagenes = _leer(EXPERIMENTOS / "IMAGENES-resultados.json")
+    sensibilidad = _leer(run_sensitivity_startup.RESULTADOS)
     base_e1 = MetaKnowledgeBase.load(run_lodo.BASE)
     base_e2 = MetaKnowledgeBase.load(run_lodo_e2.BASE)
 
-    verificaciones = verificar_documentos(e1, e2, imagenes)
+    verificaciones = verificar_documentos(e1, e2, imagenes, sensibilidad)
     for nombre, semilla in PARES_E1:
         pliegue = _pliegue(e1, nombre)
         verificaciones.append(
@@ -411,6 +463,24 @@ def main() -> int:
             verificar_corridas(
                 "E2", pliegue, semilla, ("frio", *run_lodo_e2.CONDICIONES_CALIENTES),
                 run_lodo_e2.ejecutar_condicion, run_lodo_e2._cargar_de_openml,
+            )
+        )
+    if sensibilidad is not None:
+        nombre, semilla = PAR_SENSIBILIDAD
+        # Las corridas de la sensibilidad no guardan recomendaciones: inyectan las del
+        # experimento 2, que se toman de su pliegue.
+        pliegue = {
+            **_pliegue(sensibilidad, nombre),
+            "recomendaciones": _pliegue(e2, nombre)["recomendaciones"],
+        }
+        verificaciones.append(
+            verificar_corridas(
+                f"sensibilidad (n_startup_trials={run_sensitivity_startup.N_STARTUP_SENSIBILIDAD})",
+                pliegue, semilla, run_sensitivity_startup.CONDICIONES,
+                lambda f, e, s, i: run_sensitivity_startup.ejecutar_condicion(
+                    f, e, s, i, run_sensitivity_startup.N_STARTUP_SENSIBILIDAD
+                ),
+                run_lodo_e2._cargar_de_openml,
             )
         )
     verificaciones.append(verificar_imagenes(args.datos, imagenes))

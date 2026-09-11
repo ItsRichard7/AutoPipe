@@ -1656,15 +1656,63 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  que su pre-registro declara. Quedan para la semana 12 las conclusiones, las recomendaciones,
  el Apéndice 1 y la verificación con evidencia del resto de criterios de ingeniería.}
 
-\cierresemana{11}{21}{23}{RE6 cerrado del todo: el análisis estratificado, que en el
+\entrada{2026-09-25}{5}
+{Antes de la semana 12 verifiqué que la implementación y la experimentación estuvieran
+ completas contra lo que declaran el anteproyecto y los dos pre-registros. No lo estaban del
+ todo: faltaba reportar la segunda variable del anteproyecto ---el desempeño a presupuesto
+ reducido--- en los dos experimentos, la tabla por conjunto completa del pre-registro v1.0 y
+ la relación entre meseta y beneficio que el v2.0 declaró exploratoria; y la sensibilidad a
+ \texttt{n\_startup\_trials} decidida en el spike A nunca se había ejecutado. Escribí
+ \texttt{scripts/\allowbreak analyze\_\allowbreak reduced\_\allowbreak budget.py} y
+ \texttt{scripts/\allowbreak tabulate\_\allowbreak by\_\allowbreak dataset.py}, con 34
+ pruebas y sin ejecutar ningún ensayo.}
+{La segunda variable estaba medida en cada corrida y el informe solo presentaba una de las dos
+ variables del anteproyecto. Con ella ningún contraste distingue a las condiciones, ni a
+ quince ensayos en el experimento 1 ni a 5, 15 y 30 en el 2, lo que no contradice al
+ \emph{regret}: este integra toda la curva y aquella mira un solo punto. La relación entre
+ meseta y beneficio es negativa en las cuatro condiciones calientes con Spearman ---el
+ beneficio crece donde la meseta es estrecha---, pero con Pearson la de \texttt{nearest} no es
+ significativa, y lo reporto así. Un detalle que casi se me pasa: en esta variable mayor es
+ mejor, al revés que en las otras dos, y una prueba por sabotaje falla si la cola del
+ contraste se copia del arnés. Comprobé además que el frío de los dos experimentos coincide en
+ las 125 parejas que comparten, lo que legitima compararlos a igual presupuesto.}
+
+\entrada{2026-09-26}{6}
+{Ejecuté la sensibilidad a \texttt{n\_startup\_trials} $= 5$ con
+ \texttt{scripts/\allowbreak run\_\allowbreak sensitivity\_\allowbreak startup.py} y 20
+ pruebas: \texttt{frio}, \texttt{nearest} y \texttt{frequent} sobre los 42 conjuntos, 75\,600
+ ensayos en 90 minutos. \textbf{La conclusión del experimento 2 se sostiene}: el primer
+ contraste se cumple con un 46,8\% de reducción y $p_{\mathrm{Holm}} = 0{,}0002$, y el segundo
+ sigue sin cumplirse. Añadí los cuatro documentos nuevos y una pareja de la sensibilidad al
+ verificador de reproducibilidad ---19 de 19 idénticas--- y redacté los resultados en el
+ informe, las discusiones y la guía técnica.}
+{Fijé el análisis en el código antes de ejecutar, y la corrida inyecta las configuraciones
+ guardadas del experimento 2 en lugar de recalcularlas, para que lo único que cambie sea el
+ parámetro: una prueba exige que con 10 se reproduzcan las curvas del arnés ensayo por
+ ensayo, y los contrastes con 10 recalculados coincidieron cifra por cifra con los publicados.
+ La advertencia del spike A de medir también el frío resultó decisiva para leer el resultado:
+ el frío no se mueve, el beneficio frente a él tampoco, y el único brazo que cambia es
+ \texttt{frequent}, con un valor $p$ que no resiste corrección. Una prueba de regeneración
+ encontró un defecto real antes de la corrida larga: el JSON guarda las claves ordenadas y el
+ resumen regenerado salía con otra fila primero. Dejé explícitos en el informe los dos
+ análisis declarados que no se ejercieron: el escalado alternativo, que el pre-registro solo
+ admitía, y la ponderación de meta-características, que diseñada después de ver los datos
+ abriría el grado de libertad que el pre-registro existe para cerrar.}
+
+\cierresemana{11}{32}{23}{RE6 cerrado del todo: el análisis estratificado, que en el
  experimento 1 estaba vacío, ahora tiene contenido sin haber tocado su umbral; el caso de
  anomalías en imágenes verifica la generalización por tarea sobre tres categorías de MVTec AD,
  con la calidad de detección reportada sin suavizar; y la reproducibilidad de punta a punta
- queda demostrada, con \textbf{14 de 14 verificaciones idénticas}. La explicación refutada del
- spike A se retiró de la documentación viva y se conservó, con nota, en la fechada. El informe
- tiene redactado su análisis de resultados y compila sin avisos. Suite de 743 a 782 pruebas,
- 99\% de cobertura. Se gastaron 21\,h de las 23 comprometidas: la ablación aleatoria ya estaba
- hecha dentro de los dos experimentos. Quedan 68\,h para la semana 12.}
+ queda demostrada, con \textbf{19 de 19 verificaciones idénticas}. Antes de cerrar se
+ completaron los análisis que los pre-registros declaraban y faltaban ---la segunda variable
+ del anteproyecto, la tabla por conjunto completa, la relación entre meseta y beneficio y la
+ sensibilidad a \texttt{n\_startup\_trials}---, y la sensibilidad muestra que la conclusión del
+ experimento 2 no depende de ese parámetro. La explicación refutada del spike A se retiró de
+ la documentación viva y se conservó, con nota, en la fechada. El informe tiene redactado su
+ análisis de resultados y compila sin avisos. Suite de 743 a 837 pruebas, 99\% de cobertura.
+ Se gastaron 32\,h de las 23 comprometidas: 21 en los puntos planificados, que costaron menos
+ porque la ablación aleatoria ya estaba hecha, y 11 en cerrar los análisis declarados. Quedan
+ 57\,h para la semana 12.}
 
 \newpage
 \section*{Resumen de horas}
@@ -1692,7 +1740,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 8  & E5, E8            & 24 & 18 & RE5 completo; 4 estrategias con controles \\
 9  & E5, E6, E8        & 23 & 23 & Hito: recomendador funcional; v1.0 congelada \\
 10 & E6, E7, E8        & 22 & 46 & Dos experimentos; hipótesis confirmada \\
-11 & E6, E7, E8        & 23 & 21 & Imágenes, reproducibilidad y resultados \\
+11 & E6, E7, E8        & 23 & 32 & Imágenes, resultados y análisis declarados \\
 12 & E8                & 21 & --- & Hito: cierre del proyecto \\
 \midrule
 \multicolumn{2}{@{}l}{\textbf{Total comprometido}} & \textbf{290} & --- & \\
