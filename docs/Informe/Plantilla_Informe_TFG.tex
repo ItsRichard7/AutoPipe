@@ -18,143 +18,15 @@
 
 \documentclass[12pt,letterpaper,oneside]{article}
 
-%------------------------------------------------------------------ Idioma ---
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-% es-tabla: fuerza «Tabla» en lugar de «Cuadro» (predeterminado de babel-spanish).
-% es-noquoting: evita que babel se apropie de los signos " y < >.
-\usepackage[spanish,es-tabla,es-noquoting]{babel}
-
-%----------------------------------------------------- Página y espaciado ----
-\usepackage[letterpaper,margin=1in]{geometry}
-\usepackage{setspace}
-\onehalfspacing                 % interlineado 1,5
-\usepackage{parskip}            % separación entre párrafos, sin sangría
-
-%------------------------------------------------------- Pie de página -------
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\renewcommand{\headrulewidth}{0pt}
-\fancyfoot[R]{\thepage}         % número de página a la derecha (como el .docx)
-\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[R]{\thepage}}
-
-%------------------------------------------------- Tablas, figuras, código ---
-\usepackage{graphicx}
-\graphicspath{{media/}{figuras/}}
-\usepackage{booktabs}
-\usepackage{tabularx}
-\usepackage{longtable}
-\usepackage{array}
-\usepackage{float}
-\usepackage{enumitem}
-\setlist{nosep,topsep=4pt}
-
-\usepackage{caption}
-\captionsetup{font=small,labelfont=bf,labelsep=colon,skip=6pt}
-\captionsetup[table]{position=above}
-\captionsetup[figure]{position=below}
-
-% Columnas de ancho elástico para tabularx:
-%   C = centrada,  L = alineada a la izquierda
-% Anteponga \ancho{f} para darle a una columna f veces el ancho base
-% (la suma de los factores debe ser igual al número de columnas X).
-\newcolumntype{C}{>{\centering\arraybackslash}X}
-\newcolumntype{L}{>{\raggedright\arraybackslash}X}
-\newcommand{\ancho}[1]{\hsize=#1\hsize\linewidth=\hsize}
-
-% Lista para usar DENTRO de una celda de tabla: sin espacio superior, para que
-% la primera viñeta quede alineada con el texto de las demás columnas.
-\newlist{celdaitem}{itemize}{1}
-\setlist[celdaitem]{label=\textbullet,leftmargin=1.2em,nosep,topsep=0pt,
-                    partopsep=0pt,parsep=0pt,itemsep=2pt}
-
-% Un poco más de aire entre las filas de las tablas
-\renewcommand{\arraystretch}{1.15}
-
-%------------------------------------------------------------- Títulos -------
-\usepackage{titlesec}
-\titleformat{\section}{\normalfont\Large\bfseries}{\thesection.}{0.6em}{}
-\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection.}{0.6em}{}
-\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection.}{0.6em}{}
-\titlespacing*{\section}{0pt}{18pt}{10pt}
-\titlespacing*{\subsection}{0pt}{14pt}{8pt}
-\titlespacing*{\subsubsection}{0pt}{12pt}{6pt}
-\setcounter{secnumdepth}{3}     % numeración hasta 1.1.1
-\setcounter{tocdepth}{3}        % índice general hasta 1.1.1
-
-%--------------------------------------------------------- Hiperenlaces ------
-\usepackage[hidelinks,unicode]{hyperref}
-\hypersetup{
-  pdftitle   = {Generalización de framework de selección automática de pipelines de
-                preprocesamiento a múltiples tareas de aprendizaje automático mediante
-                meta-aprendizaje},
-  pdfauthor  = {Ricardo Antonio Borbón Mena},
-  pdfsubject = {Informe de Trabajo Final de Graduación},
-  pdflang    = {es-CR},
-  bookmarksnumbered = true
-}
-\usepackage{bookmark}
-
-%-------------------------------------------- Comando para el texto guía -----
-% Todo el texto de ayuda de la plantilla va dentro de \guia{...}. Aparece en
-% gris y cursiva para distinguirlo. BÓRRELO conforme escriba su informe; al
-% terminar no debe quedar ningún \guia en el documento.
-\usepackage{xcolor}
-\newcommand{\guia}[1]{{\itshape\color{gray!75!black}#1}}
-
-% Atajo para escribir nombres de comandos dentro del texto guía
-\newcommand{\cmd}[1]{\texttt{\textbackslash #1}}
-
-%------------------------------------------------------- Bibliografía --------
-% ESTÁNDAR DE CITACIÓN: IEEE  (decidido para este TFG; los lineamientos exigen
-% usar uno solo — APA 7 o IEEE — de forma rigurosa en TODO el documento).
-%
-% Las referencias se administran en el archivo referencias.bib.
-% En el texto se cita con \cite{clave}, que produce marcas numéricas [1], [2]…
-% Requiere compilar con biber (latexmk lo hace automáticamente).
-\usepackage{csquotes}   % requerido por biblatex cuando se usa babel
-\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
-\addbibresource{referencias.bib}
-
-% sorting=none: las referencias se numeran en el orden en que aparecen citadas
-% en el texto, como manda IEEE.
+% Paquetes y configuración, compartidos con Apendice1_Implicaciones.tex.
+\input{preambulo}
 
 %==============================================================================
 \begin{document}
 %==============================================================================
 
 %------------------------------------------------------------- PORTADA -------
-% La portada cuenta como página 1, pero su número no debe aparecer.
-\begin{titlepage}
-\thispagestyle{empty}
-\centering
-
-{\large\bfseries Instituto Tecnológico de Costa Rica\par}
-\vspace{0.4cm}
-{\large\bfseries Área Académica de Ingeniería en Computadores\par}
-\vspace{0.4cm}
-{\large\bfseries Programa de Licenciatura en Ingeniería en Computadores\par}
-
-\vspace{1.2cm}
-\includegraphics[width=7.7cm]{image1.png}
-
-\vspace{1.5cm}
-{\LARGE\bfseries Generalización de framework de selección automática de pipelines
-de preprocesamiento a múltiples tareas de aprendizaje automático mediante
-meta-aprendizaje\par}
-
-\vspace{1.5cm}
-{\large\bfseries Informe de Trabajo de Graduación para optar por el título de
-Ingeniero en Computadores con grado académico de Licenciatura\par}
-
-\vfill
-{\large\bfseries Ricardo Antonio Borbón Mena\par}
-\vspace{1cm}
-{\large\bfseries Cartago, noviembre, 2026\par}
-
-\end{titlepage}
+\input{portada}
 
 % A partir de aquí sí se numeran las páginas; la portada fue la número 1.
 \setcounter{page}{2}
@@ -194,28 +66,61 @@ Debe redactarse de forma formal y ocupar una página.}
 \section*{Resumen}
 \addcontentsline{toc}{section}{Resumen}
 
-\guia{Redacte un resumen claro del proyecto en un máximo de 300 palabras. Debe
-incluir el \textbf{problema abordado}, el \textbf{objetivo del proyecto}, la
-\textbf{metodología utilizada}, los \textbf{resultados principales}, entre
-otros puntos que considere importante. A su vez, se debe incluir 6 palabras
-clave, de lo general a lo específico.}
+La elección del preprocesamiento de datos condiciona el desempeño de los modelos de
+aprendizaje automático, y buscarlo automáticamente es costoso porque cada conjunto de
+datos nuevo se explora desde cero. Este trabajo generaliza \textit{AutoPipeAD}, una
+librería de selección automática de pipelines de preprocesamiento para detección de
+anomalías en imágenes, hacia \textit{AutoPipe}: un framework agnóstico a la tarea que
+resuelve también la clasificación de datos tabulares e incorpora una capa de
+meta-aprendizaje. Esa capa describe cada conjunto de datos con 107 meta-características y
+recomienda, desde una base de meta-conocimiento, configuraciones iniciales que se inyectan en
+la optimización bayesiana: el arranque en caliente. La metodología combinó una evolución
+incremental de la arquitectura, verificada con pruebas de regresión y contra fugas de
+información, y una validación por exclusión de conjunto de datos sobre corpus de OpenML,
+gobernada por pre-registros. Un primer experimento, sobre 25 conjuntos, no confirmó la
+hipótesis; su diagnóstico atribuyó el resultado a un objetivo demasiado fácil y a una variable
+de poca resolución. Un segundo
+experimento pre-registrado, sobre 42 conjuntos, diez semillas y 126\,000 ensayos, la confirmó:
+el arranque en caliente redujo un 35,8\,\% la mediana del \textit{regret} normalizado frente al
+arranque en frío, con significancia tras la corrección de Holm, y el resultado se mantuvo al
+variar el muestreador. Sin embargo, recomendar por similitud fue la peor de las cuatro
+estrategias evaluadas: inyectar las configuraciones que más ganan dio mejores resultados, y el
+análisis del mecanismo lo atribuye a la calidad general de lo inyectado. El framework conserva
+intactas las 134 pruebas de la librería base, alcanza un 99\,\% de cobertura y reproduce
+exactamente sus resultados en 19 verificaciones de punta a punta.
 
 \vspace{1em}
-\noindent\textbf{Palabras clave:} \guia{palabra 1, palabra 2, palabra 3,
-palabra 4, palabra 5, palabra 6.}
+\noindent\textbf{Palabras clave:} aprendizaje automático, AutoML, preprocesamiento de datos,
+optimización bayesiana, meta-aprendizaje, arranque en caliente.
 
 \clearpage
 %------------------------------------------------------------ ABSTRACT -------
 \section*{Abstract}
 \addcontentsline{toc}{section}{Abstract}
 
-\guia{Traducción fiel del resumen al idioma inglés. Debe mantener exactamente
-el mismo contenido y estructura. Incluya también las keywords utilizadas en el
-resumen.}
+The choice of data preprocessing shapes the performance of machine learning models, and
+searching for it automatically is costly because every new dataset is explored from scratch.
+This work generalizes \textit{AutoPipeAD}, a library for automatic selection of preprocessing
+pipelines for image anomaly detection, into \textit{AutoPipe}: a task-agnostic framework that
+also solves tabular data classification and incorporates a meta-learning layer. That layer
+describes each dataset with 107 meta-features and recommends, from a meta-knowledge base,
+initial configurations that are injected into Bayesian optimization: the warm start. The
+methodology combined an incremental evolution of the architecture, verified with regression
+and information-leakage tests, and a leave-one-dataset-out validation over OpenML corpora,
+governed by pre-registrations. A first experiment, on 25 datasets, did not confirm the
+hypothesis; its diagnosis attributed the result to a target that was too easy and a
+low-resolution variable. A
+second pre-registered experiment, on 42 datasets, ten seeds and 126,000 trials, confirmed it:
+the warm start reduced the median normalized regret by 35.8\,\% against the cold start, with
+significance after Holm's correction, and the result held when the sampler was varied.
+However, recommending by similarity was the worst of the four strategies evaluated: injecting
+the configurations that win most often gave better results, and the mechanism analysis
+attributes this to the general quality of what is injected. The framework keeps the 134 tests of the base library
+intact, reaches 99\,\% coverage and exactly reproduces its results in 19 end-to-end checks.
 
 \vspace{1em}
-\noindent\textbf{Keywords:} \guia{keyword 1, keyword 2, keyword 3, keyword 4,
-keyword 5, keyword 6.}
+\noindent\textbf{Keywords:} machine learning, AutoML, data preprocessing, Bayesian
+optimization, meta-learning, warm start.
 
 \clearpage
 %------------------------------------------------------- ÍNDICE GENERAL ------
@@ -1427,9 +1332,9 @@ RE6 & Experimentos y reportes & Completo &
 Dos experimentos pre-registrados con su sensibilidad al muestreador, análisis estratificado,
 caso de anomalías en imágenes y reportes generados desde los datos. \\
 \addlinespace
-RE7 & Documentación y código & Parcial &
-Guía técnica, documentos de decisión, informes de spikes, discusiones de resultados y
-ejemplos ejecutables; informe en redacción. \\
+RE7 & Documentación y código & Completo &
+Guía técnica, manual de uso y README; documentos de decisión, informes de spikes y
+discusiones de resultados; ejemplos ejecutables y código en el repositorio. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1839,8 +1744,11 @@ determinista; repetirlos enteros costaría más de dos horas sin aportar evidenc
 \subsubsection{Criterios de éxito de ingeniería: estado verificado}
 
 Los criterios de éxito de ingeniería son independientes del resultado de la hipótesis
-experimental y ya pueden evaluarse. La Tabla~\ref{tab:criterios-ingenieria} presenta su
-estado medido a la fecha de redacción.
+experimental. No se declaran cumplidos: un guion del proyecto repite cada comprobación y deja
+su evidencia en un documento generado, y la Tabla~\ref{tab:criterios-ingenieria} transcribe
+lo que midió. El primer criterio se verifica de la forma más literal posible: las pruebas de
+la librería base se extraen tal como estaban en el commit que la migró y se ejecutan, sin
+modificarlas, contra el código final.
 
 \begin{table}[H]
 \centering
@@ -1852,16 +1760,18 @@ estado medido a la fecha de redacción.
 \textbf{Criterio} & \textbf{Medición} & \textbf{Estado} & \textbf{Observación} \\
 \midrule
 La suite de regresión de la librería base se mantiene en verde tras la refactorización &
-Las 134 pruebas migradas pasan sin haber sido editadas &
+Las 134 pruebas del commit de migración, ejecutadas sin modificar contra el código final,
+pasan; sus 111 funciones de prueba son idénticas a las actuales &
 Cumplido &
 Es la evidencia central de que la refactorización no alteró el caso de uso original: las
 pruebas afirman valores numéricos concretos de las métricas. \\
 \addlinespace
 Los módulos nuevos alcanzan al menos un 70\,\% de cobertura &
-Cobertura global de 99\,\% sobre 1\,642 instrucciones; los módulos de tarea, cargador
-tabular y transformaciones tabulares al 100\,\% &
+Los 16 módulos nuevos quedan entre 99,4\,\% y 100\,\%; la cobertura global es de 99,3\,\%
+sobre 1\,647 instrucciones &
 Cumplido &
-La suite pasó de 134 a 837 pruebas y la cobertura global de 97\,\% a 99\,\%. \\
+«Nuevo» es todo módulo que no existía en el commit de migración. La suite pasó de 134 a 884
+pruebas y la cobertura global, de 97\,\% a 99,3\,\%. \\
 \addlinespace
 Los resultados son reproducibles: la misma semilla produce el mismo pipeline ganador &
 Diecinueve verificaciones de punta a punta sobre los resultados reportados, todas con
@@ -1872,10 +1782,10 @@ ensayo en ambos experimentos, en la sensibilidad y en el caso de imágenes
 (Sección~\ref{sec:resultados-reproducibilidad}). \\
 \addlinespace
 El flujo completo se mantiene expresable en no más de 20 líneas de código &
-El flujo tabular completo usa 13 instrucciones &
+El flujo tabular completo usa 14 instrucciones, y el flujo con arranque en caliente, 19 &
 Cumplido &
-La verificación está automatizada: una prueba cuenta las instrucciones del ejemplo y lo
-ejecuta, de modo que el criterio se comprueba en cada corrida de la suite en lugar de
+La verificación está automatizada: una prueba cuenta las instrucciones de los dos ejemplos y
+los ejecuta, de modo que el criterio se comprueba en cada corrida de la suite en lugar de
 afirmarse. \\
 \bottomrule
 \end{tabularx}
@@ -1893,13 +1803,141 @@ de modo que contar líneas mediría el estilo de formato en lugar de la compleji
 
 \subsection{Conclusiones}
 
-\guia{En esta sección se indica si se cumplieron los objetivos. Es importante
-destacar los principales logros del proyecto.}
+Las conclusiones se ordenan en tres grupos: el cumplimiento de los objetivos específicos, el
+del objetivo general y los entregables, y los hallazgos que deja la práctica ingenieril del
+proyecto.
+
+\subsubsection{Cumplimiento de los objetivos específicos}
+
+\begin{enumerate}
+  \item \textbf{Se dispone de un núcleo agnóstico a la tarea}, que resuelve detección de
+        anomalías y clasificación tabular sobre una misma arquitectura. La evidencia es
+        doble. Las 134 pruebas de la librería base, extraídas tal como estaban en el commit
+        que la migró, pasan sin modificación contra el código final, y sus 111 funciones de
+        prueba son idénticas a las actuales. Y la ausencia de fuga entre entrenamiento y
+        validación está cubierta por pruebas escritas para fallar si el ajuste viera la
+        validación: al sabotear a propósito el protocolo, siete de las once pruebas del
+        caso tabular caen. El objetivo se cumplió.
+
+  \item \textbf{Se cuenta con una base de meta-conocimiento completa y reproducible}: 25
+        conjuntos de datos públicos para el primer experimento y 42 para el segundo, cada uno
+        descrito con 107 meta-características y asociado a su pipeline ganador. La
+        reproducibilidad no se supuso: las recomendaciones que se derivan de la base se
+        reajustaron por pliegue y coincidieron exactamente con las guardadas. El objetivo se
+        cumplió.
+
+  \item \textbf{Se obtuvo un recomendador meta-aprendido que produce configuraciones
+        válidas y ejecutables} para conjuntos de datos no vistos, integradas en el motor
+        de búsqueda como ensayos iniciales. Cada configuración se valida contra la versión
+        vigente del espacio antes de llegar al motor, porque los dos modos de fallo del
+        mecanismo de inyección van en direcciones opuestas: un índice fuera de rango aborta
+        el estudio y una clave desconocida se acepta en silencio. El objetivo se cumplió.
+
+  \item \textbf{Se determinó con evidencia estadística que el arranque en caliente reduce
+        el costo de la búsqueda}, y también de dónde proviene esa reducción. El primer
+        experimento no confirmó la hipótesis, y su diagnóstico identificó la causa en el
+        instrumento de medición y no en el método. El segundo, pre-registrado sobre 42
+        conjuntos, la confirmó con una reducción del 35,8\,\% de la mediana del
+        \textit{regret} y un valor $p$ ajustado de 0,0019, y la conclusión se sostuvo al
+        variar el número de ensayos al azar del muestreador. El objetivo se cumplió, con un
+        matiz que forma parte del resultado: el beneficio no lo produce la similitud entre
+        conjuntos de datos, sino la calidad general de las configuraciones inyectadas.
+\end{enumerate}
+
+\subsubsection{Cumplimiento del objetivo general y de los entregables}
+
+El objetivo general se alcanzó. \textit{AutoPipe} generaliza la selección automática de
+pipelines a dos tareas, incorpora una capa de meta-aprendizaje que recomienda
+configuraciones iniciales, reduce el costo de exploración en conjuntos de datos nuevos y
+mantiene la reproducibilidad: 19 verificaciones de punta a punta reprodujeron exactamente
+documentos, recomendaciones y corridas. La reducción del costo, sin embargo, debe
+enunciarse con precisión: la aporta el arranque en caliente con configuraciones buenas en
+general, y la estrategia por similitud que el anteproyecto comprometió como método fue la
+menos eficaz de las cuatro evaluadas.
+
+Los siete entregables definidos en el anteproyecto están completos
+(Tabla~\ref{tab:estado-entregables}), y los cuatro criterios de éxito de ingeniería se
+cumplen con evidencia medida, no declarada (Tabla~\ref{tab:criterios-ingenieria}).
+
+\subsubsection{Hallazgos desde la práctica ingenieril}
+
+\begin{enumerate}
+  \item \textbf{La resolución del instrumento decide lo que se puede observar.} Sobre los
+        mismos datos del segundo experimento, la variable del primero ---los ensayos hasta
+        el objetivo--- no detectaba el efecto ($p = 0{,}3902$) pese a una reducción mayor,
+        y el \textit{regret} normalizado sí ($p = 0{,}0010$). Una variable de baja
+        resolución puede ocultar un efecto real, y ninguna cantidad de datos adicionales lo
+        corrige.
+
+  \item \textbf{El pre-registro protegió el resultado de las decisiones posteriores.} El
+        resultado nulo del primer experimento no se reinterpretó ni se corrigió el umbral: se
+        reportó tal como salió y se diseñó un experimento nuevo, con su propio documento
+        congelado antes de ejecutar. Por eso el resultado positivo del segundo es
+        defendible.
+
+  \item \textbf{Una recomendación plausible pero equivocada cuesta más que no recomendar.}
+        La estrategia por similitud censuró más corridas que el propio arranque en frío, y
+        su error medio costó varias veces más que el de la estrategia por frecuencia. El
+        riesgo, previsto en el anteproyecto, quedó cuantificado.
+
+  \item \textbf{Una afirmación de la documentación es una hipótesis hasta que se mide.}
+        Medir los criterios de ingeniería y ejecutar los ejemplos del manual encontró dos
+        afirmaciones falsas en documentos vivos ---el número de instrucciones de un ejemplo
+        y una función de reconstrucción que no admitía pipelines tabulares---, y una prueba
+        de regeneración encontró que un resumen reconstruido desde sus datos cambiaba el
+        orden de una tabla. Las pruebas escritas para fallar si alguien revierte una
+        garantía, y vistas fallar al sabotearla, fueron la forma de convertir afirmaciones
+        en evidencia.
+\end{enumerate}
 
 \subsection{Recomendaciones}
 
-\guia{Aquí se sugieren mejoras o trabajos futuros. Se debe incluir aspectos no
-desarrollados pero relevantes.}
+Las recomendaciones se dirigen a quien use el framework, a quien continúe la línea de
+investigación y a la unidad académica.
+
+\begin{enumerate}
+  \item \textbf{Para el uso práctico, preferir la estrategia por frecuencia.} Mientras no
+        exista una recomendación por similitud que la supere, inyectar las configuraciones
+        que más ganan en la base es la opción respaldada por los datos. Cambiar el valor por
+        defecto de la librería debería hacerse con un experimento que lo sostenga y no en
+        silencio, porque altera lo que obtienen quienes ya la usan.
+
+  \item \textbf{Evaluar un meta-modelo más capaz que los vecinos más cercanos}, extensión que
+        el anteproyecto ya contemplaba: por ejemplo, un modelo que prediga el desempeño de
+        cada configuración a partir de las meta-características, en lugar de copiar las
+        ganadoras de los conjuntos más parecidos. El análisis del mecanismo muestra qué
+        tendría que mejorar: la calidad de lo recomendado sobre el conjunto consultado.
+
+  \item \textbf{Ejecutar, con un protocolo propio declarado de antemano, los dos análisis
+        que no se ejercieron}: la ponderación o selección de meta-características frente a
+        la concentración de distancias y el escalado alternativo del recomendador.
+
+  \item \textbf{Medir el arranque en caliente en un espacio de búsqueda más exigente.} En
+        \texttt{tabular-v1} el arranque en frío alcanza configuraciones buenas muy pronto y
+        el beneficio crece donde la meseta es estrecha. Un espacio con hiperparámetros
+        continuos dejaría más margen, a costa de perder el óptimo exacto por rejilla, y
+        sería un experimento nuevo y no un reanálisis.
+
+  \item \textbf{Ampliar la validación a otros modelos base y a un corpus mayor.} Los
+        experimentos fijaron un único modelo de vecinos más cercanos y la suite curada
+        OpenML-CC18 \cite{openml-cc18}; ampliar ambos, verificando la licencia individual de
+        cada conjunto de datos, pondría a prueba la generalidad del resultado.
+
+  \item \textbf{Llevar el arranque en caliente a la detección de anomalías en imágenes}, que
+        requiere un corpus de conjuntos de imágenes y meta-características propias de esa
+        modalidad, y sustituir los píxeles aplanados por características aprendidas: el caso
+        de imágenes mostró que el modelo actual queda cerca del azar cuando las anomalías no
+        son escasas.
+
+  \item \textbf{Corregir la normalización de predicciones de la tarea de anomalías} en una
+        versión nueva de la librería, regenerando las métricas binarias afectadas y
+        documentando el cambio.
+
+  \item \textbf{Para la unidad académica}, adoptar como práctica en los trabajos de
+        carácter experimental el pre-registro con etiqueta de versión y las pruebas escritas
+        para fallar ante la regresión de una garantía: el costo es bajo y convierten los
+        resultados, positivos o negativos, en afirmaciones verificables.
+\end{enumerate}
 
 \clearpage
 %------------------------------------------------------------------------------
@@ -1909,34 +1947,12 @@ desarrollados pero relevantes.}
 \subsection*{Apéndice 1: Implicaciones ambientales y de desarrollo sostenible}
 \addcontentsline{toc}{subsection}{Apéndice 1: Implicaciones ambientales y de desarrollo sostenible}
 
-\guia{Este apéndice se debe de realizar de manera obligatoria y debe de incluir
-una reflexión objetiva y con amplia proyección respecto del entorno sobre las
-implicaciones e impactos actuales y potenciales relacionados con aspectos
-sociales, económicos, ambientales, legales, de seguridad y salud que conlleva
-su proyecto de ingeniería para la sociedad en general, sobre todo para la
-práctica de la ingeniería y el ejercicio profesional del ingeniero en
-computadores. Recordar que se debe de entregar una copia digital de este
-apéndice en un documento por separado, el cual debe de tener la portada
-original del informe y se entrega en formato PDF.}
-
-\guia{Para el resto de los apéndices, se debe incluir el material
-complementario utilizado, como por ejemplo documentos, instructivos,
-instrumentos de encuestas, programas, algoritmos, entre otros.}
+\input{apendice1}
 
 \clearpage
 %------------------------------------------------- REFERENCIAS BIBLIOGRÁFICAS -
 \section{Referencias bibliográficas}
 \label{sec:referencias}
-
-\guia{Esta sección incluye la lista de materiales (libros, revistas, sitios
-web, etc.) y otros medios de recolección de información (congresos,
-entrevistas, tesis, etc.) que fueron consultados. A lo largo de todo el
-documento, las citaciones de referencias en el texto deberán usar el estándar
-IEEE de manera rigurosa.}
-
-\guia{La lista se genera automáticamente a partir de \texttt{referencias.bib}:
-agregue ahí cada fuente y cítela en el texto con \cmd{cite\{clave\}}. Solo
-aparecen aquí las entradas efectivamente citadas.}
 
 \printbibliography[heading=none]
 

@@ -283,6 +283,15 @@ class OptunaSearchEngine:
                 self.n_trials,
             )
         study.optimize(objective, n_trials=self.n_trials)
+        if not any(math.isfinite(r["objective"]) for r in results):
+            # Optuna elige igualmente un «mejor» ensayo entre valores ±inf; se conserva
+            # esa elección para no cambiar lo que devuelve el motor, pero se avisa.
+            logger.warning(
+                "Ningún ensayo pudo evaluarse: se devuelve un pipeline con métricas NaN "
+                "entre %d ensayos. Revise el espacio de búsqueda, los datos y el modelo "
+                "base.",
+                len(results),
+            )
 
         best_steps = []
         for key in keys:

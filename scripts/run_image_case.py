@@ -36,9 +36,10 @@ entorno ``AUTOPIPE_DATASETS`` o, en último caso, de ``datasets/``.
 corpus de datasets de imágenes, su base de meta-conocimiento y su propio
 pre-registro, y queda fuera del alcance comprometido.
 
-**Licencia.** Los reportes HTML embeben miniaturas de MVTec AD, cuya licencia prohíbe
-redistribuir las imágenes; se generan en local y no se versionan. El JSON y el resumen
-en Markdown no contienen imágenes.
+**Licencia.** Los reportes HTML embeben miniaturas de MVTec AD, cuya licencia
+---CC BY-NC-SA 4.0--- condiciona la redistribución a un uso no comercial, con atribución
+y bajo la misma licencia. El proyecto opta por no redistribuirlas: los reportes se
+generan en local y no se versionan. El JSON y el resumen en Markdown no llevan imágenes.
 
 Ejecutar con:
     .\\.venv\\Scripts\\python.exe scripts\\run_image_case.py --datos C:\\datasets
@@ -472,9 +473,10 @@ particiones distintas; el guion aborta si ocurre.
 ## Reportes HTML
 
 Cada categoría genera en local un reporte con la galería de las imágenes más anómalas.
-**No se versionan**: embeben miniaturas de MVTec AD, cuya licencia prohíbe redistribuir
-las imágenes. Antes de generarlos, el guion comprueba que los puntajes reproducidos dan
-el mismo AUC-ROC que informó el motor.
+**No se versionan**: embeben miniaturas de MVTec AD, cuya licencia (CC BY-NC-SA 4.0)
+condiciona su redistribución a un uso no comercial, y el proyecto opta por no
+redistribuirlas. Antes de generarlos, el guion comprueba que los puntajes reproducidos
+dan el mismo AUC-ROC que informó el motor.
 """
 
 

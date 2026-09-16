@@ -1,0 +1,139 @@
+%==============================================================================
+%  Apéndice 1: Implicaciones ambientales y de desarrollo sostenible.
+%  Contenido compartido por el informe (Plantilla_Informe_TFG.tex) y por su copia
+%  aparte (Apendice1_Implicaciones.tex). El título lo pone cada documento.
+%==============================================================================
+
+\textit{AutoPipe} es una librería de software de uso abierto que automatiza una decisión de
+ingeniería habitualmente manual: qué preprocesamiento aplicar a los datos antes de entrenar
+un modelo. Este apéndice analiza sus implicaciones en seis aspectos, y relaciona cada uno con
+los Objetivos de Desarrollo Sostenible (ODS) de la Agenda 2030 de las Naciones Unidas
+\cite{un2015agenda}. El análisis distingue lo que el proyecto hizo y midió de lo que su uso
+podría implicar: una librería de propósito general hereda las consecuencias de los datos y
+de los modelos sobre los que se aplique, y parte de esas consecuencias queda en manos de
+quien la usa.
+
+\subsubsection*{Aspecto social}
+
+\textbf{Identificación y análisis.} Elegir el preprocesamiento exige experiencia
+especializada y tiempo de prueba y error. Automatizarlo, con documentación en español y
+licencia abierta, reduce la barrera de entrada para equipos pequeños, estudiantes e
+investigadores sin un especialista en aprendizaje automático. La automatización tiene un
+riesgo social propio: ocultar decisiones que afectan al resultado. El proyecto lo mitiga
+exponiendo la tabla completa de candidatos y un reporte reproducible de cada búsqueda, y sus
+propios resultados muestran por qué no basta con confiar en una recomendación: la estrategia
+por similitud, la más intuitiva, fue la menos eficaz de las evaluadas.
+
+\textbf{Relación con los ODS.} Se relaciona con el ODS~4, educación de calidad, por el
+acceso abierto a una herramienta documentada y a un protocolo experimental reutilizable;
+con el ODS~9, industria, innovación e infraestructura, por la difusión de capacidades de
+aprendizaje automático; y con el ODS~10, reducción de las desigualdades, por disminuir la
+dependencia de recursos especializados.
+
+\textbf{Proyecciones futuras.} La automatización de etapas del aprendizaje automático
+ampliará quién puede usarlo. El ingeniero en computadores tendrá una responsabilidad
+creciente en que esas herramientas expliquen sus decisiones y en formar a quienes las usan
+para interpretar sus resultados en lugar de aceptarlos.
+
+\subsubsection*{Aspecto económico}
+
+\textbf{Identificación y análisis.} El costo de seleccionar un preprocesamiento es tiempo de
+cómputo y tiempo de especialistas. El arranque en caliente redujo en el segundo experimento
+un 35,8\,\% la mediana del \textit{regret} normalizado, que mide cuánto se aleja la búsqueda
+del óptimo a lo largo de su presupuesto: para una misma calidad hacen falta menos
+evaluaciones. El proyecto se desarrolló íntegramente con herramientas libres y datos
+públicos, sin costos de licencias, y su producto se distribuye bajo licencia MIT.
+
+\textbf{Relación con los ODS.} Contribuye al ODS~8, trabajo decente y crecimiento económico,
+por el aumento de productividad en tareas técnicas, y al ODS~9 por facilitar la innovación
+en organizaciones con recursos de cómputo limitados.
+
+\textbf{Proyecciones futuras.} Las organizaciones pequeñas y las universidades con
+presupuestos acotados son las que más se benefician de reducir evaluaciones. El valor del
+trabajo técnico se desplazará desde ejecutar búsquedas hacia validar y auditar sus
+resultados.
+
+\subsubsection*{Aspecto ambiental}
+
+\textbf{Identificación y análisis.} El cómputo tiene una huella energética, y la literatura
+ha mostrado que la del aprendizaje automático puede ser considerable y que conviene
+reportarla junto a los resultados \cite{strubell2019energy, schwartz2020green}. Los
+experimentos de este proyecto se ejecutaron en hardware local, sin aceleradores gráficos ni
+infraestructura en la nube: el primer experimento tomó 13,4 minutos, el cálculo de los
+óptimos de referencia unos 62 minutos, el segundo experimento 133 minutos y el análisis de
+sensibilidad 90 minutos. El propósito mismo del arranque en caliente tiene una lectura
+ambiental, porque reutiliza lo aprendido en búsquedas anteriores en lugar de repetirlas.
+
+\textbf{Relación con los ODS.} Se relaciona con el ODS~12, producción y consumo responsables,
+por el uso eficiente de recursos de cómputo, y con el ODS~13, acción por el clima, por la
+contribución indirecta a reducir el consumo energético asociado a la experimentación.
+
+\textbf{Proyecciones futuras.} Compartir conocimiento entre búsquedas, a escala de muchos
+usuarios, podría evitar cómputo redundante. Para que ese beneficio sea verificable, las
+herramientas de AutoML deberían reportar el costo computacional de cada búsqueda, como ya
+propone la literatura.
+
+\subsubsection*{Aspecto legal}
+
+\textbf{Identificación y análisis.} El proyecto combina tres regímenes de licencia. El código
+se publica bajo licencia MIT. Las imágenes de MVTec AD \cite{bergmann2019mvtec} se usan bajo
+la licencia CC BY-NC-SA 4.0, que prohíbe el uso comercial y condiciona su redistribución; el
+proyecto optó por no redistribuirlas: no se versionan en el repositorio, y una prueba falla si
+los reportes que contienen miniaturas dejaran de excluirse. Los conjuntos tabulares provienen de la suite OpenML-CC18
+\cite{openml-cc18}, cuya licencia se verificó para la suite y no conjunto por conjunto,
+limitación declarada en los criterios de inclusión del corpus. La librería no recolecta datos
+personales, pero puede aplicarse sobre ellos: en Costa Rica, la responsabilidad sobre ese
+tratamiento corresponde a quien lo realice, conforme a la Ley N.\textsuperscript{o}~8968
+\cite{ley8968}.
+
+\textbf{Relación con los ODS.} Se vincula con el ODS~16, paz, justicia e instituciones sólidas,
+en lo relativo a la transparencia y la rendición de cuentas: los pre-registros congelados y
+los reportes reproducibles permiten auditar cómo se obtuvo cada resultado.
+
+\textbf{Proyecciones futuras.} Las regulaciones sobre inteligencia artificial tienden a exigir
+trazabilidad y documentación de los sistemas automatizados. Prácticas como las de este
+proyecto ---versionar el protocolo antes de ejecutar y regenerar los resultados desde sus
+datos--- facilitarán ese cumplimiento, del mismo modo que las licencias de los conjuntos de
+datos de referencia exigirán una verificación individual cada vez más rigurosa.
+
+\subsubsection*{Aspecto de seguridad}
+
+\textbf{Identificación y análisis.} Tres riesgos de seguridad y confiabilidad se abordaron
+por diseño. La fuga de información entre entrenamiento y validación, que produce resultados
+optimistas y engañosos, se impide en el protocolo y se vigila con pruebas escritas para
+fallar. Las configuraciones que se inyectan desde una base de meta-conocimiento se validan
+antes de ejecutarse, y las bases y configuraciones se leen con formatos de datos ---JSON y
+YAML en modo seguro--- que no ejecutan código. Y los fallos silenciosos se hicieron
+explícitos: cuando ningún candidato se puede evaluar, la librería lo avisa. Queda un riesgo
+de uso que conviene señalar: en la detección de anomalías en imágenes el modelo base obtuvo
+resultados cercanos al azar en una de las categorías, de modo que los resultados de este
+proyecto no son aptos para inspección industrial crítica sin un modelo más capaz.
+
+\textbf{Relación con los ODS.} Se relaciona con el ODS~9, por la construcción de
+infraestructura tecnológica fiable, y con el ODS~8 en lo relativo a entornos de trabajo
+seguros, donde la inspección automatizada tiene aplicación.
+
+\textbf{Proyecciones futuras.} A medida que se compartan bases de conocimiento y
+configuraciones entre organizaciones, su integridad será un problema de seguridad de la
+cadena de suministro del software, que exigirá versionado, validación y firma de esos
+artefactos.
+
+\subsubsection*{Aspecto de salud}
+
+\textbf{Identificación y análisis.} El proyecto no trabajó con pacientes ni con datos
+clínicos propios, pero su corpus público incluye conjuntos de origen médico, como los de
+diabetes, pacientes hepáticos, cáncer de mama y afecciones tiroideas. Eso muestra que la
+librería puede aplicarse a datos de salud, y obliga a precisar el alcance de sus resultados:
+seleccionar el preprocesamiento que maximiza una métrica sobre una partición de validación es
+un resultado de referencia, no una validación clínica. El uso de métricas macro, que dan el
+mismo peso a todas las clases, es pertinente en ese contexto, donde la clase de interés suele
+ser la minoritaria.
+
+\textbf{Relación con los ODS.} Se relaciona con el ODS~3, salud y bienestar, por el potencial
+de las técnicas de aprendizaje automático en el apoyo al diagnóstico y la detección temprana.
+
+\textbf{Proyecciones futuras.} La aplicación de herramientas de AutoML a datos clínicos
+requerirá validación externa, análisis de sesgos entre poblaciones y aprobación regulatoria.
+La cultura de pre-registro y reproducibilidad que este proyecto aplicó es la misma que exige
+la investigación clínica, y es un puente natural entre ambas prácticas.
+

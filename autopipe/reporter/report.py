@@ -25,6 +25,12 @@ from matplotlib.figure import Figure  # noqa: E402
 from PIL import Image  # noqa: E402
 
 from autopipe.pipeline.pipeline import Pipeline  # noqa: E402
+from autopipe.pipeline.tabular_transforms import (  # noqa: E402
+    EncodeCategorical,
+    ImputeMissing,
+    ScaleNumeric,
+    SelectFeatures,
+)
 from autopipe.pipeline.transforms import (  # noqa: E402
     CLAHETransform,
     GammaCorrection,
@@ -37,6 +43,9 @@ from autopipe.pipeline.transforms import (  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
+# Todas las transformaciones predefinidas, de imagen y tabulares. Una prueba falla si
+# la librería exporta una transformación que no esté aquí: sin registrarla, el
+# ganador que la contenga no podría reconstruirse desde su configuración guardada.
 _TRANSFORM_REGISTRY = {
     "GaussianBlur": GaussianBlur,
     "Normalize": Normalize,
@@ -45,6 +54,10 @@ _TRANSFORM_REGISTRY = {
     "MedianFilter": MedianFilter,
     "GammaCorrection": GammaCorrection,
     "GrayscaleConversion": GrayscaleConversion,
+    "ImputeMissing": ImputeMissing,
+    "ScaleNumeric": ScaleNumeric,
+    "EncodeCategorical": EncodeCategorical,
+    "SelectFeatures": SelectFeatures,
 }
 
 _HTML_TEMPLATE = """<!DOCTYPE html>
@@ -264,7 +277,9 @@ class ReportGenerator:
         """Reconstruye un pipeline de transformaciones predefinidas desde su config.
 
         Permite re-ejecutar la búsqueda ganadora a partir de un archivo guardado.
-        Solo soporta las transformaciones predefinidas de la librería.
+        Soporta las transformaciones predefinidas de la librería, de imagen y
+        tabulares. El pipeline se devuelve **sin ajustar**: el ajuste depende de los
+        datos y no de la configuración.
 
         Args:
             config: Diccionario de parámetros tal como lo produce

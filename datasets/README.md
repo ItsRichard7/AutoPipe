@@ -1,8 +1,8 @@
 # datasets/
 
 Datos locales usados por los notebooks de `examples/` y por los scripts de
-verificación. **Su contenido no se versiona**: los datasets son grandes, y algunos
-tienen licencias que prohíben redistribuirlos.
+verificación. **Su contenido no se versiona**: los datasets son grandes, y sus licencias
+condicionan o prohíben redistribuirlos.
 
 ## Dónde ponerlos: fuera de OneDrive
 
@@ -57,8 +57,11 @@ falta.
 
 - Descarga: <https://www.mvtec.com/company/research/datasets/mvtec-ad>
 - Requiere registro y aceptar la licencia **CC BY-NC-SA 4.0** (uso no comercial de
-  investigación). Un TFG entra sin problema, pero **no se pueden redistribuir** las
-  imágenes: por eso esta carpeta está en `.gitignore`.
+  investigación). Un TFG entra sin problema. La licencia **no prohíbe redistribuir** las
+  imágenes: las condiciona a un uso no comercial, con atribución y bajo la misma
+  licencia. Aun así, **este proyecto opta por no redistribuirlas** —son datos de un
+  tercero, pesan, y quien los quiera los descarga del origen—, y por eso esta carpeta
+  está en `.gitignore`.
 - Hay descarga por categoría además del paquete completo. Basta con `bottle`.
 - **Citar** en el informe: Bergmann et al. (2019), *MVTec AD — A Comprehensive
   Real-World Dataset for Unsupervised Anomaly Detection*, CVPR.

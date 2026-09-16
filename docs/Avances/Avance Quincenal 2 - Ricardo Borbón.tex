@@ -1,0 +1,304 @@
+% ============================================================
+%  Informe Quincenal de Avance n.o 2 - TFG AutoPipe
+%  Autor: Ricardo Antonio Borbon Mena
+%
+%  Contenido segun el Apendice 1 de los Lineamientos para los
+%  Trabajos Finales de Graduacion V4.1 (CE-5601).
+%
+%  Compilar con:  pdflatex "Avance Quincenal 2 - Ricardo Borbón.tex"
+% ============================================================
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{lmodern}
+\usepackage[letterpaper,top=2.4cm,bottom=2.4cm,left=2.6cm,right=2.4cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
+
+\definecolor{tecnavy}{HTML}{003366}
+\definecolor{hecho}{HTML}{003366}
+\definecolor{quincena}{HTML}{C87F0A}
+\definecolor{pendiente}{HTML}{D9D9D9}
+\definecolor{bordepend}{HTML}{9A9A9A}
+\definecolor{gris}{HTML}{666666}
+\definecolor{tablehead}{HTML}{E6EEF5}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.25}
+\setlist[itemize]{leftmargin=1.3em,topsep=3pt,itemsep=3pt}
+\setlist[enumerate]{leftmargin=1.5em,topsep=3pt,itemsep=3pt}
+
+\titleformat{\section}{\large\bfseries\sffamily\color{tecnavy}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\sffamily}{}{0em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small AutoPipe --- TFG}
+\fancyhead[R]{\small Informe de avance n.\textsuperscript{o}~2}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+% =========== ENCABEZADO ====================================
+\vspace*{0.12\textheight}
+\begin{center}
+{\LARGE\bfseries\color{tecnavy} Informe Quincenal de Avance}\\[4pt]
+{\large Trabajo Final de Graduación}\\[10pt]
+\end{center}
+
+\vspace{10pt}
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{L{3.6cm} Y}
+\toprule
+\rowcolor{tablehead} \multicolumn{2}{l}{\textbf{Identificación}} \\
+\midrule
+Estudiante & Ricardo Antonio Borbón Mena \\
+Organización & Instituto Tecnológico de Costa Rica, Escuela de Ingeniería
+en Computadores \\
+Proyecto & Generalización de framework de selección automática de pipelines de
+preprocesamiento a múltiples tareas de aprendizaje automático mediante
+meta-aprendizaje \\
+Período del informe & 31 de agosto al 14 de septiembre de 2026 \\
+Informe n.\textsuperscript{o} & 2 \\
+Profesor asesor & Dr.Eng. Jeferson González Gómez \\
+Profesor tutor & Luis Alberto Chavarría Zamora \\
+Fecha de entrega & 14 de septiembre de 2026 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{20pt}
+\begin{center}
+\begin{minipage}{0.86\textwidth}
+\centering
+{\small\color{gris} Este informe retoma la periodicidad quincenal anunciada en el
+anterior. En la quincena se cerraron las semanas 7, 8 y 9 del plan de trabajo y se
+inició la 10, de modo que el primer experimento ya está ejecutado.}
+\end{minipage}
+\end{center}
+
+% =========== 1. TAREAS REALIZADAS ===========================
+\newpage
+\section{Tareas realizadas en el período}
+
+Las tareas se agrupan por el objetivo específico del anteproyecto. Los objetivos 1 y 2
+quedaron alcanzados en el período anterior.
+
+\subsection{Objetivo específico 3 --- Recomendador meta-aprendido}
+
+\begin{itemize}
+  \item Se analizó de forma exhaustiva la diversidad de los pipelines ganadores,
+        evaluando los 144 pipelines del espacio sobre los 25 conjuntos del corpus. El
+        óptimo casi nunca es único ---la mediana es de nueve configuraciones empatadas---
+        y la meseta es ancha: una mediana de 36 de las 144 configuraciones alcanza el
+        95\,\% del óptimo.
+  \item Se implementó una regla de desempate canónico entre configuraciones empatadas y
+        se regeneró la base de meta-conocimiento: 21 de las 25 entradas cambiaron de
+        configuración sin que cambiara ninguna métrica, y los ganadores que omitían la
+        codificación, que no se pueden ejecutar en conjuntos con variables categóricas,
+        pasaron de siete a cero.
+  \item Se implementó el recomendador por vecinos más cercanos. Compara los conjuntos por
+        la distancia L1 entre sus meta-características, con un escalado robusto ajustado
+        solo con los conjuntos de cada pliegue y la consulta recortada al rango
+        observado, y devuelve cinco configuraciones distintas junto con los vecinos que
+        aportó cada una, para que la recomendación sea auditable. Una ejecución en seco
+        sobre los 25 pliegues confirmó que ninguno ve su propio conjunto entre los
+        vecinos.
+  \item Se integró el arranque en caliente en el motor de búsqueda bayesiana: las
+        configuraciones se validan al construir el motor y se inyectan como primeros
+        ensayos. La validación responde a dos modos de fallo reproducidos contra la
+        versión actual de Optuna: un índice fuera de rango aborta el estudio completo y
+        una clave desconocida se acepta en silencio.
+  \item Se amplió el recomendador a cuatro estrategias con el mismo mecanismo: la
+        primaria por similitud, una diversa y dos controles, uno por frecuencia que
+        ignora las meta-características y una ablación aleatoria. El control por
+        frecuencia no estaba en la hoja de ruta y se añadió porque es el que aísla la
+        contribución del meta-aprendizaje.
+  \item Se evaluaron las cuatro estrategias sobre los 27 candidatos que no entraron al
+        corpus, con la rejilla exhaustiva de cada uno. Todas producen configuraciones
+        válidas y cercanas al óptimo, y quedan empatadas: se interpretó como un efecto
+        piso de la medición y no como un resultado sobre las estrategias.
+  \item Se cerró la interfaz pública del recomendador y se agregó un ejemplo ejecutable
+        del flujo completo con arranque en caliente, en 19 instrucciones.
+\end{itemize}
+
+Estado: alcanzado. El recomendador produce configuraciones válidas y ejecutables para
+conjuntos de datos no vistos y está integrado en el motor de búsqueda como ensayos
+iniciales, que es lo que el objetivo declara.
+
+\subsection{Objetivo específico 4 --- Validación experimental}
+
+\begin{itemize}
+  \item Se congeló el pre-registro del experimento en su versión 1.0 y se etiquetó el
+        mismo día que su commit, antes de ejecutar nada. La versión cierra dos
+        decisiones ---cinco semillas por condición y la región de pipelines inevaluables
+        declarada como covariable en lugar de corregida--- y declara de antemano la
+        anchura de la meseta como segunda covariable.
+  \item Se implementó el arnés de validación por exclusión de conjunto de datos contra la
+        especificación congelada, con 24 pruebas sobre un corpus sintético que recorren
+        el protocolo completo sin producir ningún número del experimento.
+  \item Se ejecutó el experimento completo el 13 de septiembre: 25 pliegues, cuatro
+        condiciones, cinco semillas, 500 corridas y 15\,000 ensayos.
+        \textbf{La hipótesis no se confirmó.} La mediana de ensayos hasta el objetivo
+        bajó un 33,3\,\% ---el criterio exige 30\,\%---, pero la prueba de Wilcoxon dio
+        $p = 0{,}3115$, y esa reducción equivale a pasar de 3 a 2 ensayos. El control por
+        frecuencia sí cumple el criterio ($p = 0{,}0239$): no confirma la hipótesis, pero
+        indica que un buen valor por defecto compite con la similitud entre conjuntos.
+  \item Se extendió el generador de reportes con un reporte comparativo del experimento,
+        con 41 pruebas. Transcribe los estadísticos sin recalcularlos, deriva el
+        veredicto de las cifras y marca qué contraste es el primario, para que el
+        resultado del control no se lea como una confirmación.
+\end{itemize}
+
+Estado: en curso. El experimento está ejecutado y reportado; faltan el análisis de sus
+causas, la verificación de la generalización por tarea, el análisis estratificado, la
+reproducibilidad de punta a punta y la redacción de resultados.
+
+\subsection{Productos intermedios entregados en el período}
+
+\begin{itemize}
+  \item Repositorio de software con la librería: 637 pruebas automatizadas ---448 al
+        cierre del informe anterior---, 99\,\% de cobertura, y verificación de estilo y
+        de tipos sin incidencias.
+  \item Resultados del primer experimento y su reporte comparativo.
+  \item Informe de TFG: cambios realizados en el capítulo 1, según sus comentarios, y capitulo 2 completado en su totalidad (marco teórico, estado del arte y metodología).
+\end{itemize}
+
+% =========== 2. TAREAS PLANEADAS ============================
+\newpage
+\section{Tareas planeadas para el siguiente período}
+
+Corresponden al período del 15 al 28 de septiembre, semanas 10 y 11 del plan. El
+propósito de la quincena es dejar alcanzado el objetivo específico 4, de modo que al
+cierre del período se finalice completamente el proyecto, incluyendo la documentación y el informe final.
+
+\begin{itemize}
+  \item Redactar la discusión de los resultados del experimento: dónde se pierde la
+        significancia, qué dicen los controles y qué explica el tamaño del efecto.
+  \item Diagnosticar las causas del resultado nulo con la covariable declarada, y
+        comprobar si el instrumento de medición ---el objetivo al 95\,\% y la variable de
+        ensayos hasta el objetivo--- tiene resolución suficiente para discriminar. Si el
+        diagnóstico apunta al instrumento, presentarle una propuesta antes de cambiar
+        nada.
+  \item Verificar la generalización por tarea con un caso completo de detección de
+        anomalías en imágenes.
+  \item Ejecutar el análisis estratificado por sensibilidad al preprocesamiento declarado
+        en el pre-registro.
+  \item Verificar la reproducibilidad de punta a punta de los resultados reportados.
+  \item Redactar el análisis de resultados del informe.
+\end{itemize}
+
+% =========== 3. ANALISIS ====================================
+\newpage
+\section{Análisis de la situación actual y proyecciones}
+\label{sec:analisis}
+
+\subsection{Estado respecto del cronograma}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[x=1.18cm, y=1cm, font=\small]
+
+  % --- Encabezado: numero de semana y fecha de inicio ------
+  \foreach \s/\f in {1/20 jul, 2/27 jul, 3/3 ago, 4/10 ago, 5/17 ago, 6/24 ago,
+                     7/31 ago, 8/7 set, 9/14 set, 10/21 set, 11/28 set, 12/5 oct} {
+    \node[anchor=south, font=\footnotesize] at (\s-0.53, 1.52) {\s};
+    \node[anchor=south, font=\tiny, text=gris] at (\s-0.53, 1.26) {\f};
+  }
+  \node[anchor=east, font=\footnotesize, text=gris] at (-0.15, 1.58) {Semana};
+
+  % --- Banda de estado por semana del plan -----------------
+  \foreach \s in {1,...,9} {
+    \fill[hecho] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+  }
+  \foreach \s in {10,...,12} {
+    \fill[quincena] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+  }
+  \foreach \s in {} {
+    \fill[pendiente] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+    \draw[bordepend, line width=0.3pt] (\s-1, 0.50) rectangle (\s-0.06, 0.90);
+  }
+  \node[anchor=east, font=\footnotesize] at (-0.15, 0.70) {Estado};
+
+  % --- Una fila por objetivo especifico --------------------
+  % {etiqueta}/{borde superior}/{semana inicial}/{semana final}/{color}
+  \foreach \lab/\yt/\a/\b/\c in {%
+      {OE 1}/0.30/1/4/hecho,
+      {OE 2}/-0.20/5/7/hecho,
+      {OE 3}/-0.70/7/9/hecho,
+      {OE 4}/-1.20/9/9/hecho,
+      {}/-1.20/10/11/quincena,
+      {Cierre}/-1.70/12/12/quincena} {
+    \foreach \s in {\a,...,\b} {
+      \fill[\c] (\s-1, \yt-0.40) rectangle (\s-0.06, \yt);
+      \ifnum\pdfstrcmp{\c}{pendiente}=0
+        \draw[bordepend, line width=0.3pt] (\s-1, \yt-0.40) rectangle (\s-0.06, \yt);
+      \fi
+    }
+    \node[anchor=east, font=\footnotesize] at (-0.15, \yt-0.20) {\lab};
+  }
+
+  % --- Hitos del plan de trabajo ---------------------------
+  \foreach \s in {4,7,9,12} {
+    \node[diamond, fill=tecnavy, inner sep=1.7pt] at (\s-0.53, -2.35) {};
+  }
+  \node[anchor=east, font=\footnotesize] at (-0.15, -2.35) {Hitos};
+
+  % --- Linea de hoy ----------------------------------------
+  \draw[tecnavy, dashed, line width=0.7pt] (8, 1.06) -- (8, -2.10);
+  \node[anchor=south, font=\tiny, text=tecnavy] at (8, 1.04) {hoy};
+
+  % --- Leyenda ---------------------------------------------
+  \fill[hecho] (0, -3.10) rectangle (0.34, -2.86);
+  \node[anchor=west, font=\footnotesize] at (0.44, -2.98) {Completado};
+  \fill[quincena] (3.0, -3.10) rectangle (3.34, -2.86);
+  \node[anchor=west, font=\footnotesize] at (3.44, -2.98) {Próxima quincena};
+  \fill[pendiente] (7.2, -3.10) rectangle (7.54, -2.86);
+  \draw[bordepend, line width=0.3pt] (7.2, -3.10) rectangle (7.54, -2.86);
+  \node[anchor=west, font=\footnotesize] at (7.64, -2.98) {Pendiente};
+
+\end{tikzpicture}
+\caption{Estado del plan de trabajo sobre sus doce semanas. La banda y las filas marcan el
+avance del plan. Los rombos marcan los hitos previstos: núcleo generalizado (S4), base de meta-conocimiento (S7), recomendador
+funcional (S9) y cierre del proyecto (S12).}
+\label{fig:cronograma}
+\end{figure}
+
+Trabajo realizado (azul): la quincena cerró las semanas 7, 8 y 9 del plan, con los hitos
+de la base de meta-conocimiento y del recomendador funcional alcanzados, e inició la 10
+con el experimento ya ejecutado. 
+
+El calendario, en cambio, apenas llega al inicio de la
+semana 9, de modo que el proyecto va adelantado alrededor de una semana según el calendario. Se
+registraron 80 horas en la quincena, para un acumulado de 214 de las 336 del proyecto;
+hasta la semana 9, que ya cerró, el plan comprometía 224.
+
+Trabajo próximo (naranja): la quincena que abre este informe corresponde a las semanas 10, 11 y 12 del plan, que cierran la validación experimental y la documentación final.
+
+\subsection{Proyección}
+
+Al cierre de la próxima quincena se espera tener alcanzado el objetivo específico 4: la
+discusión y el diagnóstico del experimento, el caso de imágenes, el análisis estratificado,
+la reproducibilidad verificada y el análisis de resultados redactado en el informe. Por otra parte, 
+también se planea finalizar la documentación técnica, el manual de uso y el informe final, antes
+de la entrega para revisión del asesor.
+
+\end{document}

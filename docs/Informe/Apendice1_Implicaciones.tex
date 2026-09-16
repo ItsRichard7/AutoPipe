@@ -1,0 +1,33 @@
+%==============================================================================
+%  APÉNDICE 1 — COPIA APARTE
+%  Implicaciones ambientales y de desarrollo sostenible
+%
+%  Los lineamientos exigen entregar este apéndice también en un documento aparte,
+%  en PDF y con la portada original del informe. Este archivo no tiene contenido
+%  propio: toma el preámbulo, la portada y el texto del apéndice de los mismos
+%  archivos que usa el informe, de modo que las dos versiones no pueden divergir.
+%
+%  Compilar con:   latexmk -pdf Apendice1_Implicaciones.tex
+%==============================================================================
+
+\documentclass[12pt,letterpaper,oneside]{article}
+
+\input{preambulo}
+\hypersetup{pdfsubject = {Apéndice 1 del Informe de Trabajo Final de Graduación}}
+
+\begin{document}
+
+\input{portada}
+
+% Como en el informe, la portada es la página 1 y no muestra su número.
+\setcounter{page}{2}
+
+\section*{Apéndice 1: Implicaciones ambientales y de desarrollo sostenible}
+
+\input{apendice1}
+
+\section*{Referencias bibliográficas}
+
+\printbibliography[heading=none]
+
+\end{document}

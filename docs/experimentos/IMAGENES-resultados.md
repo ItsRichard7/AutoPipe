@@ -3,7 +3,7 @@
 > **Archivo generado.** No editar a mano: se regenera con
 > `.\.venv\Scripts\python.exe scripts\run_image_case.py --datos <carpeta>`.
 
-- **Generado:** 2026-09-10
+- **Generado:** 2026-09-15
 - **Duración:** 1.6 min
 
 ## Qué verifica y qué no
@@ -73,6 +73,7 @@ particiones distintas; el guion aborta si ocurre.
 ## Reportes HTML
 
 Cada categoría genera en local un reporte con la galería de las imágenes más anómalas.
-**No se versionan**: embeben miniaturas de MVTec AD, cuya licencia prohíbe redistribuir
-las imágenes. Antes de generarlos, el guion comprueba que los puntajes reproducidos dan
-el mismo AUC-ROC que informó el motor.
+**No se versionan**: embeben miniaturas de MVTec AD, cuya licencia (CC BY-NC-SA 4.0)
+condiciona su redistribución a un uso no comercial, y el proyecto opta por no
+redistribuirlas. Antes de generarlos, el guion comprueba que los puntajes reproducidos
+dan el mismo AUC-ROC que informó el motor.
