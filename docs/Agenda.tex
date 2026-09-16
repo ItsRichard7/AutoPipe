@@ -1714,6 +1714,72 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  porque la ablación aleatoria ya estaba hecha, y 11 en cerrar los análisis declarados. Quedan
  57\,h para la semana 12.}
 
+\semana{12}{2026-09-27 a 2026-10-03 --- E8: documentación y entrega}
+
+\entrada{2026-09-27}{4}
+{Escribí \texttt{scripts/\allowbreak verify\_\allowbreak engineering\_\allowbreak criteria.py},
+ que mide los cuatro criterios de ingeniería del anteproyecto y deja la evidencia en
+ \texttt{docs/\allowbreak CRITERIOS-ingenieria.md}, con 33 pruebas. Los cuatro se cumplen: las
+ 134 pruebas de la librería base, extraídas tal como estaban en el commit de migración, pasan
+ sin modificación contra el código actual; los 16 módulos nuevos quedan entre 99,4\% y 100\%
+ de cobertura; las 19 verificaciones de reproducibilidad son idénticas; y los dos flujos de
+ usuario usan 14 y 19 instrucciones.}
+{Hasta hoy el informe declaraba cumplido el primer criterio sin haberlo comprobado contra la
+ migración: la afirmación de que las pruebas no se editaron no tenía evidencia. Ahora la tiene
+ de la forma más literal ---se ejecuta la copia de las pruebas del commit \texttt{35f1db5}---,
+ y además sus 111 funciones se comparan por árbol sintáctico, de modo que reformatear no cuenta
+ como edición y cambiar una aserción sí. La medición encontró un error mío: el ejemplo tabular
+ tiene 14 instrucciones, no las 13 que decían el informe, la guía técnica y dos entradas de esta
+ bitácora. Tenía 13 cuando lo escribí y ganó una al congelar el espacio canónico. Lo corregí en
+ los documentos vivos y lo dejo anotado aquí en lugar de reescribir las entradas fechadas.}
+
+\entrada{2026-09-28}{6}
+{Escribí el manual de uso, \texttt{docs/\allowbreak MANUAL-uso.md}, en español: instalación,
+ los tres flujos, evaluación en paralelo, reportes, reproducibilidad, métricas, limitaciones y
+ solución de problemas. Actualicé el README ---enlace de clonado, flujo de arranque en caliente
+ con lo que midieron los experimentos y una estructura sin la carpeta \texttt{configs/}, que no
+ existía--- y la guía técnica. Resolví dos deudas de código sin cambiar ningún resultado: los
+ dos motores avisan cuando ningún candidato se puede evaluar, y \texttt{GridSearchEngine}
+ expone \texttt{build\_pipelines()} como método público. Añadí 9 pruebas.}
+{Antes de documentar cada fragmento del manual lo ejecuté, y eso destapó un defecto real:
+ \texttt{ReportGenerator.\allowbreak rebuild\_\allowbreak pipeline} no reconstruía pipelines
+ tabulares, porque su registro solo conocía las transformaciones de imagen, y la guía técnica
+ afirmaba lo contrario. El manual recomienda la estrategia \texttt{frequent} y no la de
+ similitud, que es la que el anteproyecto comprometió: un manual que aconsejara el valor por
+ defecto contra lo que midieron los experimentos engañaría a quien lo use. El valor por defecto
+ no lo cambié, porque eso sí alteraría lo que obtienen los usuarios actuales y merece su propio
+ experimento.}
+
+\entrada{2026-09-29}{5}
+{Arreglé \texttt{rebuild\_pipeline} registrando las cuatro transformaciones tabulares, con 5
+ pruebas: reconstruyen los 144 candidatos del espacio canónico por JSON y por YAML, y una falla
+ si la librería exporta una transformación sin registrar. Redacté en el informe el resumen y el
+ abstract, las conclusiones ---los cuatro objetivos específicos, el general, los entregables y
+ cuatro hallazgos de ingeniería--- y ocho recomendaciones.}
+{Las conclusiones dicen que los cuatro objetivos se cumplieron y dicen también el matiz que
+ forma parte del resultado: el beneficio del arranque en caliente no lo produce la similitud.
+ Omitir esa mitad haría la conclusión más cómoda y menos cierta. El resumen salió con 307
+ palabras de las 300 permitidas, y el recorte obligó a decir lo mismo con menos sin quitar el
+ hallazgo sobre la estrategia por similitud.}
+
+\entrada{2026-09-30}{4}
+{Redacté el Apéndice 1 ---los seis aspectos, cada uno con su análisis, su relación con los
+ Objetivos de Desarrollo Sostenible y sus proyecciones--- y preparé la copia aparte en PDF con
+ la portada original que exigen los lineamientos, separando el preámbulo, la portada y el texto
+ del apéndice en archivos que comparten el informe y la copia. Reejecuté las verificaciones con
+ el código final: 884 pruebas, 99\% de cobertura, 19 de 19 verificaciones de reproducibilidad
+ idénticas y los cuatro criterios de ingeniería cumplidos. El informe compila en 61 páginas sin
+ avisos, con el cuerpo en 44 de las 70 permitidas.}
+{El apéndice se apoya en hechos del proyecto y no en generalidades: los tiempos de cómputo
+ medidos, las licencias del código y de los datos, la licencia de OpenML verificada solo a nivel
+ de suite, la lectura de configuraciones en formatos que no ejecutan código y los conjuntos de
+ origen médico del corpus. Al redactar el aspecto legal noté que la licencia de MVTec AD permite
+ redistribuir sin fines comerciales, cuando varios documentos del proyecto dicen que lo
+ prohíbe; en el informe quedó con precisión. Separar los archivos no cambió el informe: el PDF
+ salió con el mismo tamaño y el mismo índice. Quedan para la revisión con el profesor asesor
+ las tres decisiones de formato pendientes, y la dedicatoria y los agradecimientos, que son
+ personales.}
+
 \newpage
 \section*{Resumen de horas}
 

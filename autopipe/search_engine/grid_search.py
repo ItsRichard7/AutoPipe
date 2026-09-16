@@ -324,7 +324,7 @@ class GridSearchEngine:
         validate_metric(metric, self.task)
         labels = np.asarray(labels)
         train_idx, val_idx = self.splitter.split(labels)
-        pipelines = self._build_pipelines()
+        pipelines = self.build_pipelines()
 
         results: list[dict] = []
         best_pipeline: Pipeline | None = None
@@ -354,6 +354,15 @@ class GridSearchEngine:
                 best_pipeline, best_metrics, best_objective = pipeline, metrics, objective
 
         if best_pipeline is None:
+            # Se conserva el resultado de siempre —el primer candidato— para no cambiar
+            # lo que devuelve el motor, pero ya no en silencio: sin ningún pipeline
+            # evaluable, ese «ganador» no ganó nada.
+            logger.warning(
+                "Ningún pipeline pudo evaluarse: se devuelve el primero de los %d "
+                "candidatos, con métricas NaN. Revise el espacio de búsqueda, los datos "
+                "y el modelo base.",
+                len(pipelines),
+            )
             best_pipeline = pipelines[0]
             best_metrics = results[0]["metrics"]
         logger.info(
@@ -361,11 +370,14 @@ class GridSearchEngine:
         )
         return best_pipeline, best_metrics, results
 
-    def _build_pipelines(self) -> list[Pipeline]:
-        """Genera un pipeline por cada combinación del espacio de búsqueda.
+    def build_pipelines(self) -> list[Pipeline]:
+        """Genera los pipelines candidatos sin evaluarlos.
 
-        A cada paso se le añade automáticamente la opción de omitirse
-        (``None``); los pasos omitidos se filtran al construir el pipeline.
+        Son exactamente los que :meth:`run` recorre, en el mismo orden: uno por cada
+        combinación del espacio de búsqueda. A cada paso se le añade automáticamente
+        la opción de omitirse (``None``), y los pasos omitidos se filtran al construir
+        el pipeline. Sirve para saber cuántos candidatos hay y cuáles son antes de
+        pagar su evaluación.
 
         Returns:
             Lista de pipelines correspondientes al producto cartesiano
@@ -377,3 +389,7 @@ class GridSearchEngine:
             Pipeline([step for step in combo if step is not None])
             for combo in itertools.product(*option_lists)
         ]
+
+    # Nombre anterior, conservado porque lo usan guiones y pruebas escritos antes de
+    # que existiera la versión pública.
+    _build_pipelines = build_pipelines

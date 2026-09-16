@@ -12,8 +12,12 @@ Two task families are supported today:
 The library **does not train or implement the base model** — it consumes any model exposing a scikit-learn–style `fit`/`predict` interface (e.g. `KNeighborsClassifier`, `IsolationForest`, `OneClassSVM`) or a PyTorch model.
 
 > Started as CE-1114 – Proyecto de Aplicación de la Ingeniería en Computadores
-> (I Semester 2026) and currently being extended as a Graduation Project (TFG),
+> (I Semester 2026) and extended as a Graduation Project (TFG, II Semester 2026),
 > Instituto Tecnológico de Costa Rica.
+>
+> **Documentation in Spanish:** the user manual is
+> [`docs/MANUAL-uso.md`](docs/MANUAL-uso.md) and the technical guide is
+> [`docs/GUIA-tecnica.md`](docs/GUIA-tecnica.md).
 
 ---
 
@@ -27,7 +31,8 @@ The library **does not train or implement the base model** — it consumes any m
 - Automatic pipeline search with **Grid Search** or **Bayesian optimization** (Optuna, TPE + median pruning)
 - **Meta-learned warm start**: describe a dataset with 107 meta-features, find the most similar datasets in a meta-knowledge base, and inject their winning configurations as the first trials of the search. Injected trials are validated against the current space version before they reach Optuna, because an out-of-range index aborts a study and an unknown key is accepted silently
 - **No leakage at the meta level either**: the recommender's scaling is fitted only on the datasets of the current fold, never on the held-out one
-- Every step is also tried as **skipped** automatically, so the search can drop transforms that hurt performance (skipped steps simply don't appear in the winning pipeline or its saved config)
+- Every step is also tried as **skipped** automatically, so the search can drop transforms that hurt performance (skipped steps simply don't appear in the winning pipeline or its saved config). `GridSearchEngine.build_pipelines()` lists the candidates without evaluating them
+- Unevaluable candidates (e.g. a pipeline that leaves categorical columns unencoded) are recorded with `NaN` metrics and never win; if **no** candidate can be evaluated, both engines log a warning instead of returning a meaningless winner silently
 - Parallel evaluation with `joblib` (loky backend, Windows-safe), with measured speedup
 - **No data leakage**: pipelines are fitted on the training subset only, and cloned per candidate so stateful transforms cannot contaminate each other
 - Reproducible results: same seed ⇒ same winning pipeline; winning config saved as JSON/YAML and re-runnable
@@ -42,7 +47,7 @@ The library **does not train or implement the base model** — it consumes any m
 
 ```bash
 # Clone the repo
-git clone https://github.com/ricardobm/AutoPipe.git
+git clone https://github.com/ItsRichard7/AutoPipe.git
 cd AutoPipe
 
 # Create and activate a virtual environment
@@ -80,6 +85,35 @@ print(f"macro-F1: {metrics['macro_f1']:.4f}")
 ```
 
 Transforms are fitted **on the training subset only**, so no statistic from the validation subset can leak into the training data.
+
+## Quick Start — meta-learned warm start
+
+Instead of starting the search blind, describe the dataset with its meta-features, ask the recommender for the winning configurations of similar datasets in the meta-knowledge base, and inject them as the first trials. This is a condensed version of [`examples/warm_start_quickstart.py`](examples/warm_start_quickstart.py), also executed by the test suite:
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+from autopipe import (
+    MetaFeatureExtractor, MetaKnowledgeBase, MetaRecommender,
+    OptunaSearchEngine, TabularDataLoader, build_tabular_search_space,
+)
+
+features, labels = TabularDataLoader("path/to/dataset.csv").load()
+vector = MetaFeatureExtractor(random_state=42).extract(features, labels)
+
+recommender = MetaRecommender().fit(MetaKnowledgeBase.load("docs/experimentos/BASE-meta-conocimiento.json"))
+configurations = recommender.recommend(vector)
+
+engine = OptunaSearchEngine(
+    build_tabular_search_space(), n_trials=30, random_state=42,
+    task="classification", warm_start=configurations,
+)
+best_pipeline, metrics, results = engine.run(features, labels, KNeighborsClassifier())
+```
+
+The injected trials **count towards the budget**: with five configurations and `n_trials=30`, the search runs 30 trials, not 35.
+
+> **What the experiments found.** On the thesis corpus (42 OpenML datasets, `tabular-v1` space), warm starting reduced the search cost against a cold start by 35.8 % of median normalized regret (Wilcoxon, Holm-adjusted p = 0.0019). But choosing configurations by dataset similarity — `strategy="nearest"`, the default — was the weakest of the four warm-start strategies: `strategy="frequent"`, which ignores the meta-features and injects the configurations that win most often, did better. See [`docs/experimentos/LODO-E2-discusion.md`](docs/experimentos/LODO-E2-discusion.md).
 
 ## Quick Start — image anomaly detection
 
@@ -166,12 +200,22 @@ print(f"Speedup: {report['speedup']:.2f}x  (consistent: {report['consistent']})"
 
 ## Reproducing the winning pipeline
 
-The winning configuration is saved during report generation and can be reloaded and rebuilt:
+The winning configuration saved during report generation can be reloaded and rebuilt, for image and tabular pipelines alike:
 
 ```python
 config = ReportGenerator.load_pipeline_config("reports/winning_pipeline.json")
 pipeline = ReportGenerator.rebuild_pipeline(config)   # built-in transforms only
 ```
+
+After an Optuna search you can also rebuild the tabular winner from the per-step indices the engine recorded, without the report:
+
+```python
+from autopipe import pipeline_from_configuration
+
+pipeline = pipeline_from_configuration(engine.best_configuration_)
+```
+
+A rebuilt pipeline is **unfitted** in both cases: call `fit` on training data before `transform`.
 
 ## Project Structure
 
@@ -188,13 +232,12 @@ AutoPipe/
 │   ├── meta_recommender/# MetaRecommender: nearest neighbours over meta-features
 │   ├── evaluator/       # DataSplitter, metric calculators
 │   ├── parallel_runner/ # ParallelRunner
-│   └── reporter/        # ReportGenerator
+│   └── reporter/        # ReportGenerator, ComparativeReportGenerator
 ├── tests/
-├── examples/
-├── scripts/           # reproducible utilities (corpus listing, regression check)
+├── examples/          # notebooks and the two executable quick starts
+├── scripts/           # reproducible experiment harnesses, analyses and verifiers
 ├── spikes/            # feasibility experiments
-├── docs/
-└── configs/
+└── docs/              # user manual, technical guide, decisions, experiments, report
 ```
 
 ## Running Tests
@@ -243,9 +286,11 @@ All are maximized. Macro averaging weights every class equally, so a majority-cl
 
 ## Documentation
 
+- [`docs/MANUAL-uso.md`](docs/MANUAL-uso.md) — user manual (Spanish): installation, the three usage flows, reports, reproducibility, known limitations and troubleshooting.
 - [`docs/GUIA-tecnica.md`](docs/GUIA-tecnica.md) — technical guide (Spanish): architecture, the transform contract, what the evaluation protocol guarantees, and common errors.
 - [`docs/decisiones/`](docs/decisiones/) — architecture decision records and the coupling audit.
-- [`docs/experimentos/`](docs/experimentos/) — experimental pre-registration, feasibility spikes and corpus selection.
+- [`docs/experimentos/`](docs/experimentos/) — the two frozen pre-registrations, experiment results and discussions, feasibility spikes and corpus selection.
+- [`docs/CRITERIOS-ingenieria.md`](docs/CRITERIOS-ingenieria.md) — the engineering success criteria, each verified by a repeatable measurement.
 
 ## Out of Scope
 

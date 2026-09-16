@@ -3,7 +3,7 @@
 > **Archivo generado.** No editar a mano: se regenera con
 > `.\.venv\Scripts\python.exe scripts\verify_reproducibility.py --datos <carpeta>`.
 
-- **Generado:** 2026-09-10
+- **Generado:** 2026-09-11
 - **Verificaciones:** 19 · **Omitidas:** 0
 
 ## Veredicto

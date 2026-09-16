@@ -1,14 +1,15 @@
 # Guía técnica de AutoPipe
 
-- **Estado:** cubre el núcleo generalizado, las meta-características, la base de
-  meta-conocimiento, el recomendador, el arranque en caliente y el arnés del
-  experimento
+- **Estado:** completa. Cubre el núcleo generalizado, las meta-características, la base de
+  meta-conocimiento, el recomendador, el arranque en caliente, los arneses de los dos
+  experimentos, sus análisis y la verificación de reproducibilidad y de los criterios de
+  ingeniería
 - **Entregable:** RE7
-- **Actualizada:** 2026-09-12
+- **Actualizada:** 2026-09-27
 
-Documentación técnica del framework. Para el uso básico está el `README.md`; esta guía
-explica **cómo funciona por dentro** y **qué garantiza**, que es lo que hace falta para
-extenderlo o para confiar en sus resultados.
+Documentación técnica del framework. Para **usarlo** está el manual,
+`docs/MANUAL-uso.md`; esta guía explica **cómo funciona por dentro** y **qué garantiza**,
+que es lo que hace falta para extenderlo o para confiar en sus resultados.
 
 ## Qué cambió respecto de AutoPipeAD
 
@@ -162,7 +163,7 @@ fallar no prueba nada.
 
 ## Flujo tabular
 
-El ejemplo ejecutable está en `examples/tabular_quickstart.py` (13 instrucciones) y el
+El ejemplo ejecutable está en `examples/tabular_quickstart.py` (14 instrucciones) y el
 recorrido comentado en `examples/tabular_walkthrough.ipynb`. En resumen:
 
 ```python
@@ -742,6 +743,32 @@ tampoco una evidencia: el documento las cuenta aparte.
 .\.venv\Scripts\python.exe scripts\verify_reproducibility.py --datos C:\datasets
 ```
 
+## Verificar los criterios de éxito de ingeniería
+
+`scripts/verify_engineering_criteria.py` mide los cuatro criterios de ingeniería del
+anteproyecto y escribe `docs/CRITERIOS-ingenieria.md`. Termina con código 1 si alguno no se
+cumple.
+
+| Criterio | Cómo se mide |
+|---|---|
+| (a) Suite de la librería base en verde | Extrae `tests/` **tal como estaba en el commit de migración** (`35f1db5`) a una carpeta temporal y lo ejecuta sin tocarlo contra el código actual. Compara además cada función de prueba con la de hoy por su árbol sintáctico |
+| (b) Módulos nuevos con al menos 70 % | Ejecuta la suite y lee la cobertura por archivo. «Nuevo» es lo que no existía en la migración, según `git` |
+| (c) Reproducibilidad | Lee `REPRODUCIBILIDAD.md` y exige que ninguna verificación difiera |
+| (d) Flujo en no más de 20 instrucciones | Cuenta las instrucciones de los dos ejemplos de `examples/` |
+
+Dos detalles que sostienen la medición:
+
+- Las pruebas extraídas tienen que importar el `autopipe` **del repositorio**. Si se
+  ejecutaran contra otra copia instalada, pasar no probaría nada sobre este código, y el
+  criterio se declara no cumplido.
+- La comparación con el umbral de cobertura usa el porcentaje sin redondear: un módulo al
+  69,96 % no cumple aunque se muestre como 70,0 %.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\verify_engineering_criteria.py              # ~5 min
+.\.venv\Scripts\python.exe scripts\verify_engineering_criteria.py --sin-suite  # reutiliza la cobertura
+```
+
 ## Reproducibilidad
 
 - `random_state` gobierna la partición y el muestreador de Optuna. La misma semilla produce
@@ -753,10 +780,13 @@ tampoco una evidencia: el documento las cuenta aparte.
   referencia y sale con código 1 si algo cambió. Conviene correrlo antes de cada hito.
 - El multihilo de OpenCV puede alterar bits; `cv2.setNumThreads(1)` hace la comparación
   exacta.
-- La configuración ganadora se serializa y puede reconstruirse con
-  `ReportGenerator.rebuild_pipeline`. **Un pipeline reconstruido viene sin ajustar**: el
-  ajuste depende de los datos, no de la configuración, así que para datos tabulares hay que
-  volver a llamar a `fit` antes de transformar.
+- La configuración ganadora se serializa y se reconstruye con
+  `ReportGenerator.rebuild_pipeline`, tanto en imágenes como en datos tabulares.
+  `tests/test_rebuild_tabular.py` recorre ida y vuelta los 144 candidatos del espacio
+  canónico y falla si la librería exporta una transformación que no esté en el registro de
+  reconstrucción. **Un pipeline reconstruido viene sin ajustar**: el ajuste depende de los
+  datos, no de la configuración, así que hay que volver a llamar a `fit` antes de
+  transformar.
 
 ## Errores frecuentes
 
@@ -805,7 +835,7 @@ tampoco una evidencia: el documento las cuenta aparte.
 
 | Archivo | Qué muestra |
 |---|---|
-| `examples/tabular_quickstart.py` | El flujo tabular completo en 13 instrucciones. Lo ejecuta la suite de pruebas |
+| `examples/tabular_quickstart.py` | El flujo tabular completo en 14 instrucciones. Lo ejecuta la suite de pruebas |
 | `examples/tabular_walkthrough.ipynb` | El mismo flujo comentado: espacio canónico, candidatos inevaluables, anti-fuga en vivo y reproducibilidad |
 | `examples/basic_usage.ipynb` | Uso básico sobre imágenes |
 | `examples/mvtec_anomaly_detection.ipynb` | Anomalías industriales sobre MVTec AD |
@@ -815,7 +845,16 @@ Todos los notebooks corren **sin datos externos**: si no encuentran el dataset r
 un sustituto sintético. Los datos reales van fuera del repositorio; véase
 `datasets/README.md`.
 
-## Pendiente en esta guía
+## Deuda conocida
 
-Se amplía con los reportes comparativos del experimento y el análisis de causas
-(semanas 10 y 11).
+- **`normalize_predictions` en la detección de anomalías.** Si un modelo con la convención
+  de scikit-learn predice `+1` («normal») para **todas** las muestras, el conjunto de
+  valores es `{1}`, que también cabe en `{0, 1}`, y se interpreta como «todo anómalo».
+  Afecta a las métricas binarias (`f1`, `precision`, `recall`, `false_positive_rate`), no
+  al AUC-ROC, que usa puntajes continuos. Corregirlo cambiaría métricas binarias ya
+  reportadas, así que queda documentado y no se corrige.
+- **Resuelto:** cuando ningún candidato se puede evaluar, los dos motores registran un
+  aviso en lugar de devolver en silencio un «ganador» con métricas `NaN`; los candidatos se
+  pueden inspeccionar con el método público `GridSearchEngine.build_pipelines()`; y
+  `rebuild_pipeline`, que solo conocía las transformaciones de imagen, reconstruye también
+  los ganadores tabulares.
