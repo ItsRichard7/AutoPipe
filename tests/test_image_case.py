@@ -276,8 +276,9 @@ def test_the_document_explains_why_the_html_reports_are_not_versioned() -> None:
 def test_the_html_reports_are_ignored_by_git() -> None:
     """Prueba por sabotaje de la licencia.
 
-    Los reportes embeben miniaturas de MVTec AD, que no se puede redistribuir. Si
-    alguien quitara la regla de ``.gitignore``, un ``git add`` los publicaría.
+    Los reportes embeben miniaturas de MVTec AD, que el proyecto decidió no
+    redistribuir. Si alguien quitara la regla de ``.gitignore``, un ``git add`` los
+    publicaría.
     """
     reglas = (RAIZ_REPO / ".gitignore").read_text(encoding="utf-8")
 

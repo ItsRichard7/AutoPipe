@@ -80,7 +80,8 @@ docs/experimentos/Preregistro-E2.pdf
 docs/experimentos/reportes/*.pdf
 
 # Los reportes del caso de imágenes embeben miniaturas de MVTec AD, cuya licencia
-# prohíbe redistribuir las imágenes (véase datasets/README.md). Se regeneran en local.
+# condiciona la redistribución a un uso no comercial (véase datasets/README.md). El
+# proyecto opta por no redistribuirlas; los reportes se regeneran en local.
 docs/experimentos/reportes/imagenes/
 # Los informes de avance se entregan en PDF, pero el PDF se regenera desde su
 # .tex: lo que se versiona es la fuente.

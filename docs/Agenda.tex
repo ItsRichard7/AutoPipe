@@ -1780,6 +1780,36 @@ capacidad de \presupuesto\,h. El colchón es del 13,7\%.
  las tres decisiones de formato pendientes, y la dedicatoria y los agradecimientos, que son
  personales.}
 
+\entrada{2026-10-01}{1}
+{Corregí en los documentos vivos la afirmación sobre la licencia de MVTec AD. Varios decían
+ que \emph{prohíbe} redistribuir las imágenes, y lo que hace la CC BY-NC-SA 4.0 es
+ \emph{condicionar} la redistribución a un uso no comercial, con atribución y bajo la misma
+ licencia. Toqué el README de \texttt{datasets/}, la regla de \texttt{.gitignore}, la guía
+ técnica, el guion del caso de imágenes y el documento que genera. La decisión de no
+ versionar los reportes no cambia: es del proyecto y no de la licencia.}
+{La afirmación nació en la semana 11 y se propagó a cinco documentos, uno de ellos generado,
+ lo que obligó a regenerar \texttt{IMAGENES-resultados.md} desde su JSON y a repetir la
+ verificación de reproducibilidad, porque el verificador compara ese documento con lo que
+ produce el guion. Es el tercer error de este tipo que aparece en la semana ---antes fueron
+ las 13 instrucciones del ejemplo y la reconstrucción de pipelines tabulares---, y los tres
+ tienen la misma forma: una afirmación escrita una vez, propagada por copia y nunca
+ comprobada. Las entradas fechadas de esta bitácora no se reescriben; la corrección queda
+ aquí.}
+
+\cierresemana{12}{20}{21}{Semana 12 cerrada y, con ella, el proyecto en todo lo que depende
+ de mí. Los cuatro criterios de éxito de ingeniería quedan \textbf{medidos} y no declarados:
+ las 134 pruebas de la librería base, extraídas del commit de migración y ejecutadas sin
+ modificar contra el código final, pasan; los 16 módulos nuevos quedan entre 99,4\% y 100\%
+ de cobertura; 19 de 19 verificaciones de reproducibilidad son idénticas; y los dos flujos de
+ usuario usan 14 y 19 instrucciones. RE7 completo con el manual de uso, el README y la guía
+ técnica. El informe suma resumen, abstract, conclusiones, ocho recomendaciones y el Apéndice
+ 1, más su copia aparte con la portada original: 61 páginas sin avisos, con el cuerpo en 44 de
+ las 70 permitidas. Se resolvieron tres deudas de código sin cambiar ningún resultado
+ reportado. Suite de 837 a 884 pruebas, 99\% de cobertura. Se gastaron 20\,h de las 21
+ comprometidas y quedan 37\,h de las 336. Queda pendiente la revisión con el profesor asesor,
+ que no consumió horas de esta semana, y con ella las tres decisiones de formato del informe;
+ y quedan la dedicatoria y los agradecimientos, que son personales.}
+
 \newpage
 \section*{Resumen de horas}
 
@@ -1807,7 +1837,7 @@ corresponde a las horas comprometidas de la hoja de ruta; la diferencia con las
 9  & E5, E6, E8        & 23 & 23 & Hito: recomendador funcional; v1.0 congelada \\
 10 & E6, E7, E8        & 22 & 46 & Dos experimentos; hipótesis confirmada \\
 11 & E6, E7, E8        & 23 & 32 & Imágenes, resultados y análisis declarados \\
-12 & E8                & 21 & --- & Hito: cierre del proyecto \\
+12 & E8                & 21 & 20 & Hito: cierre del proyecto \\
 \midrule
 \multicolumn{2}{@{}l}{\textbf{Total comprometido}} & \textbf{290} & --- & \\
 \multicolumn{2}{@{}l}{\textbf{Reserva de contingencia}} & \textbf{46} & --- & 13,7\% de \presupuesto\,h \\

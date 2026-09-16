@@ -688,8 +688,10 @@ tienen que dar **el mismo AUC-ROC** que informó el motor.
 anomalías —109 de 132 en `capsule`— y *Isolation Forest* supone que son escasas. Es
 herencia del protocolo base y explica en buena parte que `capsule` quede al azar.
 
-**Los HTML no se versionan**: embeben miniaturas de MVTec AD, cuya licencia prohíbe
-redistribuir las imágenes. `tests/test_image_case.py` falla si alguien quita la regla de
+**Los HTML no se versionan**: embeben miniaturas de MVTec AD, cuya licencia
+(CC BY-NC-SA 4.0) condiciona la redistribución a un uso no comercial, con atribución y
+bajo la misma licencia. Redistribuirlas en un TFG sería admisible, pero el proyecto opta
+por no hacerlo. `tests/test_image_case.py` falla si alguien quita la regla de
 `.gitignore`.
 
 ```powershell
